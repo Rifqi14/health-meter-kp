@@ -1,0 +1,16 @@
+[
+    {
+        "code": "upgresik",
+        "name": "UP Gresik",
+        "phone": "(031) 3981569",
+        "email": "085655727661",
+        "province_id": 11,
+        "region_id": 133,
+        "district_id": 1835,
+        "address": "Jl. Harun Tohir No.1, Singosari, Pulopancikan, Kec. Gresik, Kabupaten Gresik, Jawa Timur 61111",
+        "postal_code": 61111,
+        "logo":"assets/site/mainstore.png",
+        "receipt_header":"<p>UP Gresik<br></p>",
+        "receipt_footer":"<p>Generate By System</p>"
+    }
+]

@@ -1,0 +1,92 @@
+[
+    {
+        "parent_name":"",
+        "menu_name": "Dashboard",
+        "menu_route": "dashboard",
+        "menu_icon": "fa fa-home"
+    },
+    {
+        "parent_name":"",
+        "menu_name": "Data",
+        "menu_route": "data",
+        "menu_icon": "fa fa-database"
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Kategori",
+        "menu_route": "category",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Fomula",
+        "menu_route": "formula",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Bidang",
+        "menu_route": "department",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Jabatan",
+        "menu_route": "title",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Pegawai",
+        "menu_route": "employee",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Health Meter",
+        "menu_route": "healthmeter",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Data",
+        "menu_name": "Partner",
+        "menu_route": "partner",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"",
+        "menu_name": "Pengaturan",
+        "menu_route": "setting",
+        "menu_icon": "fa fa-cog"
+    },
+    {
+        "parent_name":"Pengaturan",
+        "menu_name": "Umum",
+        "menu_route": "config",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Pengaturan",
+        "menu_name": "Unit",
+        "menu_route": "site",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Pengaturan",
+        "menu_name": "Menu",
+        "menu_route": "menu",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Pengaturan",
+        "menu_name": "Role",
+        "menu_route": "role",
+        "menu_icon": ""
+    },
+    {
+        "parent_name":"Pengaturan",
+        "menu_name": "User",
+        "menu_route": "user",
+        "menu_icon": ""
+    }
+]

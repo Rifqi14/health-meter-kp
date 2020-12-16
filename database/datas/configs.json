@@ -1,0 +1,38 @@
+[
+    {
+        "option": "app_name",
+        "value": "HEALTH METER"
+    },
+    {
+        "option": "app_copyright",
+        "value": "2020 - 2021"
+    },
+    {
+        "option": "app_logo",
+        "value": "assets/logo.png"
+    },
+    {
+        "option": "company_name",
+        "value": "PT PJB"
+    },
+    {
+        "option": "company_email",
+        "value": "cs@pjb.com"
+    },
+    {
+        "option": "company_phone",
+        "value": "(031) 8283180"
+    },
+    {
+        "option": "company_address",
+        "value": "Jl. Ketintang Baru No.11, Ketintang, Kec. Wonocolo, Kota SBY, Jawa Timur 60231"
+    },
+    {
+        "option": "company_latitude",
+        "value": -7.3187892
+    },
+    {
+        "option": "company_longitude",
+        "value": 112.7271361
+    }
+]
