@@ -241,6 +241,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/document/read', 'Admin\DocumentController@read')->name('document.read');
         Route::resource('/document', 'Admin\DocumentController');
 
+        // Medicine
+        Route::get('/medicine/read', 'Admin\MedicineController@read')->name('medicine.read');
+        Route::get('/medicine/select', 'Admin\MedicineController@select')->name('medicine.select');
+        Route::get('/medicine/import', 'Admin\MedicineController@import')->name('medicine.import');
+        Route::post('/medicine/preview', 'Admin\MedicineController@preview')->name('medicine.preview');
+        Route::post('/medicine/storemass', 'Admin\MedicineController@storemass')->name('medicine.storemass');
+        Route::resource('/medicine', 'Admin\MedicineController');
 
         //Laporan Pengisian
         Route::get('/reportdaily', 'Admin\ReportDailyController@index')->name('reportdaily');
