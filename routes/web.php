@@ -11,6 +11,8 @@
 */
 //Route Customer
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('/admin');
@@ -18,14 +20,14 @@ Route::get('/', function () {
 Auth::routes();
 //Route Admin
 Route::group(['prefix' => 'admin'], function () {
-    Route::get('/', 'Auth\AdminLoginController@showLoginForm')->name('admin.login');
+    Route::get('/', 'Auth\AdminLoginController@index')->name('admin.login');
     Route::post('/login', 'Auth\AdminLoginController@login')->name('admin.login.post');
     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('admin.logout');
     Route::group(['middleware' => 'auth:admin'], function () {
-        Route::get('/dashboard','Admin\DashboardController@index')->name('dashboard.index');
-        Route::get('/dashboard/medicalrecord/{id}','Admin\DashboardController@medicalrecord')->name('dashboard.medicalrecord');
-        Route::get('/dashboard/healthmeter/{id}','Admin\DashboardController@healthmeter')->name('dashboard.healthmeter');
-        Route::get('/dashboard/chart','Admin\DashboardController@chart')->name('dashboard.chart');
+        Route::get('/dashboard', 'Admin\DashboardController@index')->name('dashboard.index');
+        Route::get('/dashboard/medicalrecord/{id}', 'Admin\DashboardController@medicalrecord')->name('dashboard.medicalrecord');
+        Route::get('/dashboard/healthmeter/{id}', 'Admin\DashboardController@healthmeter')->name('dashboard.healthmeter');
+        Route::get('/dashboard/chart', 'Admin\DashboardController@chart')->name('dashboard.chart');
         //Route Formula
         Route::get('/formula/read', 'Admin\FormulaController@read')->name('formula.read');
         Route::get('/formula/select', 'Admin\FormulaController@select')->name('formula.select');
@@ -33,49 +35,49 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Formula Detail
         Route::get('/formuladetail/read', 'Admin\FormulaDetailController@read')->name('formuladetail.read');
         Route::resource('/formuladetail', 'Admin\FormulaDetailController');
-         //Route Category
-         Route::get('/category/read', 'Admin\CategoryController@read')->name('category.read');
-         Route::get('/category/select', 'Admin\CategoryController@select')->name('category.select');
-         Route::resource('/category', 'Admin\CategoryController');
-         //Route Sub Category
-         Route::get('/subcategory/read', 'Admin\SubCategoryController@read')->name('subcategory.read');
-         Route::resource('/subcategory', 'Admin\SubCategoryController');
-         //Route Department
-         Route::get('/department/read', 'Admin\DepartmentController@read')->name('department.read');
-         Route::get('/department/select', 'Admin\DepartmentController@select')->name('department.select');
-         Route::get('/department/import', 'Admin\DepartmentController@import')->name('department.import');
-         Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
-         Route::post('/department/storemass', 'Admin\DepartmentController@storemass')->name('department.storemass');
-         Route::resource('/department', 'Admin\DepartmentController');
-         //Route Title
-         Route::get('/title/read', 'Admin\TitleController@read')->name('title.read');
-         Route::get('/title/employee', 'Admin\TitleController@employee')->name('title.employee');
-         Route::get('/title/select', 'Admin\TitleController@select')->name('title.select');
-         Route::get('/title/import', 'Admin\TitleController@import')->name('title.import');
-         Route::post('/title/preview', 'Admin\TitleController@preview')->name('title.preview');
-         Route::post('/title/storemass', 'Admin\TitleController@storemass')->name('title.storemass');
-         Route::resource('/title', 'Admin\TitleController');
-         //Route Grade
-         Route::get('/grade/read', 'Admin\GradeController@read')->name('grade.read');
-         Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
-         Route::resource('/grade', 'Admin\GradeController');
-         //Route Employee
-         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
-         Route::get('/employee/import', 'Admin\EmployeeController@import')->name('employee.import');
-         Route::post('/employee/preview', 'Admin\EmployeeController@preview')->name('employee.preview');
-         Route::post('/employee/storemass', 'Admin\EmployeeController@storemass')->name('employee.storemass');
-         Route::get('/employee/select', 'Admin\EmployeeController@select')->name('employee.select');
-         Route::get('/employee/medis', 'Admin\EmployeeController@medis')->name('employee.medis');
-         Route::get('/employee/history', 'Admin\EmployeeController@history')->name('employee.history');
-         Route::get('/employee/temperature', 'Admin\EmployeeController@temperature')->name('employee.temperature');
-         Route::get('/employee/saturasi', 'Admin\EmployeeController@saturasi')->name('employee.saturasi');
-         Route::get('/employee/exportmedis', 'Admin\EmployeeController@exportmedis')->name('employee.exportmedis');
-         Route::resource('/employee', 'Admin\EmployeeController');
-         //Route Employee Detail
+        //Route Category
+        Route::get('/category/read', 'Admin\CategoryController@read')->name('category.read');
+        Route::get('/category/select', 'Admin\CategoryController@select')->name('category.select');
+        Route::resource('/category', 'Admin\CategoryController');
+        //Route Sub Category
+        Route::get('/subcategory/read', 'Admin\SubCategoryController@read')->name('subcategory.read');
+        Route::resource('/subcategory', 'Admin\SubCategoryController');
+        //Route Department
+        Route::get('/department/read', 'Admin\DepartmentController@read')->name('department.read');
+        Route::get('/department/select', 'Admin\DepartmentController@select')->name('department.select');
+        Route::get('/department/import', 'Admin\DepartmentController@import')->name('department.import');
+        Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
+        Route::post('/department/storemass', 'Admin\DepartmentController@storemass')->name('department.storemass');
+        Route::resource('/department', 'Admin\DepartmentController');
+        //Route Title
+        Route::get('/title/read', 'Admin\TitleController@read')->name('title.read');
+        Route::get('/title/employee', 'Admin\TitleController@employee')->name('title.employee');
+        Route::get('/title/select', 'Admin\TitleController@select')->name('title.select');
+        Route::get('/title/import', 'Admin\TitleController@import')->name('title.import');
+        Route::post('/title/preview', 'Admin\TitleController@preview')->name('title.preview');
+        Route::post('/title/storemass', 'Admin\TitleController@storemass')->name('title.storemass');
+        Route::resource('/title', 'Admin\TitleController');
+        //Route Grade
+        Route::get('/grade/read', 'Admin\GradeController@read')->name('grade.read');
+        Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
+        Route::resource('/grade', 'Admin\GradeController');
+        //Route Employee
+        Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
+        Route::get('/employee/import', 'Admin\EmployeeController@import')->name('employee.import');
+        Route::post('/employee/preview', 'Admin\EmployeeController@preview')->name('employee.preview');
+        Route::post('/employee/storemass', 'Admin\EmployeeController@storemass')->name('employee.storemass');
+        Route::get('/employee/select', 'Admin\EmployeeController@select')->name('employee.select');
+        Route::get('/employee/medis', 'Admin\EmployeeController@medis')->name('employee.medis');
+        Route::get('/employee/history', 'Admin\EmployeeController@history')->name('employee.history');
+        Route::get('/employee/temperature', 'Admin\EmployeeController@temperature')->name('employee.temperature');
+        Route::get('/employee/saturasi', 'Admin\EmployeeController@saturasi')->name('employee.saturasi');
+        Route::get('/employee/exportmedis', 'Admin\EmployeeController@exportmedis')->name('employee.exportmedis');
+        Route::resource('/employee', 'Admin\EmployeeController');
+        //Route Employee Detail
         Route::get('/employeefamily/read', 'Admin\EmployeeFamilyController@read')->name('employeefamily.read');
         Route::get('/employeefamily/select', 'Admin\EmployeeFamilyController@select')->name('employeefamily.select');
         Route::resource('/employeefamily', 'Admin\EmployeeFamilyController');
-          //Route Health Meter
+        //Route Health Meter
         Route::get('/healthmeter/read', 'Admin\HealthMeterController@read')->name('healthmeter.read');
         Route::get('/healthmeter/select', 'Admin\HealthMeterController@select')->name('healthmeter.select');
         Route::resource('/healthmeter', 'Admin\HealthMeterController');
@@ -99,8 +101,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::delete('/siteuser/{id}', 'Admin\SiteUserController@destroy')->name('siteuser.destroy');
         //Route Menu
         Route::post('/menu/order', 'Admin\MenuController@order')->name('menu.order');
-        Route::resource('/menu', 'Admin\MenuController')->only(['index', 'store', 'edit' ,'update', 'destroy']);;
+        Route::resource('/menu', 'Admin\MenuController')->only(['index', 'store', 'edit', 'update', 'destroy']);;
         //Route Role
+        Route::get('/role/set/{id}', 'Admin\RoleController@set');
         Route::get('/role/read', 'Admin\RoleController@read')->name('role.read');
         Route::get('/role/select', 'Admin\RoleController@select')->name('role.select');
         Route::resource('/role', 'Admin\RoleController');
@@ -109,9 +112,12 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Role Menu
         Route::post('/roledashboard/update', 'Admin\RoleDashboardController@update');
         //Route User
-        Route::get('/user/log','Admin\UserController@log')->name('user.log');
+        Route::get('/user/log', 'Admin\UserController@log')->name('user.log');
         Route::get('/user/read', 'Admin\UserController@read')->name('user.read');
+        Route::get('/user/readrole', 'Admin\UserController@readrole')->name('user.readrole');
         Route::post('/user/reset', 'Admin\UserController@reset')->name('user.reset');
+        Route::post('/user/assignrole', 'Admin\UserController@assignrole')->name('user.assignrole');
+        Route::delete('/user/deleterole', 'Admin\UserController@deleterole')->name('user.deleterole');
         Route::resource('/user', 'Admin\UserController');
 
         //Route Personeel
@@ -124,7 +130,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/personnel/exportmedis', 'Admin\PersonnelController@exportmedis')->name('personnel.exportmedis');
         Route::resource('/personnel', 'Admin\PersonnelController');
         Route::get('/supervisor/read', 'Admin\SupervisorController@read')->name('supervisor.read');
-        Route::resource('/supervisor','Admin\SupervisorController');
+        Route::resource('/supervisor', 'Admin\SupervisorController');
 
         //Route partner
         Route::get('/partner/read', 'Admin\PartnerController@read')->name('partner.read');
@@ -132,8 +138,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/partner', 'Admin\PartnerController');
 
         //Route Profile
-        Route::get('account/info','Admin\AccountController@info')->name('account.info');
-        Route::put('account/update/{account}','Admin\AccountController@update')->name('account.update');
+        Route::get('account/info', 'Admin\AccountController@info')->name('account.info');
+        Route::put('account/update/{account}', 'Admin\AccountController@update')->name('account.update');
         //Route Diagnoses Report
         Route::get('/reportdiagnoses', 'Admin\MedicalRecordController@report')->name('reportdiagnoses');
         Route::get('/reportdiagnoses/chart', 'Admin\MedicalRecordController@chart')->name('reportdiagnoses.chart');
@@ -227,7 +233,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportstatus/read', 'Admin\ReportStatusController@read')->name('reportstatus.read');
         Route::post('/reportstatus/export', 'Admin\ReportStatusController@export')->name('reportstatus.export');
 
-         //Template
+        //Template
         Route::get('/template/read', 'Admin\TemplateController@read')->name('template.read');
         Route::resource('/template', 'Admin\TemplateController');
 
@@ -257,4 +263,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/guide', 'Admin\GuideController');
     });
 });
-
+Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
+    Route::get('/', 'Site\LoginController@index');
+    Route::post('/login', 'Site\LoginController@login');
+    Route::get('/logout', 'Site\LoginController@logout');
+    Route::group(['middleware' => 'check.site'], function () {
+        Route::get('/selectroel/{id}', 'Site\LoginController@selectrole');
+        // Route::get('/dashboard', 'Site\DashboardController@index')->name('dashboard.index');
+    });
+});

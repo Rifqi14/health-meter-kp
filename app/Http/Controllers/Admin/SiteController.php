@@ -12,16 +12,18 @@ use Illuminate\Support\Facades\Validator;
 
 class SiteController extends Controller
 {
-    function __construct(){
-        View::share('menu_active', url('admin/'.'site'));
-        $this->middleware('accessmenu', ['except' => ['select','set']]);
+    function __construct()
+    {
+        View::share('menu_active', url('admin/' . 'site'));
+        $this->middleware('accessmenu', ['except' => ['select', 'set']]);
     }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function read(Request $request){
+    public function read(Request $request)
+    {
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
@@ -48,15 +50,15 @@ class SiteController extends Controller
         $sites = $query->get();
 
         $data = [];
-        foreach($sites as $site){
+        foreach ($sites as $site) {
             $site->no = ++$start;
-			$data[] = $site;
-		}
+            $data[] = $site;
+        }
         return response()->json([
-            'draw'=>$request->draw,
-			'recordsTotal'=>$recordsTotal,
-			'recordsFiltered'=>$recordsTotal,
-			'data'=>$data
+            'draw' => $request->draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsTotal,
+            'data' => $data
         ], 200);
     }
     public function index()
@@ -83,57 +85,57 @@ class SiteController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code' 	    => 'required|unique:sites',
-            'name' 	=> 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'province_id' 	=> 'required',
-            'region_id' 	=> 'required',
-            'district_id' 	=> 'required',
-            'address' 	=> 'required',
-            'postal_code' 	=> 'required',
-            'receipt_header' => 'required',
-            'receipt_footer' => 'required',
-            'logo' 		     => 'required|mimes:png',
+            'code'              => 'required|unique:sites',
+            'name'              => 'required',
+            'phone'             => 'required',
+            'email'             => 'required|email',
+            'province_id'       => 'required',
+            'region_id'         => 'required',
+            'district_id'       => 'required',
+            'address'           => 'required',
+            'postal_code'       => 'required',
+            'resep_dokter'      => 'required',
+            'surat_pengantar'   => 'required',
+            'logo'              => 'required|mimes:png',
         ]);
 
         if ($validator->fails()) {
-        	return response()->json([
-        		'status' 	=> false,
-        		'message' 	=> $validator->errors()->first()
-        	], 400);
+            return response()->json([
+                'status'     => false,
+                'message'     => $validator->errors()->first()
+            ], 400);
         }
 
         $site = Site::create([
-            'code' 	=> $request->code,
-			'name' 	=> $request->name,
-			'phone' 	=> $request->phone,
-			'email' 	=> $request->email,
-			'province_id' 	=> $request->province_id,
-			'region_id' 	=> $request->region_id,
-			'district_id' 	=> $request->district_id,
-			'address' 	=> $request->address,
-			'postal_code' 	=> $request->postal_code,
-			'receipt_header' 	=> $request->receipt_header,
-			'receipt_footer' 	=> $request->receipt_footer,
+            'code'                  => $request->code,
+            'name'                  => $request->name,
+            'phone'                 => $request->phone,
+            'email'                 => $request->email,
+            'province_id'           => $request->province_id,
+            'region_id'             => $request->region_id,
+            'district_id'           => $request->district_id,
+            'address'               => $request->address,
+            'postal_code'           => $request->postal_code,
+            'cover_letter'          => $request->surat_pengantar,
+            'doctor_prescription'   => $request->resep_dokter
         ]);
         if (!$site) {
             return response()->json([
                 'status' => false,
-                'message' 	=> $site
+                'message'     => $site
             ], 400);
         }
         $logo = $request->file('logo');
-        if($logo){
+        if ($logo) {
             $path = 'assets/site/';
-            $logo->move($path, $site->code.'.'.$logo->getClientOriginalExtension());
-            $filename = $path.$site->code.'.'.$logo->getClientOriginalExtension();
-            $site->logo = $filename?$filename:'';
+            $logo->move($path, $site->code . '.' . $logo->getClientOriginalExtension());
+            $filename = $path . $site->code . '.' . $logo->getClientOriginalExtension();
+            $site->logo = $filename ? $filename : '';
             $site->save();
         }
         return response()->json([
-        	'status' 	=> true,
-        	'results' 	=> route('site.index'),
+            'status'     => true,
+            'results'     => route('site.index'),
         ], 200);
     }
 
@@ -145,11 +147,10 @@ class SiteController extends Controller
      */
     public function edit($id)
     {
-        $site = Site::with('province','region','district')->find($id);
-        if($site){
-            return view('admin.site.edit',compact('site'));
-        }
-        else{
+        $site = Site::with('province', 'region', 'district')->find($id);
+        if ($site) {
+            return view('admin.site.edit', compact('site'));
+        } else {
             abort(404);
         }
     }
@@ -164,24 +165,24 @@ class SiteController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code' 	    => 'required|unique:sites,code,'.$id,
-            'name' 	=> 'required',
-            'phone' => 'required',
-            'email' => 'required|email',
-            'province_id' 	=> 'required',
-            'region_id' 	=> 'required',
-            'district_id' 	=> 'required',
-            'address' 	=> 'required',
-            'postal_code' 	=> 'required',
-            'receipt_header' => 'required',
-            'receipt_footer' => 'required'
+            'code'              => 'required|unique:sites,code,' . $id,
+            'name'              => 'required',
+            'phone'             => 'required',
+            'email'             => 'required|email',
+            'province_id'       => 'required',
+            'region_id'         => 'required',
+            'district_id'       => 'required',
+            'address'           => 'required',
+            'postal_code'       => 'required',
+            'resep_dokter'      => 'required',
+            'surat_pengantar'   => 'required'
         ]);
 
         if ($validator->fails()) {
-        	return response()->json([
-        		'status' 	=> false,
-        		'message' 	=> $validator->errors()->first()
-        	], 400);
+            return response()->json([
+                'status'     => false,
+                'message'     => $validator->errors()->first()
+            ], 400);
         }
 
         $site = Site::find($id);
@@ -193,30 +194,30 @@ class SiteController extends Controller
         $site->district_id = $request->district_id;
         $site->address = $request->address;
         $site->postal_code = $request->postal_code;
-        $site->receipt_header = $request->receipt_header;
-        $site->receipt_footer = $request->receipt_footer;
+        $site->cover_letter = $request->surat_pengantar;
+        $site->doctor_prescription = $request->resep_dokter;
         $site->save();
         if (!$site) {
             return response()->json([
                 'status' => false,
-                'message' 	=> $site
+                'message'     => $site
             ], 400);
         }
         $logo = $request->file('logo');
-        if($logo){
-            if(file_exists($site->logo)){
+        if ($logo) {
+            if (file_exists($site->logo)) {
                 unlink($site->logo);
             }
             $path = 'assets/site/';
-            $logo->move($path, $site->code.'.'.$logo->getClientOriginalExtension());
-            $filename = $path.$site->code.'.'.$logo->getClientOriginalExtension();
-            $site->logo = $filename?$filename:'';
+            $logo->move($path, $site->code . '.' . $logo->getClientOriginalExtension());
+            $filename = $path . $site->code . '.' . $logo->getClientOriginalExtension();
+            $site->logo = $filename ? $filename : '';
             $site->save();
         }
-        
+
         return response()->json([
-        	'status' 	=> true,
-        	'results' 	=> route('site.index'),
+            'status'     => true,
+            'results'     => route('site.index'),
         ], 200);
     }
 
@@ -231,7 +232,7 @@ class SiteController extends Controller
         try {
             $site = Site::find($id);
             $site->delete();
-            if(file_exists($site->logo)){
+            if (file_exists($site->logo)) {
                 unlink($site->logo);
             }
         } catch (\Illuminate\Database\QueryException $e) {
@@ -246,8 +247,9 @@ class SiteController extends Controller
         ], 200);
     }
 
-    public function set(Request $request){
-        $request->session()->put('site_id', $request->id);
+    public function set(Request $request)
+    {
+        $request->session()->put('role_id', $request->id);
         return redirect()->back();
-     }
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Custom\CheckAdmin;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -61,12 +62,17 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        // Custom Middleware
+        'check.admin'   => CheckAdmin::class,
+        'exist.site'    => \App\Http\Middleware\Custom\ExistSite::class,
+        'check.site'    => \App\Http\Middleware\Custom\CheckSite::class,
+        'check.api'     => \App\Http\Middleware\Custom\CheckAPI::class,
         // THIS LINES HAS BEEN ADDED to JWT Implementation
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
         'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
         // Access Menu
-        'accessmenu' => \App\Http\Middleware\AccessMenu::class, 
+        'accessmenu' => \App\Http\Middleware\AccessMenu::class,
     ];
 
     /**

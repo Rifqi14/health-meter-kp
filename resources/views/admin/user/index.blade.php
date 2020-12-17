@@ -5,48 +5,49 @@
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-    <li class="active">User</li>
+<li class="active">User</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-    <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Data User</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-            <a href="{{route('user.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
-              <i class="fa fa-plus"></i>
-            </a>
-            <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
-                <i class="fa fa-search"></i>
-              </a>
-          </div>
-          <!-- /. tools -->
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Data User</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <a href="{{route('user.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
+                        title="Tambah">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                    <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </div>
+                <!-- /. tools -->
+            </div>
+            <div class="box-body">
+                <table class="table table-striped table-bordered datatable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th width="10">#</th>
+                            <th width="120">Nama</th>
+                            <th width="100">Username</th>
+                            <th width="100">Email</th>
+                            <th width="50">Status</th>
+                            <th width="100">Dibuat</th>
+                            <th width="10">#</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-        <div class="box-body">
-            <table class="table table-striped table-bordered datatable" style="width:100%">
-                <thead>
-                    <tr>
-                        <th width="10">#</th>
-                        <th width="100">Role</th>
-                        <th width="120">Nama</th>
-                        <th width="100">Username</th>
-                        <th width="100">Email</th>
-                        <th width="50">Status</th>
-                        <th width="100">Dibuat</th>
-                        <th width="10">#</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="overlay hidden">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div>
     </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
+    aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -54,23 +55,17 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title">Pencarian</h4>
-			</div>		
+            </div>
             <div class="modal-body">
-                <form id="form-search" autocomplete="off">	
+                <form id="form-search" autocomplete="off">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label" for="display_name">Role</label>
-                                <input type="text" name="display_name" class="form-control" placeholder="Role">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="name">Nama</label>
                                 <input type="text" name="name" class="form-control" placeholder="Nama">
-                            </div>			
+                            </div>
                         </div>
-                    </div> 
+                    </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -86,13 +81,14 @@
                                     <option value="1">Aktif</option>
                                     <option value="0">Tidak Aktif</option>
                                 </select>
-                            </div>			
+                            </div>
                         </div>
-                    </div>   
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
+                <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
+                        class="fa fa-search"></i></button>
             </div>
         </div>
     </div>
@@ -102,7 +98,7 @@
 @push('scripts')
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script type="text/javascript">
-function filter(){
+    function filter(){
     $('#add-filter').modal('show');
 }
 $(function(){
@@ -114,16 +110,14 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 7, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('user.read')}}",
             type: "GET",
             data:function(data){
-                var display_name = $('#form-search').find('input[name=display_name]').val();
                 var name = $('#form-search').find('input[name=name]').val();
                 var email = $('#form-search').find('input[name=email]').val();
                 var status = $('#form-search').find('select[name=status]').val();
-                data.display_name = display_name;
                 data.name = name;
                 data.email = email;
                 data.status = status;
@@ -134,7 +128,7 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [5,7] },
+            { className: "text-center", targets: [4,6] },
             {
                 render: function ( data, type, row ) {
                     if(row.status == 1){
@@ -144,7 +138,7 @@ $(function(){
                         return `<span class="label label-danger">Tidak Aktif</span>`
                     }
                 },
-                targets: [5]
+                targets: [4]
             },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
@@ -156,12 +150,11 @@ $(function(){
                         <li><a class="dropdown-item" href="{{url('admin/user')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                         <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                     </ul></div>`
-            },targets: [7]
+            },targets: [6]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "display_name" },
             { data: "name" },
             { data: "username" },
             { data: "email" },
