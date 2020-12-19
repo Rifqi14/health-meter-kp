@@ -19,7 +19,8 @@ class LoginController extends Controller
     public function index(Request $request)
     {
         if (!$request->session()->get('site')) {
-            return view('site.login');
+            $siteinfo = $request->siteinfo;
+            return view('site.login', compact('siteinfo'));
         } else {
             return redirect($request->site . '/dashboard');
         }

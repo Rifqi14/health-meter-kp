@@ -8,13 +8,27 @@
   .register-page {
     background: #d2d6de url("/adminlte/images/background.png");
   }
+
+  .site-logo {
+    width: 7rem;
+    height: 7rem;
+    object-fit: contain;
+  }
+
+  .site-name {
+    font-size: 3rem;
+    font-weight: 600;
+  }
 </style>
 @endsection
 @section('content')
 <div class="login-box">
   <div class="login-box-body">
     <div class="login-logo">
-      <a href="#"><img src="{{asset(config('configs.app_logo'))}}"></a>
+      <a href="#">
+        <img src="{{asset($siteinfo->logo)}}" class="site-logo">
+        <p class="site-name">{{ $siteinfo->name }}</p>
+      </a>
     </div>
     <form action="{{ url()->current().'/login' }}" id="form" method="post" autocomplete="off">
       @csrf

@@ -1,0 +1,70 @@
+.site-logo {
+    width: 6rem;
+    height: 6rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.users-list-name {
+    text-align: center;
+}
+
+.login-box {
+    width: 40%;
+}
+
+@media (max-width: 768px) {
+    .login-box {
+        width: 60%;
+    }
+
+    .site-logo {
+        width: 4rem;
+        height: 4rem;
+        object-fit: contain;
+    }
+
+    .site-name {
+        font-size: 1rem;
+    }
+
+    .modal-body .site-logo {
+        width: 6rem;
+        height: 6rem;
+        object-fit: contain;
+    }
+
+    .modal-body .site-name {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 425px) {
+    .login-box {
+        width: 60%;
+    }
+
+    .site-logo {
+        width: 4rem;
+        height: 4rem;
+        object-fit: contain;
+    }
+
+    .site-name {
+        font-size: 1rem;
+    }
+
+    .modal-body .site-logo {
+        width: 5rem;
+        height: 5rem;
+        object-fit: contain;
+    }
+
+    .modal-body .site-name {
+        font-size: 1.5rem;
+    }
+}
