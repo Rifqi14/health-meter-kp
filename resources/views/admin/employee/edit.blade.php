@@ -2,130 +2,149 @@
 
 @section('title', 'Ubah Pegawai')
 @push('breadcrump')
-    <li><a href="{{route('employee.index')}}">Pegawai</a></li>
-    <li class="active">Ubah</li>
+<li><a href="{{route('employee.index')}}">Pegawai</a></li>
+<li class="active">Ubah</li>
 @endpush
 @section('stylesheets')
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style type="text/css">
   #map {
-       height: 300px;
-       border: 1px solid #CCCCCC;
-     }
+    height: 300px;
+    border: 1px solid #CCCCCC;
+  }
 </style>
 @endsection
 @section('content')
 <div class="row">
-    <div class="col-lg-12">
+  <div class="col-lg-12">
     <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Ubah Pegawai</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-            <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+      <div class="box-header">
+        <h3 class="box-title">Ubah Pegawai</h3>
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
+              class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
+              class="fa fa-reply"></i></a>
+        </div>
+        <!-- /. tools -->
+      </div>
+      <div class="box-body">
+        <form id="form" action="{{route('employee.update',['id'=>$employee->id])}}" class="form-horizontal"
+          method="post" autocomplete="off">
+          {{ csrf_field() }}
+          <input type="hidden" name="_method" value="put">
+          <div class="well well-sm">
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" value="{{$employee->nid}}"
+                  required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Nama"
+                  value="{{$employee->name}}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe" required>
+                  <option value=""></option>
+                  <option value="permanent" @if($employee->type == 'permanent') selected @endif>Pegawai Tetap</option>
+                  <option value="internship" @if($employee->type == 'internship') selected @endif>Alih Daya</option>
+                  <option value="pensiun" @if($employee->type == 'pensiun') selected @endif>Pensiun</option>
+                  <option value="other" @if($employee->type == 'other') selected @endif>Lainya</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Jenis Kelamin <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="type" name="gender" class="form-control select2" placeholder="Pilih Jenis Kelamin" required>
+                  <option value=""></option>
+                  <option value="m" @if($employee->gender == 'm') selected @endif>Laki - Laki</option>
+                  <option value="f" @if($employee->gender == 'f') selected @endif>Perempuan</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tempat Lahir <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="place_of_birth" name="place_of_birth"
+                  placeholder="Tempat Lahir" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tanggal Lahir <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="birth_date" name="birth_date" placeholder="Tanggal Lahir"
+                  value="{{$employee->birth_date}}" required>
+              </div>
+            </div>
           </div>
-          <!-- /. tools -->
-        </div>
-        <div class="box-body">
-            <form id="form" action="{{route('employee.update',['id'=>$employee->id])}}" class="form-horizontal" method="post" autocomplete="off">
-               {{ csrf_field() }}
-               <input type="hidden" name="_method" value="put">
-               <div class="well well-sm">
-                <div class="form-group">
-                  <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
-                  <div class="col-sm-6">
-                    <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan">
-                  </div>
-                </div>
-                  <div class="form-group">
-                    <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                    <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" value="{{$employee->nid}}" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="{{$employee->name}}" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                       <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe" required>
-                          <option value=""></option>
-                          <option value="permanent" @if($employee->type == 'permanent') selected @endif>Pegawai Tetap</option>
-                          <option value="internship" @if($employee->type == 'internship') selected @endif>Alih Daya</option>
-                          <option value="pensiun" @if($employee->type == 'pensiun') selected @endif>Pensiun</option>
-                          <option value="other" @if($employee->type == 'other') selected @endif>Lainya</option>
-                       </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Jenis Kelamin <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                       <select id="type" name="gender" class="form-control select2" placeholder="Pilih Jenis Kelamin" required>
-                          <option value=""></option>
-                          <option value="m" @if($employee->gender == 'm') selected @endif>Laki - Laki</option>
-                          <option value="f" @if($employee->gender == 'f') selected @endif>Perempuan</option>
-                       </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tempat Lahir <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="place_of_birth" name="place_of_birth" placeholder="Tempat Lahir" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tanggal Lahir <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                    <input type="text" class="form-control" id="birth_date" name="birth_date" placeholder="Tanggal Lahir" value="{{$employee->birth_date}}" required>
-                    </div>
-                  </div>
-                </div>
-                <div class="well well-sm">
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Telepon <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="phone" name="phone" placeholder="Telepon" value="{{$employee->phone}}" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Alamat <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                    <textarea name="address" id="address" class="form-control" placeholder="Alamat">{{$employee->address}}</textarea>
-                      <div id="map"></div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Latitude</label>
-                    <div class="col-sm-6">
-                    <input type="text" class="form-control" id="latitude" name="latitude" value="{{$employee->latitude}}" placeholder="Latitude">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Longitude</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="longitude" name="longitude" value="{{$employee->longitude}}"placeholder="Longitude">
-                    </div>
-                  </div>
-                </div>
-              </form>
-        </div>
-        <div class="overlay hidden">
-          <i class="fa fa-refresh fa-spin"></i>
-        </div>
+          <div class="well well-sm">
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Telepon <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Telepon"
+                  value="{{$employee->phone}}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Alamat <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <textarea name="address" id="address" class="form-control"
+                  placeholder="Alamat">{{$employee->address}}</textarea>
+                <div id="map"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Latitude</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="latitude" name="latitude" value="{{$employee->latitude}}"
+                  placeholder="Latitude">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Longitude</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="longitude" name="longitude" value="{{$employee->longitude}}"
+                  placeholder="Longitude">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="unit" class="col-sm-2 control-label">Unit</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="unit" name="unit" value="{{$employee->site_id}}"
+                  placeholder="Pilih Unit">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="overlay hidden">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
 @endsection
 
 @push('scripts')
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
+<script type="text/javascript"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
 <script>
   var map, geocoder, marker, infowindow;
   $(document).ready(function(){
@@ -188,6 +207,37 @@
       });
       @if(isset($employee->movement[0]->title))
       $("#title_id").select2('data',{id:{{$employee->movement[0]->title->id}},text:'{{$employee->movement[0]->title->name}}'}).trigger('change');
+      @endif
+      $("#unit").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      @if(isset($employee->site_id))
+      $("#unit").select2('data',{id:{{$employee->site->id}},text:'{{$employee->site->name}}'}).trigger('change');
       @endif
       $(document).on("change", "#title_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {

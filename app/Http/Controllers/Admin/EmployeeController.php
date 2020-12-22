@@ -52,11 +52,15 @@ class EmployeeController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $site = $request->site;
 
         //Count Data
         $query = DB::table('employees');
         $query->select('employees.*');
         $query->whereRaw("upper(employees.name) like '%$name%'");
+        if ($site) {
+            $query->where('site_id', $site);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
@@ -67,6 +71,9 @@ class EmployeeController extends Controller
         $query->leftJoin('regions', 'regions.id', '=', 'employees.place_of_birth');
         $query->whereNull('finish');
         $query->whereRaw("upper(employees.name) like '%$name%'");
+        if ($site) {
+            $query->where('employees.site_id', $site);
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -146,7 +153,8 @@ class EmployeeController extends Controller
             'birth_date'   => 'required',
             'phone'   => 'required',
             'address'   => 'required',
-            'password'   => 'required'
+            'password'   => 'required',
+            'unit'      => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -167,7 +175,8 @@ class EmployeeController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'latitude' => $request->latitude,
-            'longitude' => $request->longitude
+            'longitude' => $request->longitude,
+            'site_id'   => $request->unit
         ]);
         if (!$employee) {
             DB::rollback();
@@ -210,7 +219,7 @@ class EmployeeController extends Controller
 
         $siteuser = SiteUser::create([
             'user_id' => $user->id,
-            'site_id'     => $request->session()->get('site_id')
+            'site_id'     => $request->unit
         ]);
         if (!$siteuser) {
             DB::rollback();
@@ -297,7 +306,8 @@ class EmployeeController extends Controller
             'phone'          => 'required',
             'address'        => 'required',
             'latitude'       => 'required',
-            'longitude'      => 'required'
+            'longitude'      => 'required',
+            'unit'           => 'required'
 
         ]);
 
@@ -366,6 +376,7 @@ class EmployeeController extends Controller
         $employee->address        = $request->address;
         $employee->latitude       = $request->latitude;
         $employee->longitude      = $request->longitude;
+        $employee->site_id        = $request->unit;
         $employee->save();
         if (!$employee) {
             DB::rollback();

@@ -9,7 +9,6 @@
         height: 370px;
         border: 1px solid #CCCCCC;
     }
-
 </style>
 @endsection
 @push('breadcrump')
@@ -56,6 +55,10 @@
                     <tr>
                         <td><strong>Longitude</strong></td>
                         <td class="text-right" id="long">{{$partner->longitude}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unit</strong></td>
+                        <td class="text-right" id="site">{{$partner->site->name}}</td>
                     </tr>
                 </table>
 

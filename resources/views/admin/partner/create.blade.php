@@ -12,7 +12,6 @@
         height: 300px;
         border: 1px solid #CCCCCC;
     }
-
 </style>
 @endsection
 @section('content')
@@ -46,8 +45,8 @@
                             <label for="category" class="col-sm-2 control-label">Kategori <b
                                     class="text-danger">*</b></label>
                             <div class="col-sm-6">
-                                <Select id="type" name="category" class="form-control select2" placeholder="Pilih Kategori"
-                                    required>
+                                <Select id="type" name="category" class="form-control select2"
+                                    placeholder="Pilih Kategori" required>
                                     <option value=""></option>
                                     <option value="drugstore">Apotek</option>
                                     <option value="hospital">Rumah Sakit</option>
@@ -91,6 +90,12 @@
                                     placeholder="Longitude">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="site" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="site" name="site" placeholder="Unit">
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -125,6 +130,34 @@
         });
         $('.select2').select2({
             allowClear: true
+        });
+        $("#site").select2({
+            ajax: {
+                url: "{{route('site.select')}}",
+                type:'GET',
+                dataType: 'json',
+                data: function (term,page) {
+                return {
+                    name:term,
+                    page:page,
+                    limit:30,
+                };
+                },
+                results: function (data,page) {
+                var more = (page * 30) < data.total;
+                var option = [];
+                $.each(data.rows,function(index,item){
+                    option.push({
+                    id:item.id,  
+                    text: `${item.name}`
+                    });
+                });
+                return {
+                    results: option, more: more,
+                };
+                },
+            },
+            allowClear: true,
         });
 
         $("#form").validate({

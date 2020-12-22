@@ -46,8 +46,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-    aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" role="dialog" aria-hidden="true" role="dialog" aria-hidden="true"
+    data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -63,6 +63,12 @@
                             <div class="form-group">
                                 <label class="control-label" for="name">Nama</label>
                                 <input type="text" name="name" class="form-control" placeholder="Nama">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="site" class="control-label">Unit</label>
+                                <input type="text" class="form-control" id="site" name="site" data-placeholder="Unit">
                             </div>
                         </div>
                     </div>
@@ -85,6 +91,34 @@
         $('#add-filter').modal('show');
     }
     $(function () {
+        $("#site").select2({
+            ajax: {
+                url: "{{route('site.select')}}",
+                type:'GET',
+                dataType: 'json',
+                data: function (term,page) {
+                return {
+                    name:term,
+                    page:page,
+                    limit:30,
+                };
+                },
+                results: function (data,page) {
+                var more = (page * 30) < data.total;
+                var option = [];
+                $.each(data.rows,function(index,item){
+                    option.push({
+                    id:item.id,  
+                    text: `${item.name}`
+                    });
+                });
+                return {
+                    results: option, more: more,
+                };
+                },
+            },
+            allowClear: true,
+        });
         dataTable = $('.datatable').DataTable({
             stateSave: true,
             processing: true,
@@ -101,6 +135,8 @@
                 type: "GET",
                 data: function (data) {
                     var name = $('#form-search').find('input[name=name]').val();
+                    var site = $('#form-search').find('input[name=site]').val();
+                    data.site = site;
                     data.name = name;
                 }
             },
@@ -154,7 +190,6 @@
                 },
             ]
         });
-
         $('#form-search').submit(function (e) {
             e.preventDefault();
             dataTable.draw();

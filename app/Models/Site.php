@@ -7,13 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Site extends Model
 {
     protected $guarded = [];
-    public function province() {
+    public function province()
+    {
         return $this->hasOne('App\Models\Province', 'id', 'province_id');
     }
-    public function region() {
+    public function region()
+    {
         return $this->hasOne('App\Models\Region', 'id', 'region_id');
     }
-    public function district() {
+    public function district()
+    {
         return $this->hasOne('App\Models\District', 'id', 'district_id');
+    }
+    public function partner()
+    {
+        return $this->hasMany(Partner::class, 'site_id', 'id');
     }
 }

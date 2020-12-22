@@ -9,8 +9,9 @@
         height: 370px;
         border: 1px solid #CCCCCC;
     }
-    .overlay-wrapper{
-      position:relative;
+
+    .overlay-wrapper {
+        position: relative;
     }
 </style>
 @endsection
@@ -33,8 +34,11 @@
                 <table class="table">
                     <tr>
                         <td width="25%"><strong>Jabatan</strong></td>
-                        <td width="25%" class="text-right">{{$employee->movement[0]->title->name?$employee->movement[0]->title->name:'Tidak Ada'}}</td>
-                        <td rowspan="9"><div id="map"></div></td>
+                        <td width="25%" class="text-right">
+                            {{$employee->movement[0]->title->name?$employee->movement[0]->title->name:'Tidak Ada'}}</td>
+                        <td rowspan="9">
+                            <div id="map"></div>
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>NID</strong></td>
@@ -50,17 +54,22 @@
                     </tr>
                     <tr>
                         <td><strong>Tempat & Tgl Lahir</strong></td>
-                        <td class="text-right">{{$employee->region->name}} , {{ Carbon\Carbon::parse($employee->birth_date)->format('d F Y') }}
+                        <td class="text-right">{{$employee->region->name}} ,
+                            {{ Carbon\Carbon::parse($employee->birth_date)->format('d F Y') }}
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Umur</strong></td>
-                        <td class="text-right"><span class="label label-success">{{ Carbon\Carbon::parse($employee->birth_date)->age }} Tahun </span>
+                        <td class="text-right"><span
+                                class="label label-success">{{ Carbon\Carbon::parse($employee->birth_date)->age }} Tahun
+                            </span>
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Hak Rawat Inap</strong></td>
-                        <td class="text-right" id="inpatient">{{isset($employee->movement[0]->title->grade->name)?$employee->movement[0]->title->grade->name:'Tidak Ada'}}</td>
+                        <td class="text-right" id="inpatient">
+                            {{isset($employee->movement[0]->title->grade->name)?$employee->movement[0]->title->grade->name:'Tidak Ada'}}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Alamat</strong></td>
@@ -74,6 +83,10 @@
                         <td><strong>Longitude</strong></td>
                         <td class="text-right" id="long">{{$employee->longitude}}</td>
                     </tr>
+                    <tr>
+                        <td><strong>Unit</strong></td>
+                        <td class="text-right" id="unit">{{$employee->site->name}}</td>
+                    </tr>
                 </table>
 
             </div>
@@ -84,55 +97,58 @@
     <div class="col-lg-12">
         <div class="nav-tabs-custom tab-primary">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#employeefamily" data-toggle="tab">Tanggungan</a></li>
-              <li><a href="#employeehistory" data-toggle="tab">Riwayat</a></li>
-              <li><a href="#employeemedis" data-toggle="tab">Medis</a></li>
+                <li class="active"><a href="#employeefamily" data-toggle="tab">Tanggungan</a></li>
+                <li><a href="#employeehistory" data-toggle="tab">Riwayat</a></li>
+                <li><a href="#employeemedis" data-toggle="tab">Medis</a></li>
             </ul>
             <div class="tab-content">
-              <div class="tab-pane active" id="employeefamily">
-                <div class="overlay-wrapper">
-                  <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
-                <table  class="table table-bordered table-striped" id="table-family">
-                    <thead>
-                        <tr>
-                            <th style="text-align:center" width="10">#</th>
-                            <th width="100" >Tipe</th>
-                            <th width="250" >Nama</th>
-                            <th width="100" >Tgl Lahir</th>
-                            <th width="10" >#</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="overlay hidden">
-                  <i class="fa fa-refresh fa-spin"></i>
+                <div class="tab-pane active" id="employeefamily">
+                    <div class="overlay-wrapper">
+                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i
+                                class="fa fa-plus"></i></a>
+                        <table class="table table-bordered table-striped" id="table-family">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center" width="10">#</th>
+                                    <th width="100">Tipe</th>
+                                    <th width="250">Nama</th>
+                                    <th width="100">Tgl Lahir</th>
+                                    <th width="10">#</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="overlay hidden">
+                            <i class="fa fa-refresh fa-spin"></i>
+                        </div>
+                    </div>
                 </div>
-                </div>
-              </div>
-              <div class="tab-pane" id="employeehistory">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box box-primary">
-                            <div class="box-header">
-                                <h3 class="box-title">Riwayat Pengisian</h3>
-                            </div>
-                            <div class="box-body">
-                                <table  class="table table-bordered table-striped" style="width:100%" id="table-history">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align:right" width="10">#</th>
-                                            <th style="text-align:center" width="100" >Tanggal</th>
-                                            <th style="text-align:center" width="50" >Apakah Sehat?</th>
-                                            <th style="text-align:center" width="50" >	Suhu Badan</th>
-                                            <th style="text-align:center" width="50" >Saturasi</th>
-                                            <th style="text-align:center" width="50" >Resiko Covid-19 (Hasil Presensi)</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                <div class="tab-pane" id="employeehistory">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">Riwayat Pengisian</h3>
+                                </div>
+                                <div class="box-body">
+                                    <table class="table table-bordered table-striped" style="width:100%"
+                                        id="table-history">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align:right" width="10">#</th>
+                                                <th style="text-align:center" width="100">Tanggal</th>
+                                                <th style="text-align:center" width="50">Apakah Sehat?</th>
+                                                <th style="text-align:center" width="50"> Suhu Badan</th>
+                                                <th style="text-align:center" width="50">Saturasi</th>
+                                                <th style="text-align:center" width="50">Resiko Covid-19 (Hasil
+                                                    Presensi)</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                  </div>
-                  <div class="row">
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="box box-primary">
                                 <div class="box-header">
@@ -155,32 +171,34 @@
                                 </div>
                             </div>
                         </div>
-                  </div>
-              </div>
-              <div class="tab-pane" id="employeemedis">
-                <div class="overlay-wrapper">
-                <a href="#" class="btn btn-primary pull-right btn-sm export-file" title="Example"><i class="fa fa-download"></i></a>
-                <table  class="table table-bordered table-striped" id="table-medis" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th style="text-align:center" width="10">#</th>
-                            <th width="100" >No Dokumen</th>
-                            <th width="250" >Nama</th>
-                            <th width="100" >Hasil</th>
-                            <th width="10" >#</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="overlay hidden">
-                  <i class="fa fa-refresh fa-spin"></i>
+                    </div>
                 </div>
+                <div class="tab-pane" id="employeemedis">
+                    <div class="overlay-wrapper">
+                        <a href="#" class="btn btn-primary pull-right btn-sm export-file" title="Example"><i
+                                class="fa fa-download"></i></a>
+                        <table class="table table-bordered table-striped" id="table-medis" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center" width="10">#</th>
+                                    <th width="100">No Dokumen</th>
+                                    <th width="250">Nama</th>
+                                    <th width="100">Hasil</th>
+                                    <th width="10">#</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="overlay hidden">
+                            <i class="fa fa-refresh fa-spin"></i>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
     </div>
 </div>
-<div class="modal fade" id="add-detail" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
+    aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -192,16 +210,17 @@
             <div class="modal-body">
                 <form id="form" method="post" action="{{route('employeefamily.store')}}" autocomplete="off">
                     {{ csrf_field() }}
-                    <input type="hidden" name="employee_id" value="{{$employee->id}}"/>
-                    <input type="hidden" name="_method"/>
+                    <input type="hidden" name="employee_id" value="{{$employee->id}}" />
+                    <input type="hidden" name="_method" />
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="type">Tipe</label>
-                                <select name="type" class="form-control select2" placeholder="Pilih Tipe Tanggungan" required>
-                                <option value=""></option>
-                                <option value="couple">Pasangan</option>
-                                <option value="child">Anak</option>
+                                <select name="type" class="form-control select2" placeholder="Pilih Tipe Tanggungan"
+                                    required>
+                                    <option value=""></option>
+                                    <option value="couple">Pasangan</option>
+                                    <option value="child">Anak</option>
                                 </select>
                             </div>
                         </div>
@@ -217,7 +236,8 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="control-label" for="birth_date">Tgl Lahir <b class="text-danger">*</b></label>
+                                <label class="control-label" for="birth_date">Tgl Lahir <b
+                                        class="text-danger">*</b></label>
                                 <input type="text" name="birth_date" class="form-control" placeholder="Tgl Lahir">
                             </div>
                         </div>
@@ -225,11 +245,12 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i class="fa fa-save"></i></button>
+                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
+                        class="fa fa-save"></i></button>
             </div>
         </div>
     </div>
-    </div>
+</div>
 @endsection
 
 @push('scripts')

@@ -61,6 +61,39 @@ class SiteController extends Controller
             'data' => $data
         ], 200);
     }
+
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+
+        //Count Data
+        $query = Site::select('sites.*');
+        if ($name) {
+            $query->where('name', 'like', "%$name%");
+        }
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = Site::select('sites.*');
+        if ($name) {
+            $query->where('name', 'like', "%$name%");
+        }
+        $query->offset($start);
+        $query->limit($length);
+        $sites = $query->get();
+
+        $data = [];
+        foreach ($sites as $site) {
+            $site->no = ++$start;
+            $data[] = $site;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
     public function index()
     {
         return view('admin.site.index');

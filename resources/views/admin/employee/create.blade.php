@@ -2,155 +2,170 @@
 
 @section('title', 'Tambah Pegawai')
 @push('breadcrump')
-    <li><a href="{{route('employee.index')}}">Pegawai</a></li>
-    <li class="active">Tambah</li>
+<li><a href="{{route('employee.index')}}">Pegawai</a></li>
+<li class="active">Tambah</li>
 @endpush
 @section('stylesheets')
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style type="text/css">
   #map {
-       height: 300px;
-       border: 1px solid #CCCCCC;
-     }
+    height: 300px;
+    border: 1px solid #CCCCCC;
+  }
 </style>
 @endsection
 @section('content')
 <div class="row">
-    <div class="col-lg-12">
+  <div class="col-lg-12">
     <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Tambah Pegawai</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-            <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+      <div class="box-header">
+        <h3 class="box-title">Tambah Pegawai</h3>
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
+              class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
+              class="fa fa-reply"></i></a>
+        </div>
+        <!-- /. tools -->
+      </div>
+      <div class="box-body">
+        <form id="form" action="{{route('employee.store')}}" class="form-horizontal" method="post" autocomplete="off">
+          {{ csrf_field() }}
+          <div class="well well-sm">
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan"
+                  required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe" required>
+                  <option value=""></option>
+                  <option value="permanent">Pegawai Tetap</option>
+                  <option value="internship">Alih Daya</option>
+                  <option value="pensiun">Pensiun</option>
+                  <option value="other">Lainya</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Jenis Kelamin <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="type" name="gender" class="form-control select2" placeholder="Pilih Jenis Kelamin" required>
+                  <option value=""></option>
+                  <option value="m">Laki - Laki</option>
+                  <option value="f">Perempuan</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tempat Lahir <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="place_of_birth" name="place_of_birth"
+                  placeholder="Tempat Lahir" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Tanggal Lahir <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="birth_date" name="birth_date" placeholder="Tanggal Lahir"
+                  required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Jenjang Jabatan <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="grade_id" name="grade_id"
+                  data-placeholder="Pilih Jenjang Jabatan" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required>
+              </div>
+            </div>
           </div>
-          <!-- /. tools -->
-        </div>
-        <div class="box-body">
-            <form id="form" action="{{route('employee.store')}}" class="form-horizontal" method="post" autocomplete="off">
-               {{ csrf_field() }}
-               <div class="well well-sm">
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                       <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe" required>
-                          <option value=""></option>
-                          <option value="permanent">Pegawai Tetap</option>
-                          <option value="internship">Alih Daya</option>
-                          <option value="pensiun">Pensiun</option>
-                          <option value="other">Lainya</option>
-                       </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Jenis Kelamin <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                       <select id="type" name="gender" class="form-control select2" placeholder="Pilih Jenis Kelamin" required>
-                          <option value=""></option>
-                          <option value="m">Laki - Laki</option>
-                          <option value="f">Perempuan</option>
-                       </select>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tempat Lahir <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="place_of_birth" name="place_of_birth" placeholder="Tempat Lahir" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Tanggal Lahir <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="birth_date" name="birth_date" placeholder="Tanggal Lahir" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Jenjang Jabatan <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="grade_id" name="grade_id" data-placeholder="Pilih Jenjang Jabatan" required>
-                    </div>
-                  </div>
-                </div>
-                <div class="well well-sm">
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Telepon <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="phone" name="phone" placeholder="Telepon" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Alamat <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <textarea name="address" id="address" class="form-control" placeholder="Alamat"></textarea>
-                      <div id="map"></div>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Latitude</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude">
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Longitude</label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude">
-                    </div>
-                  </div>
-                </div>
-                <div class="well well-sm">
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Role <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="email" class="col-sm-2 control-label">Email <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="password" class="col-sm-2 control-label">Password <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                    </div>
-                  </div>
-                </div>
-              </form>
-        </div>
-        <div class="overlay hidden">
-          <i class="fa fa-refresh fa-spin"></i>
-        </div>
+          <div class="well well-sm">
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Telepon <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Telepon" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Alamat <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <textarea name="address" id="address" class="form-control" placeholder="Alamat"></textarea>
+                <div id="map"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Latitude</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Longitude</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude">
+              </div>
+            </div>
+          </div>
+          <div class="well well-sm">
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Role <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role"
+                  required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email" class="col-sm-2 control-label">Email <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="col-sm-2 control-label">Password <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                  required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="overlay hidden">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
 @endsection
 
 @push('scripts')
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
+<script type="text/javascript"
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
 <script>
   var map, geocoder, marker, infowindow;
   $(document).ready(function(){
@@ -205,6 +220,34 @@
               results: option, more: more,
             };
           },
+        },
+        allowClear: true,
+      });
+      $("#unit").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
         },
         allowClear: true,
       });
