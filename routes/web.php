@@ -269,6 +269,14 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/guide/read', 'Admin\GuideController@read')->name('guide.read');
         Route::get('/guide/list', 'Admin\GuideController@list')->name('guide.list');
         Route::resource('/guide', 'Admin\GuideController');
+
+        // Doctor
+        Route::get('/doctor/read', 'Admin\DoctorController@read')->name('doctor.read');
+        Route::get('/doctor/select', 'Admin\DoctorController@select')->name('doctor.select');
+        Route::get('/doctor/import', 'Admin\DoctorController@import')->name('doctor.import');
+        Route::post('/doctor/preview', 'Admin\DoctorController@preview')->name('doctor.preview');
+        Route::post('/doctor/storemass', 'Admin\DoctorController@storemass')->name('doctor.storemass');
+        Route::resource('/doctor', 'Admin\DoctorController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
