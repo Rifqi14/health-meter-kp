@@ -93,6 +93,7 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Site
         Route::get('/site/set/{id}', 'Admin\SiteController@set');
         Route::get('/site/read', 'Admin\SiteController@read')->name('site.read');
+        Route::get('/site/select', 'Admin\SiteController@select')->name('site.select');
         Route::resource('/site', 'Admin\SiteController')->except(['show']);
         //Route User Site
         Route::get('/siteuser/read', 'Admin\SiteUserController@read')->name('siteuser.read');
