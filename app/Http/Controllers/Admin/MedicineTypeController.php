@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\MedicineCategory;
-use App\Models\MedicineGroup;
+use App\Models\MedicineType;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
-class MedicineGroupController extends Controller
+class MedicineTypeController extends Controller
 {
     function __construct() {
-        View::share('menu_active', url('admin/medicinegroup'));
+        View::share('menu_active', url('admin/medicinetype'));
         $this->middleware('accessmenu', ['except' => 'select']);
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +24,7 @@ class MedicineGroupController extends Controller
      */
     public function index()
     {
-        return view('admin.medicinegroup.index');
+        return view('admin.medicinetype.index');
     }
 
     public function read(Request $request)
@@ -38,14 +38,14 @@ class MedicineGroupController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = MedicineGroup::with('user')->whereRaw("upper(description) like '%$name%'");
+        $query = MedicineType::with('user')->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = MedicineGroup::with('user')->whereRaw("upper(description) like '%$name%'");
+        $query = MedicineType::with('user')->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
@@ -74,11 +74,11 @@ class MedicineGroupController extends Controller
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = MedicineGroup::whereRaw("upper(description) like '%$name%'");
+        $query = MedicineType::whereRaw("upper(description) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = MedicineGroup::whereRaw("upper(description) like '%$name%'");
+        $query = MedicineType::whereRaw("upper(description) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
         $medicines = $query->get();
@@ -101,7 +101,7 @@ class MedicineGroupController extends Controller
      */
     public function create()
     {
-        return view('admin.medicinegroup.create');
+        return view('admin.medicinetype.create');
     }
 
     /**
@@ -113,7 +113,7 @@ class MedicineGroupController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_groups'
+            'description'   => 'required|unique:medicine_types'
         ]);
 
         if ($validator->fails()) {
@@ -124,7 +124,7 @@ class MedicineGroupController extends Controller
         }
 
         try {
-            $medicine_group = MedicineGroup::create([
+            $medicine_group = MedicineType::create([
                 'description'   => $request->description,
                 'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
@@ -137,7 +137,7 @@ class MedicineGroupController extends Controller
         }
         return response()->json([
             'status'    => true,
-            'results'   => route('medicinegroup.index'),
+            'results'   => route('medicinetype.index'),
         ], 200);
     }
 
@@ -160,9 +160,9 @@ class MedicineGroupController extends Controller
      */
     public function edit($id)
     {
-        $group = MedicineGroup::find($id);
-        if ($group) {
-            return view('admin.medicinegroup.edit', compact('group'));
+        $type = MedicineType::find($id);
+        if ($type) {
+            return view('admin.medicinetype.edit', compact('type'));
         } else {
             abort(404);
         }
@@ -178,7 +178,7 @@ class MedicineGroupController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_groups,description,' . $id,
+            'description'   => 'required|unique:medicine_types,description,' . $id,
         ]);
 
         if ($validator->fails()) {
@@ -188,21 +188,21 @@ class MedicineGroupController extends Controller
             ], 400);
         }
 
-        $group = MedicineGroup::find($id);
-        $group->description  = $request->description;
-        $group->status       = $request->status ? 1 : 0;
-        $group->updated_by   = Auth::id();
-        $group->save();
+        $type = MedicineType::find($id);
+        $type->description  = $request->description;
+        $type->status       = $request->status ? 1 : 0;
+        $type->updated_by   = Auth::id();
+        $type->save();
 
-        if (!$group) {
+        if (!$type) {
             return response()->json([
                 'status'    => false,
-                'message'   => $group
+                'message'   => $type
             ], 400);
         }
         return response()->json([
             'status'    => true,
-            'results'   => route('medicinegroup.index')
+            'results'   => route('medicinetype.index')
         ], 200);
     }
 
@@ -215,8 +215,8 @@ class MedicineGroupController extends Controller
     public function destroy($id)
     {
         try {
-            $medicine = MedicineGroup::find($id);
-            $medicine->delete();
+            $type = MedicineType::find($id);
+            $type->delete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -232,7 +232,7 @@ class MedicineGroupController extends Controller
     public function restore($id)
     {
         try {
-            $medicine = MedicineGroup::onlyTrashed()->find($id);
+            $medicine = MedicineType::onlyTrashed()->find($id);
             $medicine->restore();
         } catch (QueryException $th) {
             return response()->json([
@@ -249,7 +249,7 @@ class MedicineGroupController extends Controller
     public function delete($id)
     {
         try {
-            $medicine = MedicineGroup::onlyTrashed()->find($id);
+            $medicine = MedicineType::onlyTrashed()->find($id);
             $medicine->forceDelete();
         } catch (QueryException $th) {
             return response()->json([

@@ -296,6 +296,20 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/medicineunit/restore/{id}', 'Admin\MedicineUnitController@restore')->name('medicineunit.restore');
         Route::get('/medicineunit/delete/{id}', 'Admin\MedicineUnitController@delete')->name('medicineunit.delete');
         Route::resource('/medicineunit', 'Admin\MedicineUnitController');
+        
+        // Medicine Type
+        Route::get('/medicinetype/read', 'Admin\MedicineTypeController@read')->name('medicinetype.read');
+        Route::get('/medicinetype/select', 'Admin\MedicineTypeController@select')->name('medicinetype.select');
+        Route::get('/medicinetype/restore/{id}', 'Admin\MedicineTypeController@restore')->name('medicinetype.restore');
+        Route::get('/medicinetype/delete/{id}', 'Admin\MedicineTypeController@delete')->name('medicinetype.delete');
+        Route::resource('/medicinetype', 'Admin\MedicineTypeController');
+
+        // Using Rule
+        Route::get('/usingrule/read', 'Admin\UsingRuleController@read')->name('usingrule.read');
+        Route::get('/usingrule/select', 'Admin\UsingRuleController@select')->name('usingrule.select');
+        Route::get('/usingrule/restore/{id}', 'Admin\UsingRuleController@restore')->name('usingrule.restore');
+        Route::get('/usingrule/delete/{id}', 'Admin\UsingRuleController@delete')->name('usingrule.delete');
+        Route::resource('/usingrule', 'Admin\UsingRuleController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {

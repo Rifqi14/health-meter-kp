@@ -4,17 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\MedicineCategory;
-use App\Models\MedicineGroup;
+use App\Models\UsingRule;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
-class MedicineGroupController extends Controller
+class UsingRuleController extends Controller
 {
     function __construct() {
-        View::share('menu_active', url('admin/medicinegroup'));
+        View::share('menu_active', url('admin/usingrule'));
         $this->middleware('accessmenu', ['except' => 'select']);
     }
     /**
@@ -24,7 +23,7 @@ class MedicineGroupController extends Controller
      */
     public function index()
     {
-        return view('admin.medicinegroup.index');
+        return view('admin.usingrule.index');
     }
 
     public function read(Request $request)
@@ -38,59 +37,32 @@ class MedicineGroupController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = MedicineGroup::with('user')->whereRaw("upper(description) like '%$name%'");
+        $query = UsingRule::with('user')->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = MedicineGroup::with('user')->whereRaw("upper(description) like '%$name%'");
+        $query = UsingRule::with('user')->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
-        $medicines = $query->get();
+        $usings = $query->get();
 
         $data = [];
-        foreach ($medicines as $medicine) {
-            $medicine->no = ++$start;
-            $data[] = $medicine;
+        foreach ($usings as $using) {
+            $using->no = ++$start;
+            $data[] = $using;
         }
         return response()->json([
             'draw' => $request->draw,
             'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsTotal,
             'data' => $data
-        ], 200);
-    }
-
-    public function select(Request $request)
-    {
-        $start = $request->page ? $request->page - 1 : 0;
-        $length = $request->limit;
-        $name = strtoupper($request->name);
-
-        //Count Data
-        $query = MedicineGroup::whereRaw("upper(description) like '%$name%'");
-        $recordsTotal = $query->count();
-
-        //Select Pagination
-        $query = MedicineGroup::whereRaw("upper(description) like '%$name%'");
-        $query->offset($start);
-        $query->limit($length);
-        $medicines = $query->get();
-
-        $data = [];
-        foreach ($medicines as $medicine) {
-            $medicine->no = ++$start;
-            $data[] = $medicine;
-        }
-        return response()->json([
-            'total' => $recordsTotal,
-            'rows' => $data
         ], 200);
     }
 
@@ -101,7 +73,7 @@ class MedicineGroupController extends Controller
      */
     public function create()
     {
-        return view('admin.medicinegroup.create');
+        return view('admin.usingrule.create');
     }
 
     /**
@@ -124,7 +96,7 @@ class MedicineGroupController extends Controller
         }
 
         try {
-            $medicine_group = MedicineGroup::create([
+            $medicine_group = UsingRule::create([
                 'description'   => $request->description,
                 'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
@@ -137,7 +109,7 @@ class MedicineGroupController extends Controller
         }
         return response()->json([
             'status'    => true,
-            'results'   => route('medicinegroup.index'),
+            'results'   => route('usingrule.index'),
         ], 200);
     }
 
@@ -160,9 +132,9 @@ class MedicineGroupController extends Controller
      */
     public function edit($id)
     {
-        $group = MedicineGroup::find($id);
-        if ($group) {
-            return view('admin.medicinegroup.edit', compact('group'));
+        $rule = UsingRule::find($id);
+        if ($rule) {
+            return view('admin.usingrule.edit', compact('rule'));
         } else {
             abort(404);
         }
@@ -178,7 +150,7 @@ class MedicineGroupController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_groups,description,' . $id,
+            'description'   => 'required|unique:using_rules,description,' . $id,
         ]);
 
         if ($validator->fails()) {
@@ -188,21 +160,21 @@ class MedicineGroupController extends Controller
             ], 400);
         }
 
-        $group = MedicineGroup::find($id);
-        $group->description  = $request->description;
-        $group->status       = $request->status ? 1 : 0;
-        $group->updated_by   = Auth::id();
-        $group->save();
+        $rule = UsingRule::find($id);
+        $rule->description  = $request->description;
+        $rule->status       = $request->status ? 1 : 0;
+        $rule->updated_by   = Auth::id();
+        $rule->save();
 
-        if (!$group) {
+        if (!$rule) {
             return response()->json([
                 'status'    => false,
-                'message'   => $group
+                'message'   => $rule
             ], 400);
         }
         return response()->json([
             'status'    => true,
-            'results'   => route('medicinegroup.index')
+            'results'   => route('usingrule.index')
         ], 200);
     }
 
@@ -215,8 +187,8 @@ class MedicineGroupController extends Controller
     public function destroy($id)
     {
         try {
-            $medicine = MedicineGroup::find($id);
-            $medicine->delete();
+            $rule = UsingRule::find($id);
+            $rule->delete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -232,8 +204,8 @@ class MedicineGroupController extends Controller
     public function restore($id)
     {
         try {
-            $medicine = MedicineGroup::onlyTrashed()->find($id);
-            $medicine->restore();
+            $rule = UsingRule::onlyTrashed()->find($id);
+            $rule->restore();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -249,8 +221,8 @@ class MedicineGroupController extends Controller
     public function delete($id)
     {
         try {
-            $medicine = MedicineGroup::onlyTrashed()->find($id);
-            $medicine->forceDelete();
+            $rule = UsingRule::onlyTrashed()->find($id);
+            $rule->forceDelete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,

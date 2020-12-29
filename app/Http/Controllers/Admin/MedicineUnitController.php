@@ -67,6 +67,33 @@ class MedicineUnitController extends Controller
         ], 200);
     }
 
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+
+        //Count Data
+        $query = MedicineUnit::whereRaw("upper(description) like '%$name%'");
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = MedicineUnit::whereRaw("upper(description) like '%$name%'");
+        $query->offset($start);
+        $query->limit($length);
+        $medicines = $query->get();
+
+        $data = [];
+        foreach ($medicines as $medicine) {
+            $medicine->no = ++$start;
+            $data[] = $medicine;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

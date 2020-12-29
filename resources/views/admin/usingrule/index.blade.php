@@ -1,22 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kelompok Obat')
+@section('title', 'Aturan Pakai')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Kelompok Obat</li>
+<li class="active">Aturan Pakai</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Kelompok Obat</h3>
+        <h3 class="box-title">Data Aturan Pakai</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('medicinegroup.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="Tambah">
+          <a href="{{route('usingrule.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -102,7 +101,7 @@
       responsive: true,
       order: [[ 5, "asc" ]],
       ajax: {
-        url: "{{route('medicinegroup.read')}}",
+        url: "{{route('usingrule.read')}}",
         type: "GET",
         data:function(data){
           var name = $('#form-search').find('input[name=name]').val();
@@ -135,7 +134,7 @@
               html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete Permanent</a></li>`;
               html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
             } else {
-              html += `<li><a class="dropdown-item" href="{{url('admin/medicinegroup')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
+              html += `<li><a class="dropdown-item" href="{{url('admin/usingrule')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
               html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
             }
             html += `</ul>
@@ -170,7 +169,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Menghapus kelompok obat?',
+        title:'Menghapus aturan pakai?',
         message:'Data yang telah dihapus dapat dikembalikan',
         callback: function(result) {
           if(result) {
@@ -178,7 +177,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/medicinegroup')}}/${id}`,
+              url: `{{url('admin/usingrule')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'DELETE',
@@ -231,7 +230,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Mengembalikan kelompok obat?',
+        title:'Mengembalikan aturan pakai?',
         message:'Data yang telah dikembalikan dapat dihapus',
         callback: function(result) {
           if(result) {
@@ -239,7 +238,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/medicinegroup/restore')}}/${id}`,
+              url: `{{url('admin/usingrule/restore')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',
@@ -292,7 +291,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Menghapus permanen kelompok obat?',
+        title:'Menghapus permanen aturan pakai?',
         message:'Data yang telah dihapus tidak dapat dikembalikan',
         callback: function(result) {
           if(result) {
@@ -300,7 +299,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/medicinegroup/delete')}}/${id}`,
+              url: `{{url('admin/usingrule/delete')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',
