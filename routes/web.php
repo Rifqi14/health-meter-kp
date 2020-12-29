@@ -277,6 +277,25 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/doctor/preview', 'Admin\DoctorController@preview')->name('doctor.preview');
         Route::post('/doctor/storemass', 'Admin\DoctorController@storemass')->name('doctor.storemass');
         Route::resource('/doctor', 'Admin\DoctorController');
+
+        // Medicine Category
+        Route::get('/medicinecategory/read', 'Admin\MedicineCategoryController@read')->name('medicinecategory.read');
+        Route::get('/medicinecategory/select', 'Admin\MedicineCategoryController@select')->name('medicinecategory.select');
+        Route::resource('/medicinecategory', 'Admin\MedicineCategoryController');
+
+        // Medicine Group
+        Route::get('/medicinegroup/read', 'Admin\MedicineGroupController@read')->name('medicinegroup.read');
+        Route::get('/medicinegroup/select', 'Admin\MedicineGroupController@select')->name('medicinegroup.select');
+        Route::get('/medicinegroup/restore/{id}', 'Admin\MedicineGroupController@restore')->name('medicinegroup.restore');
+        Route::get('/medicinegroup/delete/{id}', 'Admin\MedicineGroupController@delete')->name('medicinegroup.delete');
+        Route::resource('/medicinegroup', 'Admin\MedicineGroupController');
+
+        // Medicine Unit
+        Route::get('/medicineunit/read', 'Admin\MedicineUnitController@read')->name('medicineunit.read');
+        Route::get('/medicineunit/select', 'Admin\MedicineUnitController@select')->name('medicineunit.select');
+        Route::get('/medicineunit/restore/{id}', 'Admin\MedicineUnitController@restore')->name('medicineunit.restore');
+        Route::get('/medicineunit/delete/{id}', 'Admin\MedicineUnitController@delete')->name('medicineunit.delete');
+        Route::resource('/medicineunit', 'Admin\MedicineUnitController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {

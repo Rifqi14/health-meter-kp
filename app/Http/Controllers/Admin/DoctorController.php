@@ -40,16 +40,16 @@ class DoctorController extends Controller
         $site           = $request->site;
 
         // Count Data
-        $doctors        = Doctor::where('name', 'like', "%$name%");
+        $doctors        = Doctor::whereRaw("upper(name) like '%$name%'");
         if ($site) {
-            $query->where('site_id', $site);
+            $doctors->where('site_id', $site);
         }
         $recordsTotal   = $doctors->count();
 
         // Select Pagination
-        $doctor         = Doctor::where('name', 'like', "%$name%");
+        $doctor         = Doctor::whereRaw("upper(name) like '%$name%'");
         if ($site) {
-            $query->where('site_id', $site);
+            $doctor->where('site_id', $site);
         }
         $doctor->offset($start);
         $doctor->limit($length);
