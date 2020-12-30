@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Medicine;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
@@ -105,8 +106,14 @@ class MedicineController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:medicines|regex:/^.*(?=.*[A-Z]).*$/',
-            'name'      => 'required',
+            'code'              => 'required|unique:medicines|regex:/^.*(?=.*[A-Z]).*$/',
+            'name'              => 'required',
+            'medicine_category' => 'required',
+            'medicine_group'    => 'required',
+            'medicine_unit'     => 'required',
+            'medicine_type'     => 'required',
+            'level'             => 'required',
+            'price'             => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -118,8 +125,17 @@ class MedicineController extends Controller
 
         try {
             $medicines = Medicine::create([
-                'code'         => $request->code,
-                'name'         => $request->name,
+                'code'                  => $request->code,
+                'name'                  => $request->name,
+                'id_medicine_category'  => $request->medicine_category,
+                'id_medicine_group'     => $request->medicine_group,
+                'id_medicine_unit'      => $request->medicine_unit,
+                'id_medicine_type'      => $request->medicine_type,
+                'level'                 => $request->level,
+                'description'           => $request->description,
+                'price'                 => $request->price,
+                'status'                => $request->status ? 1 : 0,
+                'updated_by'            => Auth::id()
             ]);
         } catch (QueryException $ex) {
             return response()->json([
@@ -182,8 +198,17 @@ class MedicineController extends Controller
         }
 
         $medicine = Medicine::find($id);
-        $medicine->code = $request->code;
-        $medicine->name = $request->name;
+        $medicine->code                 = $request->code;
+        $medicine->name                 = $request->name;
+        $medicine->id_medicine_category = $request->medicine_category;
+        $medicine->id_medicine_group    = $request->medicine_group;
+        $medicine->id_medicine_unit     = $request->medicine_unit;
+        $medicine->id_medicine_type     = $request->medicine_type;
+        $medicine->level                = $request->level;
+        $medicine->description          = $request->description;
+        $medicine->price                = $request->price;
+        $medicine->status               = $request->status ? 1 : 0;
+        $medicine->updated_by           = Auth::id();
         $medicine->save();
 
         if (!$medicine) {

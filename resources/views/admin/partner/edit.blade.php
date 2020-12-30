@@ -47,15 +47,8 @@
                                 <label for="category" class="col-sm-2 control-label">Kategori <b
                                         class="text-danger">*</b></label>
                                 <div class="col-sm-6">
-                                    <Select id="type" name="category" class="form-control select2"
-                                        placeholder="Pilih Tipe" required>
-                                        <option value="drugstore" @if($partner->category == 'drugstore') selected
-                                            @endif>Apotek</option>
-                                        <option value="hospital" @if($partner->category == 'hospital') selected
-                                            @endif>Rumah Sakit</option>
-                                        <option value="laboratorium" @if($partner->category == 'laboratorium') selected
-                                            @endif>Laboratorium</option>
-                                    </Select>
+                                    <input type="text" class="form-control" id="category" name="category"
+                                        placeholder="Pilih Kategori" required value="{{$partner->id_partner_category}}">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -71,6 +64,33 @@
                                 <div class="col-sm-6">
                                     <input type="email" class="form-control" id="email" name="email" placeholder="Email"
                                         value="{{$partner->email}}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" style="padding-top: 1px"
+                                    for="collaboration">Status
+                                    Kerjasama</label>
+                                <div class="col-sm-4">
+                                    <label>
+                                        @if ($partner->collaboration_status)
+                                        <input class="form-control status" type="checkbox" checked name="collaboration">
+                                        @else
+                                        <input class="form-control status" type="checkbox" name="collaboration">
+                                        @endif
+                                        <i></i></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status
+                                    Aktif</label>
+                                <div class="col-sm-4">
+                                    <label>
+                                        @if ($partner->status)
+                                        <input class="form-control status" type="checkbox" name="status" checked>
+                                        @else
+                                        <input class="form-control status" type="checkbox" name="status">
+                                        @endif
+                                        <i></i></label>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -124,6 +144,10 @@
 <script>
     var map, geocoder, marker, infowindow;
     $(document).ready(function () {
+        $('.status').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
         var address = $('#address').val(),
             lat = $('#latitude').val(),
             long = $('#longitude').val();
@@ -176,6 +200,41 @@
         @if(isset($partner->site->name))
         $("#site").select2('data',{id:{{$partner->site->id}},text:'{{$partner->site->name}}'}).trigger('change');
         @endif
+
+        $("#category").select2({
+            ajax: {
+            url: "{{route('partnercategory.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+                return {
+                name:term,
+                page:page,
+                limit:30,
+                };
+            },
+            results: function (data,page) {
+                var more = (page * 30) < data.total;
+                var option = [];
+                $.each(data.rows,function(index,item){
+                option.push({
+                    id:item.id,  
+                    text: `${item.name}`
+                });
+                });
+                return {
+                results: option, more: more,
+                };
+            },
+            },
+            allowClear: true,
+        });
+        $(document).on("change", "#category", function () {
+            if (!$.isEmptyObject($('#form').validate().submitted)) {
+            $('#form').validate().form();
+            }
+        });
+
         $("#form").validate({
             errorElement: 'span',
             errorClass: 'help-block',
@@ -239,6 +298,10 @@
                 })
             }
         });
+        
+        @if(isset($partner->id_partner_category))
+        $("#category").select2('data',{id:{{$partner->partnercategory->id}},text:'{{$partner->partnercategory->name}}'}).trigger('change');
+        @endif
     });
     function setCoordinates(address,latitude,longitude) {
     // Mengecek apakah terdapat 'geocoded object'. Jika tidak maka buat satu.

@@ -53,7 +53,39 @@
             <div class="form-group">
               <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required>
+                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required
+                  value="{{ $doctor->site_id }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="partner" class="col-sm-2 control-label">Partner</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="partner" name="partner" data-placeholder="Pilih Partner"
+                  value="{{ $doctor->id_partner }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="speciality" name="speciality"
+                  data-placeholder="Pilih Spesialisasi" required value="{{ $doctor->id_speciality }}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="group" name="group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
+                  required>
+                  <option value="" @if (!$doctor->doctor_group)
+                    selected
+                    @endif></option>
+                  <option value="0" @if ($doctor->doctor_group === 0)
+                    selected
+                    @endif>Dokter Perusahaan</option>
+                  <option value="1" @if ($doctor->doctor_group == 1)
+                    selected
+                    @endif>Dokter Eksternal</option>
+                </select>
               </div>
             </div>
             <div class="form-group">
@@ -80,6 +112,9 @@
 <script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+      $('.select2').select2({
+        allowClear: true
+      });
       $('input[name=status]').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
@@ -116,6 +151,78 @@
       $("#unit").select2('data',{id:{{$doctor->site->id}},text:'{{$doctor->site->name}}'}).trigger('change');
       @endif
       $(document).on("change", "#unit", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#partner").select2({
+        ajax: {
+            url: "{{route('partner.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      @if(isset($doctor->id_partner))
+      $("#partner").select2('data',{id:{{$doctor->partner->id}},text:'{{$doctor->partner->name}}'}).trigger('change');
+      @endif
+      $(document).on("change", "#partner", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#speciality").select2({
+        ajax: {
+            url: "{{route('speciality.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      @if(isset($doctor->id_partner))
+      $("#speciality").select2('data',{id:{{$doctor->speciality->id}},text:'{{$doctor->speciality->name}}'}).trigger('change');
+      @endif
+      $(document).on("change", "#speciality", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }

@@ -12,4 +12,12 @@ class Doctor extends Model
     {
         return $this->hasOne(Site::class, 'id', 'site_id');
     }
+    public function partner()
+    {
+        return $this->hasOne(Partner::class, 'id', 'id_partner');
+    }
+    public function speciality()
+    {
+        return $this->hasOne(Speciality::class, 'id', 'id_speciality');
+    }
 }

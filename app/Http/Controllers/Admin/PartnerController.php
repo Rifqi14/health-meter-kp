@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -43,7 +44,8 @@ class PartnerController extends Controller
 
         //Count Data
         $query = DB::table('partners');
-        $query->select('partners.*');
+        $query->select('partners.*', 'partner_categories.name as category');
+        $query->leftJoin('partner_categories', 'partner_categories.id', '=', 'partners.id_partner_category');
         $query->whereRaw("upper(partners.name) like '%$name%'");
         if ($site) {
             $query->where('site_id', $site);
@@ -52,7 +54,8 @@ class PartnerController extends Controller
 
         //Select Pagination
         $query = DB::table('partners');
-        $query->select('partners.*');
+        $query->select('partners.*', 'partner_categories.name as category');
+        $query->leftJoin('partner_categories', 'partner_categories.id', '=', 'partners.id_partner_category');
         $query->whereRaw("upper(partners.name) like '%$name%'");
         if ($site) {
             $query->where('site_id', $site);
@@ -65,7 +68,6 @@ class PartnerController extends Controller
         $data = [];
         foreach ($partners as $partner) {
             $partner->no = ++$start;
-            $partner->category = $category[$partner->category];
             $data[] = $partner;
         }
         return response()->json([
@@ -140,13 +142,16 @@ class PartnerController extends Controller
 
         $partner = Partner::create([
             'name' => $request->name,
-            'category' => $request->category,
+            'id_partner_category' => $request->category,
             'phone' => $request->phone,
             'email'  => $request->email,
             'address' => $request->address,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
-            'site_id'   => $request->site
+            'site_id'   => $request->site,
+            'collaboration_status' => $request->collaboration ? 1 : 0,
+            'status' => $request->status ? 1 : 0,
+            'updated_by' => Auth::id()
         ]);
 
         return response()->json([
@@ -219,13 +224,16 @@ class PartnerController extends Controller
 
         $partner = Partner::find($id);
         $partner->name = $request->name;
-        $partner->category = $request->category;
+        $partner->id_partner_category = $request->category;
         $partner->phone = $request->phone;
         $partner->email = $request->email;
         $partner->address = $request->address;
         $partner->latitude  = $request->latitude;
         $partner->longitude  = $request->longitude;
         $partner->site_id = $request->site;
+        $partner->collaboration_status = $request->collaboration ? 1 : 0;
+        $partner->status = $request->status ? 1 : 0;
+        $partner->updated_by = Auth::id();
         $partner->save();
 
         if (!$partner) {

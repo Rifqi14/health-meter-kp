@@ -53,6 +53,30 @@
               </div>
             </div>
             <div class="form-group">
+              <label for="partner" class="col-sm-2 control-label">Partner</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="partner" name="partner" data-placeholder="Pilih Partner">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="speciality" name="speciality"
+                  data-placeholder="Pilih Spesialisasi" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <select id="group" name="group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
+                  required>
+                  <option value=""></option>
+                  <option value="0">Dokter Perusahaan</option>
+                  <option value="1">Dokter Eksternal</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
               <label class="col-sm-2 control-label" for="status">Status Aktif</label>
               <div class="col-sm-4">
                 <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
@@ -100,6 +124,9 @@
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
       });
+      $('.select2').select2({
+        allowClear: true
+      });
       $( "#role_id" ).select2({
         ajax: {
           url: "{{route('role.select')}}",
@@ -129,6 +156,72 @@
         allowClear: true,
       });
       $(document).on("change", "#role_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#partner" ).select2({
+        ajax: {
+          url: "{{route('partner.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              display_name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#partner", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#speciality" ).select2({
+        ajax: {
+          url: "{{route('speciality.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              display_name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#speciality", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }

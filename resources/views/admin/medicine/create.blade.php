@@ -66,14 +66,39 @@
                   required>
               </div>
             </div>
+            <div class="form-group">
+              <label for="level" class="col-sm-2 control-label">Kadar <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="level" name="level" placeholder="Kadar" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="price" class="col-sm-2 control-label">Harga <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="price" name="price" placeholder="Harga" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description" class="col-sm-2 control-label">Deskripsi</label>
+              <div class="col-sm-6">
+                <textarea class="form-control" id="description" name="description" placeholder="Deskripsi"></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
+              <div class="col-sm-4">
+                <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
+              </div>
+            </div>
           </div>
-        </form>
       </div>
-      <div class="overlay hidden">
-        <i class="fa fa-refresh fa-spin"></i>
-      </div>
+      </form>
+    </div>
+    <div class="overlay hidden">
+      <i class="fa fa-refresh fa-spin"></i>
     </div>
   </div>
+</div>
 </div>
 @endsection
 
@@ -81,6 +106,10 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+      $('input[name=status]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
       $("#medicine_category").select2({
         ajax: {
           url: "{{route('medicinecategory.select')}}",

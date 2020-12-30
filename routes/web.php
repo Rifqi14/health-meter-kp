@@ -310,6 +310,20 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/usingrule/restore/{id}', 'Admin\UsingRuleController@restore')->name('usingrule.restore');
         Route::get('/usingrule/delete/{id}', 'Admin\UsingRuleController@delete')->name('usingrule.delete');
         Route::resource('/usingrule', 'Admin\UsingRuleController');
+        
+        // Partner Category
+        Route::get('/partnercategory/read', 'Admin\PartnerCategoryController@read')->name('partnercategory.read');
+        Route::get('/partnercategory/select', 'Admin\PartnerCategoryController@select')->name('partnercategory.select');
+        Route::get('/partnercategory/restore/{id}', 'Admin\PartnerCategoryController@restore')->name('partnercategory.restore');
+        Route::get('/partnercategory/delete/{id}', 'Admin\PartnerCategoryController@delete')->name('partnercategory.delete');
+        Route::resource('/partnercategory', 'Admin\PartnerCategoryController');
+        
+        // Speciality
+        Route::get('/speciality/read', 'Admin\SpecialityController@read')->name('speciality.read');
+        Route::get('/speciality/select', 'Admin\SpecialityController@select')->name('speciality.select');
+        Route::get('/speciality/restore/{id}', 'Admin\SpecialityController@restore')->name('speciality.restore');
+        Route::get('/speciality/delete/{id}', 'Admin\SpecialityController@delete')->name('speciality.delete');
+        Route::resource('/speciality', 'Admin\SpecialityController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {

@@ -8,6 +8,7 @@ use App\Models\Doctor;
 use App\Models\SiteUser;
 use App\Role;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -92,7 +93,9 @@ class DoctorController extends Controller
             'phone'     => 'required',
             'unit'      => 'required',
             'email'     => 'required',
-            'password'  => 'required'
+            'password'  => 'required',
+            'speciality'=> 'required',
+            'group'     => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -103,12 +106,16 @@ class DoctorController extends Controller
         }
         DB::beginTransaction();
         $doctor = Doctor::create([
-            'name'      => $request->name,
-            'id_doctor' => $request->id_doctor,
-            'phone'     => $request->phone,
-            'email'     => $request->email,
-            'site_id'   => $request->unit,
-            'status'    => $request->status ? 1 : 0
+            'name'          => $request->name,
+            'id_doctor'     => $request->id_doctor,
+            'phone'         => $request->phone,
+            'email'         => $request->email,
+            'site_id'       => $request->unit,
+            'id_partner'    => $request->partner,
+            'id_speciality' => $request->speciality,
+            'doctor_group'  => $request->group,
+            'status'        => $request->status ? 1 : 0,
+            'updated_by'    => Auth::id()
         ]);
         if (!$doctor) {
             DB::rollBack();
@@ -192,7 +199,9 @@ class DoctorController extends Controller
             'id_doctor'     => 'required',
             'name'          => 'required',
             'phone'         => 'required',
-            'unit'          => 'required'
+            'unit'          => 'required',
+            'speciality'    => 'required',
+            'group'         => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -215,11 +224,15 @@ class DoctorController extends Controller
                 ], 400);
             }
         }
-        $doctor->id_doctor  = $request->id_doctor;
-        $doctor->name       = $request->name;
-        $doctor->phone      = $request->phone;
-        $doctor->site_id    = $request->unit;
-        $doctor->status     = $request->status ? 1 : 0;
+        $doctor->id_doctor      = $request->id_doctor;
+        $doctor->name           = $request->name;
+        $doctor->phone          = $request->phone;
+        $doctor->site_id        = $request->unit;
+        $doctor->status         = $request->status ? 1 : 0;
+        $doctor->id_partner     = $request->partner;
+        $doctor->id_speciality  = $request->speciality;
+        $doctor->doctor_group   = $request->group;
+        $doctor->updated_by     = Auth::id();
         $doctor->save();
         if (!$doctor) {
             DB::rollback();

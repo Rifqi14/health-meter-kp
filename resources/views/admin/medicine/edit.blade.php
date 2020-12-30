@@ -40,6 +40,65 @@
                   value="{{$medicine->name}}" required>
               </div>
             </div>
+            <div class="form-group">
+              <label for="medicine_category" class="col-sm-2 control-label">Kategori Obat <b
+                  class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="medicine_category" name="medicine_category"
+                  placeholder="Kategori Obat" value="{{ $medicine->id_medicine_category }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medicine_group" class="col-sm-2 control-label">Kelompok Obat <b
+                  class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="medicine_group" name="medicine_group"
+                  placeholder="Kelompok Obat" value="{{ $medicine->id_medicine_group }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medicine_unit" class="col-sm-2 control-label">Satuan Obat <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="medicine_unit" name="medicine_unit"
+                  placeholder="Satuan Obat" value="{{ $medicine->id_medicine_unit }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medicine_type" class="col-sm-2 control-label">Jenis Obat <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="medicine_type" name="medicine_type" placeholder="Jenis Obat"
+                  value="{{ $medicine->id_medicine_type }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="level" class="col-sm-2 control-label">Kadar <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="level" name="level" placeholder="Kadar"
+                  value="{{ $medicine->level }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="price" class="col-sm-2 control-label">Harga <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="price" name="price" placeholder="Harga"
+                  value="{{ $medicine->price }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description" class="col-sm-2 control-label">Deskripsi</label>
+              <div class="col-sm-6">
+                <textarea class="form-control" id="description" name="description"
+                  placeholder="Deskripsi">{{ $medicine->description }}</textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
+              <div class="col-sm-4">
+                <label><input class="form-control" type="checkbox" name="status" @if ($medicine->status)
+                  checked
+                  @endif> <i></i></label>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -55,6 +114,142 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+      $('input[name=status]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
+      $("#medicine_category").select2({
+        ajax: {
+          url: "{{route('medicinecategory.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.description}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#medicine_category", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#medicine_group").select2({
+        ajax: {
+          url: "{{route('medicinegroup.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.description}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#medicine_group", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#medicine_unit").select2({
+        ajax: {
+          url: "{{route('medicineunit.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.description}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#medicine_unit", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#medicine_type").select2({
+        ajax: {
+          url: "{{route('medicinetype.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.description}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#medicine_type", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',
@@ -119,6 +314,18 @@
           })		
         }
       });
+      @if($medicine->id_medicine_category)
+      $("#medicine_category").select2('data',{id:{{$medicine->medicine_category->id}},text:'{{$medicine->medicine_category->description}}'}).trigger('change');
+      @endif
+      @if($medicine->id_medicine_group)
+      $("#medicine_group").select2('data',{id:{{$medicine->medicine_group->id}},text:'{{$medicine->medicine_group->description}}'}).trigger('change');
+      @endif
+      @if($medicine->id_medicine_unit)
+      $("#medicine_unit").select2('data',{id:{{$medicine->medicine_unit->id}},text:'{{$medicine->medicine_unit->description}}'}).trigger('change');
+      @endif
+      @if($medicine->id_medicine_type)
+      $("#medicine_type").select2('data',{id:{{$medicine->medicine_type->id}},text:'{{$medicine->medicine_type->description}}'}).trigger('change');
+      @endif
   });
 </script>
 @endpush

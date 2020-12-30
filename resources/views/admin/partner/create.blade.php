@@ -45,13 +45,8 @@
                             <label for="category" class="col-sm-2 control-label">Kategori <b
                                     class="text-danger">*</b></label>
                             <div class="col-sm-6">
-                                <Select id="type" name="category" class="form-control select2"
+                                <input type="text" class="form-control" id="category" name="category"
                                     placeholder="Pilih Kategori" required>
-                                    <option value=""></option>
-                                    <option value="drugstore">Apotek</option>
-                                    <option value="hospital">Rumah Sakit</option>
-                                    <option value="laboratorium">Laboratorium</option>
-                                </Select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -65,6 +60,21 @@
                             <label for="email" class="col-sm-2 control-label">Email</label>
                             <div class="col-sm-6">
                                 <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="padding-top: 1px" for="collaboration">Status
+                                Kerjasama</label>
+                            <div class="col-sm-4">
+                                <label><input class="form-control status" type="checkbox" name="collaboration">
+                                    <i></i></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status
+                                Aktif</label>
+                            <div class="col-sm-4">
+                                <label><input class="form-control status" type="checkbox" name="status"> <i></i></label>
                             </div>
                         </div>
                         <div class="form-group">
@@ -115,6 +125,10 @@
 <script>
     var map, geocoder, marker, infowindow;
     $(document).ready(function () {
+        $('.status').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
         var options = {
             zoom: 10,
             center: new google.maps.LatLng(-7.217416, 112.72990470000002),
@@ -158,6 +172,41 @@
                 },
             },
             allowClear: true,
+        });
+
+        
+        $("#category").select2({
+            ajax: {
+            url: "{{route('partnercategory.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+                return {
+                name:term,
+                page:page,
+                limit:30,
+                };
+            },
+            results: function (data,page) {
+                var more = (page * 30) < data.total;
+                var option = [];
+                $.each(data.rows,function(index,item){
+                option.push({
+                    id:item.id,  
+                    text: `${item.name}`
+                });
+                });
+                return {
+                results: option, more: more,
+                };
+            },
+            },
+            allowClear: true,
+        });
+        $(document).on("change", "#category", function () {
+            if (!$.isEmptyObject($('#form').validate().submitted)) {
+            $('#form').validate().form();
+            }
         });
 
         $("#form").validate({
