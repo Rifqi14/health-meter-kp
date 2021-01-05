@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Diagnosis;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -37,12 +39,13 @@ class DiagnosisController extends Controller
 
         //Count Data
         $query = Diagnosis::select('diagnoses.*');
-        $query->select('diagnoses.*');
+        $query->withTrashed();
         $query->whereRaw("upper(diagnoses.name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = Diagnosis::select('diagnoses.*');
+        $query->withTrashed();
         $query->whereRaw("upper(diagnoses.name) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
@@ -110,8 +113,10 @@ class DiagnosisController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:diagnoses',
-            'name'      => 'required',
+            'code'          => 'required|unique:diagnoses',
+            'name'          => 'required',
+            'english_name'  => 'required',
+            'category'      => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +129,10 @@ class DiagnosisController extends Controller
         $diagnosis = Diagnosis::create([
             'code' 	    => $request->code,
             'name' 	    => $request->name,
+            'diagnoses_category_id' => $request->category,
+            'sub_category'          => $request->sub_category,
+            'english_name'          => $request->english_name,
+            'updated_by'            => Auth::id()
         ]);
         if (!$diagnosis) {
             return response()->json([
@@ -175,8 +184,10 @@ class DiagnosisController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:diagnoses,code,'.$id,
-            'name' 	    => 'required'
+            'code'          => 'required|unique:diagnoses,code,'.$id,
+            'name' 	        => 'required',
+            'english_name'  => 'required',
+            'category'      => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -189,6 +200,10 @@ class DiagnosisController extends Controller
         $diagnosis = Diagnosis::find($id);
         $diagnosis->code = $request->code;
         $diagnosis->name = $request->name;
+        $diagnosis->diagnoses_category_id = $request->category;
+        $diagnosis->sub_category = $request->sub_category;
+        $diagnosis->english_name = $request->english_name;
+        $diagnosis->updated_by = Auth::id();
         $diagnosis->save();
 
         if (!$diagnosis) {
@@ -225,6 +240,24 @@ class DiagnosisController extends Controller
             'message' => 'Success delete data'
         ], 200);
     }
+
+    public function restore($id)
+    {
+        try {
+            $evaluation = Diagnosis::onlyTrashed()->find($id);
+            $evaluation->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
     public function import()
     {
         return view('admin.diagnosis.import');

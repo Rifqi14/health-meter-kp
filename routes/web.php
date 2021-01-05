@@ -180,6 +180,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/diagnosis/read', 'Admin\DiagnosisController@read')->name('diagnosis.read');
         Route::get('/diagnosis/select', 'Admin\DiagnosisController@select')->name('diagnosis.select');
         Route::get('/diagnosis/import', 'Admin\DiagnosisController@import')->name('diagnosis.import');
+        Route::get('/diagnosis/restore/{id}', 'Admin\DiagnosisController@restore')->name('diagnosis.restore');
         Route::post('/diagnosis/preview', 'Admin\DiagnosisController@preview')->name('diagnosis.preview');
         Route::post('/diagnosis/storemass', 'Admin\DiagnosisController@storemass')->name('diagnosis.storemass');
         Route::resource('/diagnosis', 'Admin\DiagnosisController');
@@ -353,6 +354,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/evaluationlevel/restore/{id}', 'Admin\ExaminationEvaluationLevelController@restore')->name('evaluationlevel.restore');
         Route::get('/evaluationlevel/delete/{id}', 'Admin\ExaminationEvaluationLevelController@delete')->name('evaluationlevel.delete');
         Route::resource('/evaluationlevel', 'Admin\ExaminationEvaluationLevelController');
+
+        // Diagnoses Category
+        Route::get('/diagnosescategory/read', 'Admin\DiagnosesCategoryController@read')->name('diagnosescategory.read');
+        Route::get('/diagnosescategory/select', 'Admin\DiagnosesCategoryController@select')->name('diagnosescategory.select');
+        Route::get('/diagnosescategory/restore/{id}', 'Admin\DiagnosesCategoryController@restore')->name('diagnosescategory.restore');
+        Route::get('/diagnosescategory/delete/{id}', 'Admin\DiagnosesCategoryController@delete')->name('diagnosescategory.delete');
+        Route::resource('/diagnosescategory', 'Admin\DiagnosesCategoryController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
