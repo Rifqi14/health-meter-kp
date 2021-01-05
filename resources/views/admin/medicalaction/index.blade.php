@@ -5,40 +5,42 @@
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-    <li class="active">Tindakan</li>
+<li class="active">Tindakan</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-    <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Data Tindakan</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-            <a href="{{route('medicalaction.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
-              <i class="fa fa-plus"></i>
-            </a>
-          </div>
-          <!-- /. tools -->
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Data Tindakan</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <a href="{{route('medicalaction.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
+                        title="Tambah">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+                <!-- /. tools -->
+            </div>
+            <div class="box-body">
+                <table class="table table-striped table-bordered datatable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th width="10">#</th>
+                            <th width="100">Kode</th>
+                            <th width="200">Nama</th>
+                            <th width="200">Template</th>
+                            <th width="200">Jenis Pemeriksaan</th>
+                            <th width="100">Dibuat</th>
+                            <th width="10">#</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-        <div class="box-body">
-            <table class="table table-striped table-bordered datatable" style="width:100%">
-                <thead>
-                    <tr>
-                        <th width="10">#</th>
-                        <th width="100">Kode</th>
-                        <th width="200">Nama</th>
-                        <th width="200">Template</th>
-                        <th width="100">Dibuat</th>
-                        <th width="10">#</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="overlay hidden">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div>
     </div>
 </div>
 @endsection
@@ -47,7 +49,7 @@
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script src="{{asset('assets/js/plugins/bootbox/bootbox.min.js')}}"></script>
 <script type="text/javascript">
-$(function(){
+    $(function(){
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -56,7 +58,7 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 5, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('medicalaction.read')}}",
             type: "GET",
@@ -68,7 +70,7 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [5] },
+            { className: "text-center", targets: [6] },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                     <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -78,7 +80,7 @@ $(function(){
                         <li><a class="dropdown-item" href="{{url('admin/medicalaction')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
                         <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                     </ul></div>`
-            },targets: [5]
+            },targets: [6]
             }
         ],
         columns: [
@@ -86,6 +88,7 @@ $(function(){
             { data: "code" },
             { data: "name" },
             { data: "template_name" },
+            { data: "examination_type" },
             { data: "created_at" },
             { data: "id" },
         ]

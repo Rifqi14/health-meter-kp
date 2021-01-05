@@ -36,12 +36,12 @@ class MedicalActionController extends Controller
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = MedicalAction::select('medical_actions.*');
+        $query = MedicalAction::with('examination')->select('medical_actions.*');
         $query->whereRaw("upper(name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = MedicalAction::select('medical_actions.*','templates.name as template_name');
+        $query = MedicalAction::with('examination')->select('medical_actions.*','templates.name as template_name');
         $query->leftJoin('templates','templates.id','=','medical_actions.template_id');
         $query->whereRaw("upper(medical_actions.name) like '%$name%'");
         $query->offset($start);
@@ -52,6 +52,7 @@ class MedicalActionController extends Controller
         $data = [];
         foreach($medicalactions as $medicalaction){
             $medicalaction->no = ++$start;
+            $medicalaction->examination_type = $medicalaction->examination_type_id ? $medicalaction->examination->name : '-';
 			$data[] = $medicalaction;
 		}
         return response()->json([
@@ -85,7 +86,8 @@ class MedicalActionController extends Controller
             'code'          => 'required|unique:medical_actions',
             'name' 	        => 'required|unique:medical_actions',
             'template_id' 	=> 'required',
-            'description'   => 'required'
+            'description'   => 'required',
+            'examination'   => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -96,10 +98,11 @@ class MedicalActionController extends Controller
         }
 
         $medicalaction = MedicalAction::create([
-            'code'          => $request->code,
-            'name'          => $request->name,
-            'template_id'   => $request->template_id,
-            'description'   => $request->description
+            'code'                  => $request->code,
+            'name'                  => $request->name,
+            'template_id'           => $request->template_id,
+            'description'           => $request->description,
+            'examination_type_id'   => $request->examination
         ]);
         if (!$medicalaction) {
             return response()->json([
@@ -161,7 +164,8 @@ class MedicalActionController extends Controller
             'code'  	    => 'required|unique:medical_actions,code,'.$id,
             'name' 	        => 'required|unique:medical_actions,name,'.$id,
             'template_id'   => 'required',
-            'description'   => 'required'
+            'description'   => 'required',
+            'examination'   => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -177,6 +181,7 @@ class MedicalActionController extends Controller
         $medicalaction->name = $request->name;
         $medicalaction->template_id = $request->template_id;
         $medicalaction->description = $request->description;
+        $medicalaction->examination_type_id = $request->examination;
         $medicalaction->save();
         if (!$medicalaction) {
             return response()->json([

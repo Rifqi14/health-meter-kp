@@ -2,55 +2,42 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Inpatient;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ExaminationType;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
 
-class InpatientController extends Controller
+class ExaminationTypeController extends Controller
 {
-    function __construct(){
-        View::share('menu_active', url('admin/'.'inpatient'));
-        $this->middleware('accessmenu', ['except' => 'select']);
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('admin.inpatient.index');
-    }
     public function read(Request $request)
     {
+        $input = ['numeric'=>'Angka','string'=>'Text'];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
+        $examination_id = $request->examination_id;
 
         //Count Data
-        $query = Inpatient::select('inpatients.*');
+        $query = ExaminationType::where('examination_id',$examination_id);
         $query->withTrashed();
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Inpatient::select('inpatients.*');
+        $query = ExaminationType::where('examination_id',$examination_id);
         $query->withTrashed();
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
-        $inpatients = $query->get();
+        $examination_types = $query->get();
 
         $data = [];
-        foreach($inpatients as $inpatient){
-            $inpatient->no = ++$start;
-            $inpatient->price = number_format($inpatient->price,0,',','.');
-			$data[] = $inpatient;
+        foreach($examination_types as $examination_type){
+            $examination_type->no = ++$start;
+            $examination_type->input = @$input[$examination_type->input];
+			$data[] = $examination_type;
 		}
         return response()->json([
             'draw'=>$request->draw,
@@ -60,33 +47,42 @@ class InpatientController extends Controller
         ], 200);
     }
 
-    public function select(Request $request){
-        $start = $request->page?$request->page - 1:0;
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = Inpatient::select('inpatients.*');
-        $query->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Inpatient::select('inpatients.*');
-        $query->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
-        $inpatients = $query->get();
+        $medicines = $query->get();
 
         $data = [];
-        foreach($inpatients as $inpatient){
-            $inpatient->no = ++$start;
-			$data[] = $inpatient;
-		}
+        foreach ($medicines as $examination) {
+            $examination->no = ++$start;
+            $data[] = $examination;
+        }
         return response()->json([
-			'total'=>$recordsTotal,
-			'rows'=>$data
+            'total' => $recordsTotal,
+            'rows' => $data
         ], 200);
     }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -94,7 +90,7 @@ class InpatientController extends Controller
      */
     public function create()
     {
-        return view('admin.inpatient.create');
+        //
     }
 
     /**
@@ -106,8 +102,9 @@ class InpatientController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'price'     => 'required|numeric'
+            'name'          => 'required',
+            'input'         => 'required',
+            'status'        => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -117,22 +114,22 @@ class InpatientController extends Controller
         	], 400);
         }
 
-        $inpatient = Inpatient::create([
-            'name' 	    => $request->name,
-            'price' 	=> $request->price,
-            'note'      => $request->note,
-            'updated_by'=> Auth::id()
+        $examination = ExaminationType::create([
+            'examination_id'    => $request->examination_id,
+			'name'              => $request->name,
+            'input'             => $request->input,
+            'status'            => $request->status,
+            'updated_by'        => Auth::id()
         ]);
-
-        if (!$inpatient) {
+        if (!$examination) {
             return response()->json([
                 'status' => false,
-                'message' 	=> $inpatient
+                'message' 	=> $examination
             ], 400);
         }
         return response()->json([
-        	'status' 	=> true,
-        	'results' 	=> route('inpatient.index'),
+            'status' 	=> true,
+            'message' 	=> 'Success Create Data'
         ], 200);
     }
 
@@ -155,13 +152,11 @@ class InpatientController extends Controller
      */
     public function edit($id)
     {
-        $inpatient = Inpatient::find($id);
-        if($inpatient){
-            return view('admin.inpatient.edit',compact('inpatient'));
-        }
-        else{
-            abort(404);
-        }
+        $examination = ExaminationType::withTrashed()->find($id);
+        return response()->json([
+            'status'    => true,
+            'data'      => $examination
+        ], 200);
     }
 
     /**
@@ -174,8 +169,8 @@ class InpatientController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'price'     => 'required|numeric'
+            'name'          => 'required',
+            'input'         => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -185,22 +180,26 @@ class InpatientController extends Controller
         	], 400);
         }
 
-        $inpatient = Inpatient::find($id);
-        $inpatient->name        = $request->name;
-        $inpatient->price       = $request->price;
-        $inpatient->note        = $request->note;
-        $inpatient->updated_by  = Auth::id();
-        $inpatient->save();
-
-        if (!$inpatient) {
+        $examinationtype = ExaminationType::withTrashed()->find($id);
+        $examinationtype->name  = $request->name;
+        $examinationtype->input  = $request->input;
+        $examinationtype->status = $request->status;
+        $examinationtype->updated_by = Auth::id();
+        $examinationtype->save();
+        if ($examinationtype->status == 0) {
+            $examinationtype->delete();
+        } else {
+            $examinationtype->restore();
+        }
+        if (!$examinationtype) {
             return response()->json([
                 'status' => false,
-                'message' 	=> $inpatient
+                'message' 	=> $examinationtype
             ], 400);
         }
         return response()->json([
-        	'status' 	=> true,
-        	'results' 	=> route('inpatient.index'),
+            'status' 	=> true,
+            'message' 	=> 'Success Update Data'
         ], 200);
     }
 
@@ -213,8 +212,10 @@ class InpatientController extends Controller
     public function destroy($id)
     {
         try {
-            $inpatient = Inpatient::find($id);
-            $inpatient->delete();
+            $examinationtype = ExaminationType::find($id);
+            $examinationtype->status = 0;
+            $examinationtype->save();
+            $examinationtype->delete();
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'     => false,
@@ -224,23 +225,6 @@ class InpatientController extends Controller
         return response()->json([
             'status'     => true,
             'message' => 'Success delete data'
-        ], 200);
-    }
-
-    public function restore($id)
-    {
-        try {
-            $inpatient = Inpatient::withTrashed()->find($id);
-            $inpatient->restore();
-        } catch (\Illuminate\Database\QueryException $e) {
-            return response()->json([
-                'status'     => false,
-                'message'     => 'Error restore data'
-            ], 400);
-        }
-        return response()->json([
-            'status'     => true,
-            'message' => 'Success restore data'
         ], 200);
     }
 }

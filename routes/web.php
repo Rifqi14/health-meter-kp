@@ -192,6 +192,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/medicaldetail/read', 'Admin\MedicalDetailController@read')->name('medicaldetail.read');
         Route::resource('/medicaldetail', 'Admin\MedicalDetailController');
         //Route Inpatient
+        Route::get('/inpatient/restore/{id}', 'Admin\InpatientController@restore')->name('inpatient.restore');
         Route::get('/inpatient/read', 'Admin\InpatientController@read')->name('inpatient.read');
         Route::get('/inpatient/select', 'Admin\InpatientController@select')->name('inpatient.select');
         Route::resource('/inpatient', 'Admin\InpatientController');
@@ -324,6 +325,34 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/speciality/restore/{id}', 'Admin\SpecialityController@restore')->name('speciality.restore');
         Route::get('/speciality/delete/{id}', 'Admin\SpecialityController@delete')->name('speciality.delete');
         Route::resource('/speciality', 'Admin\SpecialityController');
+
+        // Examination
+        Route::get('/examination/read', 'Admin\ExaminationController@read')->name('examination.read');
+        Route::get('/examination/select', 'Admin\ExaminationController@select')->name('examination.select');
+        Route::get('/examination/restore/{id}', 'Admin\ExaminationController@restore')->name('examination.restore');
+        Route::get('/examination/delete/{id}', 'Admin\ExaminationController@delete')->name('examination.delete');
+        Route::resource('/examination', 'Admin\ExaminationController');
+
+        // Examination Type
+        Route::get('/examinationtype/read', 'Admin\ExaminationTypeController@read')->name('examinationtype.read');
+        Route::get('/examinationtype/select', 'Admin\ExaminationTypeController@select')->name('examinationtype.select');
+        Route::get('/examinationtype/restore/{id}', 'Admin\ExaminationTypeController@restore')->name('examinationtype.restore');
+        Route::get('/examinationtype/delete/{id}', 'Admin\ExaminationTypeController@delete')->name('examinationtype.delete');
+        Route::resource('/examinationtype', 'Admin\ExaminationTypeController');
+
+        // Examination Evaluation
+        Route::get('/examinationevaluation/read', 'Admin\ExaminationEvaluationController@read')->name('examinationevaluation.read');
+        Route::get('/examinationevaluation/select', 'Admin\ExaminationEvaluationController@select')->name('examinationevaluation.select');
+        Route::get('/examinationevaluation/restore/{id}', 'Admin\ExaminationEvaluationController@restore')->name('examinationevaluation.restore');
+        Route::get('/examinationevaluation/delete/{id}', 'Admin\ExaminationEvaluationController@delete')->name('examinationevaluation.delete');
+        Route::resource('/examinationevaluation', 'Admin\ExaminationEvaluationController');
+        
+        // Examination Evaluation Level
+        Route::get('/evaluationlevel/read', 'Admin\ExaminationEvaluationLevelController@read')->name('evaluationlevel.read');
+        Route::get('/evaluationlevel/select', 'Admin\ExaminationEvaluationLevelController@select')->name('evaluationlevel.select');
+        Route::get('/evaluationlevel/restore/{id}', 'Admin\ExaminationEvaluationLevelController@restore')->name('evaluationlevel.restore');
+        Route::get('/evaluationlevel/delete/{id}', 'Admin\ExaminationEvaluationLevelController@delete')->name('evaluationlevel.delete');
+        Route::resource('/evaluationlevel', 'Admin\ExaminationEvaluationLevelController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {

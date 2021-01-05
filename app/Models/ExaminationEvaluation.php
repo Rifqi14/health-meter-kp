@@ -6,7 +6,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Inpatient extends Model
+class ExaminationEvaluation extends Model
 {
     use SoftDeletes;
     protected $guarded = [];
@@ -14,5 +14,10 @@ class Inpatient extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(ExaminationType::class, 'examination_type_id');
     }
 }
