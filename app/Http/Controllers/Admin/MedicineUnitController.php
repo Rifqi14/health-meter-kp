@@ -14,7 +14,7 @@ class MedicineUnitController extends Controller
 {
     function __construct() {
         View::share('menu_active', url('admin/medicineunit'));
-        $this->middleware('accessmenu', ['except' => 'selecct']);
+        $this->middleware('accessmenu', ['except' => 'select']);
     }
     
     /**
@@ -113,7 +113,8 @@ class MedicineUnitController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_units'
+            'code'          => 'required|unique:medicine_units',
+            'description'   => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -125,8 +126,8 @@ class MedicineUnitController extends Controller
 
         try {
             $medicine_unit = MedicineUnit::create([
+                'code'          => $request->code,
                 'description'   => $request->description,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -160,7 +161,7 @@ class MedicineUnitController extends Controller
      */
     public function edit($id)
     {
-        $unit = MedicineUnit::find($id);
+        $unit = MedicineUnit::withTrashed()->find($id);
         if ($unit) {
             return view('admin.medicineunit.edit', compact('unit'));
         } else {
@@ -178,7 +179,8 @@ class MedicineUnitController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_units,description,' . $id,
+            'code'          => 'required|unique:medicine_units,code,' . $id,
+            'description'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -189,9 +191,9 @@ class MedicineUnitController extends Controller
         }
 
         $group = MedicineUnit::find($id);
-        $group->description  = $request->description;
-        $group->status       = $request->status ? 1 : 0;
-        $group->updated_by   = Auth::id();
+        $group->code        = $request->code;
+        $group->description = $request->description;
+        $group->updated_by  = Auth::id();
         $group->save();
 
         if (!$group) {
@@ -220,12 +222,12 @@ class MedicineUnitController extends Controller
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
-                'message'   => 'Error delete data ' . $th->errorInfo[2]
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
             'status'    => true,
-            'message'   => 'Success delete data'
+            'message'   => 'Success archive data'
         ], 200);
     }
 
