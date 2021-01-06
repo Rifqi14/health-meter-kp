@@ -35,13 +35,20 @@ class MedicineController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $arsip = $request->category;
 
         //Count Data
-        $query = Medicine::whereRaw("upper(name) like '%$name%'");
+        $query = Medicine::with('user')->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Medicine::whereRaw("upper(name) like '%$name%'");
+        $query = Medicine::with('user')->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -134,7 +141,6 @@ class MedicineController extends Controller
                 'level'                 => $request->level,
                 'description'           => $request->description,
                 'price'                 => $request->price,
-                'status'                => $request->status ? 1 : 0,
                 'updated_by'            => Auth::id()
             ]);
         } catch (QueryException $ex) {
@@ -168,7 +174,7 @@ class MedicineController extends Controller
      */
     public function edit($id)
     {
-        $medicine = Medicine::find($id);
+        $medicine = Medicine::withTrashed()->find($id);
         if ($medicine) {
             return view('admin.medicine.edit', compact('medicine'));
         } else {
@@ -197,7 +203,7 @@ class MedicineController extends Controller
             ], 400);
         }
 
-        $medicine = Medicine::find($id);
+        $medicine = Medicine::withTrashed()->find($id);
         $medicine->code                 = $request->code;
         $medicine->name                 = $request->name;
         $medicine->id_medicine_category = $request->medicine_category;
@@ -207,7 +213,6 @@ class MedicineController extends Controller
         $medicine->level                = $request->level;
         $medicine->description          = $request->description;
         $medicine->price                = $request->price;
-        $medicine->status               = $request->status ? 1 : 0;
         $medicine->updated_by           = Auth::id();
         $medicine->save();
 
@@ -234,6 +239,40 @@ class MedicineController extends Controller
         try {
             $medicine = Medicine::find($id);
             $medicine->delete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore(Request $request)
+    {
+        try {
+            $category = Medicine::onlyTrashed()->find($request->id);
+            $category->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $category = Medicine::onlyTrashed()->find($request->id);
+            $category->forceDelete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,

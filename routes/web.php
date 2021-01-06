@@ -248,6 +248,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/medicine/read', 'Admin\MedicineController@read')->name('medicine.read');
         Route::get('/medicine/select', 'Admin\MedicineController@select')->name('medicine.select');
         Route::get('/medicine/import', 'Admin\MedicineController@import')->name('medicine.import');
+        Route::post('/medicine/restore', 'Admin\MedicineController@restore')->name('medicine.restore');
+        Route::post('/medicine/delete', 'Admin\MedicineController@delete')->name('medicine.delete');
         Route::post('/medicine/preview', 'Admin\MedicineController@preview')->name('medicine.preview');
         Route::post('/medicine/storemass', 'Admin\MedicineController@storemass')->name('medicine.storemass');
         Route::resource('/medicine', 'Admin\MedicineController');
@@ -361,6 +363,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/diagnosescategory/restore/{id}', 'Admin\DiagnosesCategoryController@restore')->name('diagnosescategory.restore');
         Route::get('/diagnosescategory/delete/{id}', 'Admin\DiagnosesCategoryController@delete')->name('diagnosescategory.delete');
         Route::resource('/diagnosescategory', 'Admin\DiagnosesCategoryController');
+
+        // Workforce Group
+        Route::get('/workforcegroup/read', 'Admin\WorkforceGroupController@read')->name('workforcegroup.read');
+        Route::get('/workforcegroup/select', 'Admin\WorkforceGroupController@select')->name('workforcegroup.select');
+        Route::get('/workforcegroup/restore/{id}', 'Admin\WorkforceGroupController@restore')->name('workforcegroup.restore');
+        Route::get('/workforcegroup/delete/{id}', 'Admin\WorkforceGroupController@delete')->name('workforcegroup.delete');
+        Route::resource('/workforcegroup', 'Admin\WorkforceGroupController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {

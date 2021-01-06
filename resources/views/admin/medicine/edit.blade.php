@@ -91,14 +91,6 @@
                   placeholder="Deskripsi">{{ $medicine->description }}</textarea>
               </div>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($medicine->status)
-                  checked
-                  @endif> <i></i></label>
-              </div>
-            </div>
           </div>
         </form>
       </div>
@@ -114,10 +106,6 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $('input[name=status]').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-        radioClass: 'iradio_square-green',
-      });
       $("#medicine_category").select2({
         ajax: {
           url: "{{route('medicinecategory.select')}}",
