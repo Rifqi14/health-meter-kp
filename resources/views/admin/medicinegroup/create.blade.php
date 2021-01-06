@@ -26,16 +26,16 @@
           {{ csrf_field() }}
           <div class="box-body">
             <div class="form-group">
+              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" required>
+              </div>
+            </div>
+            <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="description" name="description" placeholder="Deskripsi"
                   required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
               </div>
             </div>
           </div>
@@ -53,10 +53,6 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $('input[name=status]').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-        radioClass: 'iradio_square-green',
-      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',

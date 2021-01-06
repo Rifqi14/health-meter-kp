@@ -30,6 +30,7 @@
           <thead>
             <tr>
               <th width="10">#</th>
+              <th width="50">Kode</th>
               <th width="100">Deskripsi</th>
               <th width="50">Terakhir Dirubah</th>
               <th width="50">Dirubah Oleh</th>
@@ -100,7 +101,7 @@
       info:false,
       lengthChange:true,
       responsive: true,
-      order: [[ 5, "asc" ]],
+      order: [[ 6, "asc" ]],
       ajax: {
         url: "{{route('medicinegroup.read')}}",
         type: "GET",
@@ -113,37 +114,39 @@
       },
       columnDefs:[
         { orderable: false,targets:[0] },
-        { className: "text-right", targets: [0] },
-        { className: "text-center", targets: [4,5] },
+        { className: "text-right", targets: [0,3] },
+        { className: "text-center", targets: [4,5,6] },
         { render: function (data, type, row) {
-          return `<span class="label bg-blue">${row.user.name}</span>`
-        }, targets: [3]},
+          return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+        }, targets: [4] },
         { render: function (data, type, row) {
-          if (row.status == 1) {
-            return `<span class="label bg-green">Aktif</span>`
+          if (row.deleted_at) {
+            bg = 'bg-red', teks = 'Non-Aktif';
           } else {
-            return `<span class="label bg-red">Non-Aktif</span>`
+            bg = 'bg-green', teks = 'Aktif';
           }
-        }, targets: [4]},
+          return `<span class="label ${bg}">${teks}</span>`
+        }, targets: [5] },
         { render: function ( data, type, row ) {
-          html = `<div class="dropdown">
-                      <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                          <i class="fa fa-bars"></i>
-                      </button>
-                      <ul class="dropdown-menu dropdown-menu-right">`;
-            if (row.deleted_at) {
-              html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete Permanent</a></li>`;
-              html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
-            } else {
-              html += `<li><a class="dropdown-item" href="{{url('admin/medicinegroup')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
-              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
-            }
-            html += `</ul>
-                    </div>`;
-            return html },targets: [5] }
+          return `<div class="dropdown">
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/medicinegroup')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`
+        },targets: [6] }
       ],
       columns: [
         { data: "no" },
+        { data: "code" },
         { data: "description" },
         { data: "updated_at" },
         { data: "updated_by" },
@@ -157,7 +160,7 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
-    $(document).on('click','.delete',function(){
+    $(document).on('click','.archive',function(){
       var id = $(this).data('id');
       bootbox.confirm({
         buttons: {
@@ -170,8 +173,8 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Menghapus kelompok obat?',
-        message:'Data yang telah dihapus dapat dikembalikan',
+        title:'Mengarsipkan kelompok obat?',
+        message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
         callback: function(result) {
           if(result) {
             var data = {
@@ -232,7 +235,7 @@
           },
         },
         title:'Mengembalikan kelompok obat?',
-        message:'Data yang telah dikembalikan dapat dihapus',
+        message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
         callback: function(result) {
           if(result) {
             var data = {
@@ -279,7 +282,7 @@
         }
       });
     });
-    $(document).on('click','.delete-permanent',function(){
+    $(document).on('click','.delete',function(){
       var id = $(this).data('id');
       bootbox.confirm({
         buttons: {
