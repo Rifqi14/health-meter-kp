@@ -285,6 +285,8 @@ Route::group(['prefix' => 'admin'], function () {
         // Medicine Category
         Route::get('/medicinecategory/read', 'Admin\MedicineCategoryController@read')->name('medicinecategory.read');
         Route::get('/medicinecategory/select', 'Admin\MedicineCategoryController@select')->name('medicinecategory.select');
+        Route::post('/medicinecategory/restore', 'Admin\MedicineCategoryController@restore')->name('medicinecategory.restore');
+        Route::post('/medicinecategory/delete', 'Admin\MedicineCategoryController@delete')->name('medicinecategory.delete');
         Route::resource('/medicinecategory', 'Admin\MedicineCategoryController');
 
         // Medicine Group

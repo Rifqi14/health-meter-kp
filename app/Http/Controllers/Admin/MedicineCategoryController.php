@@ -112,6 +112,7 @@ class MedicineCategoryController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'code'          => 'required|unique:medicine_categories',
             'description'   => 'required|unique:medicine_categories'
         ]);
 
@@ -124,8 +125,8 @@ class MedicineCategoryController extends Controller
 
         try {
             $medicine_categories = MedicineCategory::create([
+                'code'          => $request->code,
                 'description'   => $request->description,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -159,7 +160,7 @@ class MedicineCategoryController extends Controller
      */
     public function edit($id)
     {
-        $category = MedicineCategory::find($id);
+        $category = MedicineCategory::withTrashed()->find($id);
         if ($category) {
             return view('admin.medicinecategory.edit', compact('category'));
         } else {
@@ -177,7 +178,8 @@ class MedicineCategoryController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_categories,description,' . $id,
+            'code'          => 'required|unique:medicine_categories,code,' . $id,
+            'description'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -187,9 +189,9 @@ class MedicineCategoryController extends Controller
             ], 400);
         }
 
-        $category = MedicineCategory::find($id);
+        $category = MedicineCategory::withTrashed()->find($id);
+        $category->code         = $request->code;
         $category->description  = $request->description;
-        $category->status       = $request->status ? 1 : 0;
         $category->updated_by   = Auth::id();
         $category->save();
 
@@ -216,6 +218,40 @@ class MedicineCategoryController extends Controller
         try {
             $medicine = MedicineCategory::find($id);
             $medicine->delete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore(Request $request)
+    {
+        try {
+            $category = MedicineCategory::onlyTrashed()->find($request->id);
+            $category->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $category = MedicineCategory::onlyTrashed()->find($request->id);
+            $category->forceDelete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,

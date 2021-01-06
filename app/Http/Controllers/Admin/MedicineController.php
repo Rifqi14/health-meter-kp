@@ -254,8 +254,8 @@ class MedicineController extends Controller
     public function restore(Request $request)
     {
         try {
-            $category = Medicine::onlyTrashed()->find($request->id);
-            $category->restore();
+            $medicine = Medicine::onlyTrashed()->find($request->id);
+            $medicine->restore();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -271,8 +271,8 @@ class MedicineController extends Controller
     public function delete(Request $request)
     {
         try {
-            $category = Medicine::onlyTrashed()->find($request->id);
-            $category->forceDelete();
+            $medicine = Medicine::onlyTrashed()->find($request->id);
+            $medicine->forceDelete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
