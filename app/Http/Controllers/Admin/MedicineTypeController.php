@@ -113,7 +113,8 @@ class MedicineTypeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_types'
+            'code'          => 'required|unique:medicine_types',
+            'description'   => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -125,8 +126,8 @@ class MedicineTypeController extends Controller
 
         try {
             $medicine_group = MedicineType::create([
+                'code'          => $request->code,
                 'description'   => $request->description,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -160,7 +161,7 @@ class MedicineTypeController extends Controller
      */
     public function edit($id)
     {
-        $type = MedicineType::find($id);
+        $type = MedicineType::withTrashed()->find($id);
         if ($type) {
             return view('admin.medicinetype.edit', compact('type'));
         } else {
@@ -178,7 +179,8 @@ class MedicineTypeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_types,description,' . $id,
+            'code'          => 'required|unique:medicine_types,code,' . $id,
+            'description'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -189,8 +191,8 @@ class MedicineTypeController extends Controller
         }
 
         $type = MedicineType::find($id);
+        $type->code         = $request->code;
         $type->description  = $request->description;
-        $type->status       = $request->status ? 1 : 0;
         $type->updated_by   = Auth::id();
         $type->save();
 
@@ -220,12 +222,12 @@ class MedicineTypeController extends Controller
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
-                'message'   => 'Error delete data ' . $th->errorInfo[2]
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
             'status'    => true,
-            'message'   => 'Success delete data'
+            'message'   => 'Success archive data'
         ], 200);
     }
 

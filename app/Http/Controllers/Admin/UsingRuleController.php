@@ -151,7 +151,7 @@ class UsingRuleController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:using_rules,description,' . $id,
+            'code'          => 'required|unique:using_rules,code,' . $id,
             'description'   => 'required',
         ]);
 
