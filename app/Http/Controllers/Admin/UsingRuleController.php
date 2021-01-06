@@ -85,7 +85,8 @@ class UsingRuleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:medicine_groups'
+            'code'          => 'required|unique:medicine_groups',
+            'description'   => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -97,8 +98,8 @@ class UsingRuleController extends Controller
 
         try {
             $medicine_group = UsingRule::create([
+                'code'          => $request->code,
                 'description'   => $request->description,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -132,7 +133,7 @@ class UsingRuleController extends Controller
      */
     public function edit($id)
     {
-        $rule = UsingRule::find($id);
+        $rule = UsingRule::withTrashed()->find($id);
         if ($rule) {
             return view('admin.usingrule.edit', compact('rule'));
         } else {
@@ -150,7 +151,8 @@ class UsingRuleController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'description'   => 'required|unique:using_rules,description,' . $id,
+            'code'          => 'required|unique:using_rules,description,' . $id,
+            'description'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -160,9 +162,9 @@ class UsingRuleController extends Controller
             ], 400);
         }
 
-        $rule = UsingRule::find($id);
+        $rule = UsingRule::withTrashed()->find($id);
+        $rule->code         = $request->code;
         $rule->description  = $request->description;
-        $rule->status       = $request->status ? 1 : 0;
         $rule->updated_by   = Auth::id();
         $rule->save();
 
