@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DiagnosesCategory;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
 class DiagnosesCategoryController extends Controller
@@ -26,12 +29,6 @@ class DiagnosesCategoryController extends Controller
 
     public function read(Request $request)
     {
-        $type = [
-            'history'     => 'Riwayat',
-            'physical'    => 'Fisik' ,
-            'laboratory'  => 'Laboraturium' ,
-            'nonlaboratury'    => 'Non Laboraturium' ,
-        ];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
@@ -60,7 +57,6 @@ class DiagnosesCategoryController extends Controller
         $data = [];
         foreach ($examinations as $examination) {
             $examination->no = ++$start;
-            $examination->type = $type[$examination->type];
             $data[] = $examination;
         }
         return response()->json([
@@ -105,7 +101,7 @@ class DiagnosesCategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.diagnosescategory.create');
     }
 
     /**
@@ -116,7 +112,34 @@ class DiagnosesCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'code'  => 'required',
+            'name'  => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'     => false,
+                'message'     => $validator->errors()->first()
+            ], 400);
+        }
+
+        try {
+            $evaluation = DiagnosesCategory::create([
+                'code'          => strtoupper($request->code),
+                'name'          => $request->name,
+                'updated_by'    => Auth::id(),
+            ]);
+        } catch (QueryException $ex) {
+            return response()->json([
+                'status'      => false,
+                'message'     => $ex->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'results'   => route('diagnosescategory.index'),
+        ], 200);
     }
 
     /**
@@ -138,7 +161,12 @@ class DiagnosesCategoryController extends Controller
      */
     public function edit($id)
     {
-        //
+        $category = DiagnosesCategory::withTrashed()->find($id);
+        if ($category) {
+            return view('admin.diagnosescategory.edit', compact('category'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -150,7 +178,33 @@ class DiagnosesCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'code'  => 'required',
+            'name'  => 'required'
+        ]);
+
+        if ($validator->fails()) {
+        	return response()->json([
+        		'status' 	=> false,
+        		'message' 	=> $validator->errors()->first()
+        	], 400);
+        }
+
+        $category = DiagnosesCategory::withTrashed()->find($id);
+        $category->code = strtoupper($request->code);
+        $category->name = $request->name;
+        $category->updated_by = Auth::id();
+        $category->save();
+        if (!$category) {
+            return response()->json([
+                'status' => false,
+                'message' 	=> $category
+            ], 400);
+        }
+        return response()->json([
+            'status' 	=> true,
+            'results'   => route('diagnosescategory.index')
+        ], 200);
     }
 
     /**
@@ -161,6 +215,35 @@ class DiagnosesCategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $category = DiagnosesCategory::find($id);
+            $category->delete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $category = DiagnosesCategory::onlyTrashed()->find($id);
+            $category->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
     }
 }
