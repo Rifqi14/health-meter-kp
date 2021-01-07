@@ -372,6 +372,20 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/workforcegroup/restore/{id}', 'Admin\WorkforceGroupController@restore')->name('workforcegroup.restore');
         Route::get('/workforcegroup/delete/{id}', 'Admin\WorkforceGroupController@delete')->name('workforcegroup.delete');
         Route::resource('/workforcegroup', 'Admin\WorkforceGroupController');
+
+        // Assessment Question
+        Route::get('/assessmentquestion/read', 'Admin\AssessmentQuestionController@read')->name('assessmentquestion.read');
+        Route::get('/assessmentquestion/select', 'Admin\AssessmentQuestionController@select')->name('assessmentquestion.select');
+        Route::post('/assessmentquestion/restore', 'Admin\AssessmentQuestionController@restore')->name('assessmentquestion.restore');
+        Route::post('/assessmentquestion/delete', 'Admin\AssessmentQuestionController@delete')->name('assessmentquestion.delete');
+        Route::resource('/assessmentquestion', 'Admin\AssessmentQuestionController');
+
+        // Assessment Answer
+        Route::get('/assessmentanswer/read', 'Admin\AssessmentAnswerController@read')->name('assessmentanswer.read');
+        Route::get('/assessmentanswer/select', 'Admin\AssessmentAnswerController@select')->name('assessmentanswer.select');
+        Route::post('/assessmentanswer/restore', 'Admin\AssessmentAnswerController@restore')->name('assessmentanswer.restore');
+        Route::post('/assessmentanswer/delete', 'Admin\AssessmentAnswerController@delete')->name('assessmentanswer.delete');
+        Route::resource('/assessmentanswer', 'Admin\AssessmentAnswerController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
