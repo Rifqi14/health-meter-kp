@@ -5,9 +5,9 @@
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 <link href="{{asset('adminlte/component/summernote/css/summernote.min.css')}}" rel="stylesheet">
 <style type="text/css">
-  .overlay-wrapper {
-    position: relative;
-  }
+    .overlay-wrapper {
+        position: relative;
+    }
 </style>
 @endsection
 @push('breadcrump')
@@ -16,147 +16,153 @@
 @endpush
 @section('content')
 <div class="row">
-  <div class="col-lg-4">
-    <div class="box box-primary">
-      <div class="box-header">
-        <h3 class="box-title">Detail Pertanyaan Assessment</h3>
-        <div class="pull-right box-tools">
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-              class="fa fa-reply"></i></a>
-        </div>
-      </div>
-      <div class="box-body box-profile">
-        <ul class="list-group list-group-unbordered">
-          <li class="list-group-item">
-            <b>Jenis</b> <span class="pull-right">{{$question->type}}</span>
-          </li>
-          <li class="list-group-item">
-            <b>Frekuensi</b> <span class="pull-right">{{$frequency[$question->frequency]}}</span>
-          </li>
-          <li class="list-group-item">
-            <b>Waktu</b> <span class="pull-right">{{$question->start_date . ' s/d ' . $question->finish_date}}</span>
-          </li>
-          <li class="list-group-item">
-            <b>Kelompok Workforce</b> <span class="pull-right">{{$question->workforcegroup->name}}</span>
-          </li>
-          <li class="list-group-item">
-            <b>Unit</b> <span class="pull-right">{{$question->site->name}}</span>
-          </li>
-        </ul>
-        <b>Deskripsi</b><br><span>{{$question->description}}</span>
-      </div>
-      <div class="overlay hidden">
-        <i class="fa fa-refresh fa-spin"></i>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-8">
-    <div class="nav-tabs-custom tab-primary">
-      <ul class="nav nav-tabs">
-        <li class="active"><a href="#subcategory" data-toggle="tab">Jawaban Assessment</a></li>
-        <li><a href="#archive" data-toggle="tab">Arsip Jawaban</a></li>
-      </ul>
-      <div class="tab-content">
-        <div class="tab-pane active" id="subcategory">
-          <div class="overlay-wrapper">
-            <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
-            <table class="table table-bordered table-striped" id="table-subcategory" style="width: 100%">
-              <thead>
-                <tr>
-                  <th style="text-align:center" width="10">#</th>
-                  <th width="300">Deskripsi</th>
-                  <th width="50">Tipe</th>
-                  <th width="50">Bobot</th>
-                  <th width="10">#</th>
-                </tr>
-              </thead>
-            </table>
-            <div class="overlay hidden">
-              <i class="fa fa-refresh fa-spin"></i>
+    <div class="col-lg-4">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Detail Pertanyaan Assessment</h3>
+                <div class="pull-right box-tools">
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
+                            class="fa fa-reply"></i></a>
+                </div>
             </div>
-          </div>
+            <div class="box-body box-profile">
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                        <b>Jenis</b> <span class="pull-right">{{$question->type}}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Frekuensi</b> <span class="pull-right">{{$frequency[$question->frequency]}}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Waktu</b> <span
+                            class="pull-right">{{$question->start_date . ' s/d ' . $question->finish_date}}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Kelompok Workforce</b> <span class="pull-right">{{$question->workforcegroup->name}}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Unit</b> <span class="pull-right">{{$question->site->name}}</span>
+                    </li>
+                </ul>
+                <b>Deskripsi</b><br><span>{{$question->description}}</span>
+            </div>
+            <div class="overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-        <div class="tab-pane" id="archive">
-          <div class="overlay-wrapper">
-            <table class="table table-bordered table-striped" id="table-archive" style="width: 100%">
-              <thead>
-                <tr>
-                  <th style="text-align:center" width="10">#</th>
-                  <th width="300">Deskripsi</th>
-                  <th width="50">Tipe</th>
-                  <th width="50">Bobot</th>
-                  <th width="10">#</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+    <div class="col-lg-8">
+        <div class="nav-tabs-custom tab-primary">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#subcategory" data-toggle="tab">Jawaban Assessment</a></li>
+                <li><a href="#archive" data-toggle="tab">Arsip Jawaban</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="subcategory">
+                    <div class="overlay-wrapper">
+                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i
+                                class="fa fa-plus"></i></a>
+                        <table class="table table-bordered table-striped" id="table-subcategory" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center" width="10">#</th>
+                                    <th width="300">Deskripsi</th>
+                                    <th width="50">Tipe</th>
+                                    <th width="50">Bobot</th>
+                                    <th width="10">#</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="overlay hidden">
+                            <i class="fa fa-refresh fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="archive">
+                    <div class="overlay-wrapper">
+                        <table class="table table-bordered table-striped" id="table-archive" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center" width="10">#</th>
+                                    <th width="300">Deskripsi</th>
+                                    <th width="50">Tipe</th>
+                                    <th width="50">Bobot</th>
+                                    <th width="10">#</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <h4 class="modal-title">Tambah Sub Kategori</h4>
-      </div>
-      <div class="modal-body">
-        <form id="form" method="post" action="{{route('assessmentanswer.store')}}" autocomplete="off">
-          {{ csrf_field() }}
-          <input type="hidden" name="assessment_question_id" value="{{$question->id}}" />
-          <input type="hidden" name="_method" />
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="description">Deskripsi</label>
-                <input type="text" name="description" class="form-control" placeholder="Deskripsi" required>
-              </div>
+    aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Tambah Jawaban Assessment</h4>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="answer_type">Tipe</label>
-                <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe" required>
-                  <option value=""></option>
-                  <option value="checkbox">Checkbox</option>
-                  <option value="radio">Radio Button</option>
-                  <option value="text">Teks</option>
-                  <option value="number">Angka</option>
-                  <option value="select">List Dropdown</option>
-                </select>
-              </div>
+            <div class="modal-body">
+                <form id="form" method="post" action="{{route('assessmentanswer.store')}}" autocomplete="off">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="assessment_question_id" value="{{$question->id}}" />
+                    <input type="hidden" name="_method" />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label" for="description">Deskripsi</label>
+                                <input type="text" name="description" class="form-control" placeholder="Deskripsi"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label" for="answer_type">Tipe</label>
+                                <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe"
+                                    required>
+                                    <option value=""></option>
+                                    <option value="checkbox">Checkbox</option>
+                                    <option value="radio">Radio Button</option>
+                                    <option value="text">Teks</option>
+                                    <option value="number">Angka</option>
+                                    <option value="select">List Dropdown</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label" for="rating">Bobot</label>
+                                <input type="text" name="rating" class="form-control numberfield" placeholder="Bobot"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="receipt_header">Informasi</label>
+                                <textarea class="form-control summernote" name="information"
+                                    id="information"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="rating">Bobot</label>
-                <input type="text" name="rating" class="form-control numberfield" placeholder="Bobot" required>
-              </div>
+            <div class="modal-footer">
+                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
+                        class="fa fa-save"></i></button>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="receipt_header">Informasi</label>
-                <textarea class="form-control summernote" name="information" id="information"></textarea>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
-            class="fa fa-save"></i></button>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 @endsection
 
@@ -165,7 +171,7 @@
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script src="{{asset('adminlte/component/summernote/js/summernote.min.js')}}"></script>
 <script>
-  function adddetail() {
+    function adddetail() {
         $('#add-detail .modal-title').html('Tambah Jawaban Assessment');
         $('#add-detail').modal('show');
         $('#form')[0].reset();

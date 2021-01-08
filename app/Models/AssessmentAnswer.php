@@ -15,4 +15,8 @@ class AssessmentAnswer extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function question()
+    {
+        return $this->belongsTo(AssessmentQuestion::class, 'assessment_question_id');
+    }
 }

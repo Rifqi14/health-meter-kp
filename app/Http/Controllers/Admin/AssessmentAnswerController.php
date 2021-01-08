@@ -73,16 +73,26 @@ class AssessmentAnswerController extends Controller
 
     public function select(Request $request)
     {
+        $type = [
+            'checkbox'  => 'Checkbox',
+            'radio'     => 'Radio Button',
+            'text'      => 'Teks',
+            'number'    => 'Angka',
+            'select'    => 'List Dropdown'
+        ];
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $question = $request->question_id;
 
         //Count Data
-        $query = AssessmentAnswer::whereRaw("upper(type) like '%$name%'");
+        $query = AssessmentAnswer::whereRaw("upper(answer_type) like '%$name%'");
+        $query->where('assessment_question_id', $question);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = AssessmentAnswer::whereRaw("upper(type) like '%$name%'");
+        $query = AssessmentAnswer::whereRaw("upper(answer_type) like '%$name%'");
+        $query->where('assessment_question_id', $question);
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();
@@ -90,6 +100,7 @@ class AssessmentAnswerController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
+            $result->answer_type = $type[$result->answer_type];
             $data[] = $result;
         }
         return response()->json([

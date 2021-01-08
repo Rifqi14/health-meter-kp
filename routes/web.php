@@ -31,6 +31,8 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Formula
         Route::get('/formula/read', 'Admin\FormulaController@read')->name('formula.read');
         Route::get('/formula/select', 'Admin\FormulaController@select')->name('formula.select');
+        Route::get('/formula/restore/{id}', 'Admin\FormulaController@restore')->name('formula.restore');
+        Route::get('/formula/delete/{id}', 'Admin\FormulaController@delete')->name('formula.delete');
         Route::resource('/formula', 'Admin\FormulaController');
         //Route Formula Detail
         Route::get('/formuladetail/read', 'Admin\FormulaDetailController@read')->name('formuladetail.read');

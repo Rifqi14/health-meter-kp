@@ -27,4 +27,8 @@ class AssessmentQuestion extends Model
     {
         return $this->belongsTo(AssessmentQuestion::class, 'question_parent_code');
     }
+    public function answer()
+    {
+        return $this->hasMany(AssessmentAnswer::class, 'assessment_question_id');
+    }
 }
