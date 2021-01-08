@@ -4,145 +4,126 @@
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 <style type="text/css">
-    .overlay-wrapper{
-      position:relative;
-    }
+  .overlay-wrapper {
+    position: relative;
+  }
 </style>
 @endsection
 @push('breadcrump')
-    <li><a href="{{route('formula.index')}}">Formula</a></li>
-    <li class="active">Detail</li>
+<li><a href="{{route('formula.index')}}">Formula</a></li>
+<li class="active">Detail</li>
 @endpush
 @section('content')
 <div class="row">
-    <div class="col-lg-4">
+  <div class="col-lg-4">
     <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Detail Formula</h3>
-          <div class="pull-right box-tools">
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
-          </div>
+      <div class="box-header">
+        <h3 class="box-title">Detail Formula</h3>
+        <div class="pull-right box-tools">
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
+              class="fa fa-reply"></i></a>
         </div>
-        <div class="box-body box-profile">
-          <ul class="list-group list-group-unbordered">
-            <li class="list-group-item">
-              <b>Nama</b> <span class="pull-right">{{$formula->name}}</span>
-            </li>
-            <li class="list-group-item">
-              <b>Operasi</b> <span class="pull-right">{{$operation[$formula->operation]}}</span>
-            </li>
-            <li class="list-group-item">
-              <b>Hasil</b> <span class="pull-right">{{$result[$formula->result]}}</span>
-            </li>
-            <li class="list-group-item">
-              <b>Dibuat</b> <span class="pull-right">{{$formula->created_at}}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="overlay hidden">
-          <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div>
-    </div>
-    <div class="col-lg-8">
-      <div class="nav-tabs-custom tab-primary">
-        <ul class="nav nav-tabs">
-          <li class="active"><a href="#formuladetail" data-toggle="tab">Formula Detail</a></li>
+      </div>
+      <div class="box-body box-profile">
+        <ul class="list-group list-group-unbordered">
+          <li class="list-group-item">
+            <b>Nama</b> <span class="pull-right">{{$formula->name}}</span>
+          </li>
+          <li class="list-group-item">
+            <b>Dibuat</b> <span class="pull-right">{{$formula->created_at}}</span>
+          </li>
         </ul>
-        <div class="tab-content">
-          <div class="tab-pane active" id="formuladetail">
-            <div class="overlay-wrapper">
-              <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
-            <table  class="table table-bordered table-striped" id="table-detail">
-                <thead>
-                    <tr>
-                        <th style="text-align:center" width="10">#</th>
-                        <th width="250" >Kategori</th>
-                        <th width="250" >Formula</th>
-                        <th width="100" >Operasi</th>
-                        <th width="100" >Nilai</th>
-                        <th width="10" >#</th>
-                    </tr>
-                </thead>
+      </div>
+      <div class="overlay hidden">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="nav-tabs-custom tab-primary">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#formuladetail" data-toggle="tab">Formula Detail</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="formuladetail">
+          <div class="overlay-wrapper">
+            <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
+            <table class="table table-bordered table-striped" id="table-detail">
+              <thead>
+                <tr>
+                  <th style="text-align:center" width="10">#</th>
+                  <th width="250">Pertanyaan</th>
+                  <th width="250">Jawaban</th>
+                  <th width="100">Operasi</th>
+                  <th width="10">#</th>
+                </tr>
+              </thead>
             </table>
             <div class="overlay hidden">
               <i class="fa fa-refresh fa-spin"></i>
             </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </div>
-<div class="modal fade" id="add-detail" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
+  aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-              <h4 class="modal-title">Tambah Formula Detail</h4>
-          </div>
-          <div class="modal-body">
-              <form id="form" method="post" action="{{route('formuladetail.store')}}" autocomplete="off">
-                 {{ csrf_field() }}
-                 <input type="hidden" name="formula_id" value="{{$formula->id}}"/>
-                 <input type="hidden" name="_method"/>
-                  <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label" for="pick">Relasi</label>
-                            <select name="pick" class="form-control select2" placeholder="Pilih Tipe Relasi" required>
-                              <option value=""></option>
-                              <option value="category">Kategori</option>
-                              <option value="formula">Formula</option>
-                           </select>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label" for="category_id">Kategori</label>
-                            <input type="text" id="category_id" name="category_id" class="form-control" data-placeholder="Pilih Kategori" required>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label" for="reference_id">Formula</label>
-                            <input type="text" id="reference_id" name="reference_id" class="form-control" data-placeholder="Pilih Formula" required>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label" for="operation">Operasi</label>
-                            <select name="operation" class="form-control select2" placeholder="Pilih Tipe Operasi" required>
-                              <option value=""></option>
-                              <option value="percentage">Presentasi</option>
-                              <option value="divide">Pembagian</option>
-                              <option value="origin">Asli</option>
-                           </select>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label" for="value">Nilai</label>
-                            <input type="text" name="value" class="form-control numberfield" placeholder="Nilai">
-                        </div>
-                    </div>
-                </div>
-              </form>
-          </div>
-          <div class="modal-footer">
-              <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i class="fa fa-save"></i></button>
-          </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Tambah Formula Detail</h4>
       </div>
+      <div class="modal-body">
+        <form id="form" method="post" action="{{route('formuladetail.store')}}" autocomplete="off">
+          {{ csrf_field() }}
+          <input type="hidden" name="formula_id" value="{{$formula->id}}" />
+          <input type="hidden" name="_method" />
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="question_id">Pertanyaan</label>
+                <input type="text" id="question_id" name="question_id" class="form-control"
+                  data-placeholder="Pilih Pertanyaan" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="answer_id">Jawaban</label>
+                <input type="text" id="answer_id" name="answer_id" class="form-control" data-placeholder="Pilih Jawaban"
+                  required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="operation">Operasi</label>
+                <select name="operation" class="form-control select2" placeholder="Pilih Tipe Operasi" required>
+                  <option value=""></option>
+                  <option value="percentage">Presentasi</option>
+                  <option value="add">Penambahan</option>
+                  <option value="subtract">Pengurangan</option>
+                  <option value="multiplay">Pengkalian</option>
+                  <option value="divide">Pembagian</option>
+                  <option value="origin">Asli</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
+            class="fa fa-save"></i></button>
+      </div>
+    </div>
   </div>
 </div>
 @endsection
@@ -160,132 +141,139 @@
       $('#form .invalid-feedback').each(function () { $(this).remove(); });
       $('#form').find('.form-group').removeClass('has-error').removeClass('has-success');
       $('#form').find('select[name=operation]').select2('val','');
-      $('#form').find('select[name=pick]').select2('val','');
-      $('#form').find('input[name=category_id]').select2('val','');
-      $('#form').find('input[name=reference_id]').select2('val','');
+      $('#form').find('input[name=question_id]').select2('val','');
+      $('#form').find('input[name=answer_id]').select2('val','');
       $('#form input[name=value]').attr('value','');
-      $('#category_id').closest('.row').hide();
-      $('#reference_id').closest('.row').hide();
+      $('#answer_id').closest('.row').hide();
   }
   $(document).ready(function(){
+    $("#question_id").select2({
+      ajax: {
+        url: "{{route('assessmentquestion.select')}}",
+        type:'GET',
+        dataType: 'json',
+        data: function (term,page) {
+          return {
+            name:term,
+            page:page,
+            limit:30,
+          };
+        },
+        results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+            option.push({
+              id:item.id,  
+              text: `${item.type} - ${item.description}`
+            });
+          });
+          return {
+            results: option, more: more,
+          };
+        },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#question_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+      if (this.value) {
+        $('#answer_id').select2('val', '');
+        $('#answer_id').closest('.row').show();
+      } else {
+        $('#answer_id').closest('.row').hide();
+      }
+    });
+    $("#answer_id").select2({
+      ajax: {
+        url: "{{route('assessmentanswer.select')}}",
+        type:'GET',
+        dataType: 'json',
+        data: function (term,page) {
+          return {
+            name:term,
+            question_id: $('input[name=question_id]').val(),
+            page:page,
+            limit:30,
+          };
+        },
+        results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+            option.push({
+              id:item.id,  
+              text: `${item.answer_type} - ${item.description}`
+            });
+          });
+          return {
+            results: option, more: more,
+          };
+        },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#answer_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
     $('.select2').select2({
       allowClear:true,
     });
     $(".numberfield").inputmask('decimal', {
 			rightAlign: false
 		});
-    $('#form select[name=pick]').on('change',function(){
-      $('#category_id').closest('.row').hide();
-      $('#reference_id').closest('.row').hide();
-        if(this.value=='category'){
-          $('#category_id').closest('.row').show();
-        }
-
-        if(this.value=='formula'){
-          $('#reference_id').closest('.row').show();
-        }
-    });
-
-    $( "#reference_id" ).select2({
-        ajax: {
-          url: "{{route('formula.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-
-      $( "#category_id" ).select2({
-        ajax: {
-          url: "{{route('category.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
     dataTable = $('#table-detail').DataTable( {
-            stateSave:true,
-            processing: true,
-            serverSide: true,
-            filter:false,
-            info:false,
-            lengthChange:false,
-            responsive: true,
-            order: [[5, "asc" ]],
-            ajax: {
-                url: "{{url('admin/formuladetail/read')}}",
-                type: "GET",
-                data:function(data){
-                    data.formula_id = {{$formula->id}};
-                }
-            },
-            columnDefs:[
-                {
-                    orderable: false,targets:[0]
-                },
-                { className: "text-right", targets: [0,4] },
-                { className: "text-center", targets: [5] },
-                { render: function ( data, type, row ) {
-                    return `<div class="dropdown">
-                    <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                      <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a class="dropdown-item edit" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                        <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                      </ul></div>`
-                },targets: [5]
-                }
-            ],
-            columns: [
-                { data: "no" },
-                { data: "category_name" },
-                { data: "formula_name" },
-                { data: "operation" },
-                { data: "value" },
-                { data: "id" },
-            ]
-      });
+      stateSave:true,
+      processing: true,
+      serverSide: true,
+      filter:false,
+      info:false,
+      lengthChange:false,
+      responsive: true,
+      order: [[4, "asc" ]],
+      ajax: {
+          url: "{{url('admin/formuladetail/read')}}",
+          type: "GET",
+          data:function(data){
+              data.formula_id = {{$formula->id}};
+          }
+      },
+      columnDefs:[
+          {
+              orderable: false,targets:[0]
+          },
+          { className: "text-right", targets: [0] },
+          { className: "text-center", targets: [4] },
+          { render: function (data, type, row) {
+            return row.question ? row.question.description : ''
+          }, targets: [1] },
+          { render: function (data, type, row) {
+            return row.answer ? row.answer.description : ''
+          }, targets: [2] },
+          { render: function ( data, type, row ) {
+              return `<div class="dropdown">
+              <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bars"></i>
+              </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a class="dropdown-item edit" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                  <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                </ul></div>`
+          },targets: [4]
+          }
+      ],
+      columns: [
+          { data: "no" },
+          { data: "assessment_question_id" },
+          { data: "assessment_answer_id" },
+          { data: "operation" },
+          { data: "id" },
+      ]
+    });
 
       $("#form").validate({
         errorElement: 'span',
@@ -371,31 +359,24 @@
           }).done(function(response){
               $('#formuladetail .overlay').addClass('hidden');
               if(response.status){
+                  var type = {
+                      checkbox  : 'Checkbox',
+                      radio     : 'Radio Button',
+                      text      : 'Teks',
+                      number    : 'Angka',
+                      select    : 'List Dropdown'
+                  }
                   $('#add-detail .modal-title').html('Ubah Formula Detail');
                   $('#add-detail').modal('show');
                   $('#form')[0].reset();
                   $('#form .invalid-feedback').each(function () { $(this).remove(); });
                   $('#form .form-group').removeClass('has-error').removeClass('has-success');
                   $('#form input[name=_method]').attr('value','PUT');
-                  $('#form input[name=name]').attr('value',response.data.name);
-                  $('#form select[name=pick]').select2('val',response.data.pick);
+                  $('#form input[name=question_id]').attr('value',response.data.assessment_question_id);
+                  $('#form input[name=answer_id]').attr('value',response.data.assessment_answer_id);
                   $('#form select[name=operation]').select2('val',response.data.operation);
-                  $('#form input[name=value]').attr('value',response.data.value);
-                  if(response.data.category_id != null){
-                    $("#category_id").select2('data',{id:response.data.category_id,text:response.data.category_name});
-                  }
-                  if(response.data.reference_id != null){
-                    $("#reference_id").select2('data',{id:response.data.reference_id,text:response.data.formula_name});
-                  }
-                  $('#category_id').closest('.row').hide();
-                  $('#reference_id').closest('.row').hide();
-                  if(response.data.pick =='category'){
-                      $('#category_id').closest('.row').show();
-                  }
-
-                  if(response.data.pick =='formula'){
-                      $('#reference_id').closest('.row').show();
-                  }
+                  $("#question_id").select2('data',{id:response.data.question.id,text:response.data.question.type + ' - ' + response.data.question.description});
+                  $("#answer_id").select2('data',{id:response.data.answer.id,text:type[response.data.answer.answer_type] + ' - ' + response.data.answer.description});
                   $('#form').attr('action',`{{url('admin/formuladetail/')}}/${response.data.id}`);
               }
           }).fail(function(response){

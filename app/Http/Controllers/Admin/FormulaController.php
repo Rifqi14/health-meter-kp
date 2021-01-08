@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Formula;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -27,32 +29,28 @@ class FormulaController extends Controller
 
     public function read(Request $request)
     {
-        $operation = [
-            'add'       => 'Penjumlahan',
-            'multiply'  => 'Pengali'
-        ];
-
-        $result = [
-            'normal'      => 'Normal',
-            'percentage'  => 'Persentasi'
-        ];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $arsip = $request->category;
 
         //Count Data
-        $query = DB::table('formulas');
-        $query->select('formulas.*');
+        $query = Formula::with('user');
         $query->whereRaw("upper(formulas.name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('formulas');
-        $query->select('formulas.*');
+        $query = Formula::with('user');
         $query->whereRaw("upper(formulas.name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -61,8 +59,6 @@ class FormulaController extends Controller
         $data = [];
         foreach($formulas as $formula){
             $formula->no = ++$start;
-            $formula->operation = $operation[$formula->operation];
-            $formula->result = $result[$formula->result];
 			$data[] = $formula;
 		}
         return response()->json([
@@ -122,8 +118,6 @@ class FormulaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'      => 'required',
-            'operation' => 'required',
-            'result' 	=> 'required'
         ]);
 
         if ($validator->fails()) {
@@ -135,8 +129,7 @@ class FormulaController extends Controller
 
         $formula = Formula::create([
             'name' 	    => $request->name,
-			'operation' => $request->operation,
-            'result' 	=> $request->result
+            'updated_by'=> Auth::id(),
         ]);
         if (!$formula) {
             return response()->json([
@@ -158,18 +151,9 @@ class FormulaController extends Controller
      */
     public function show($id)
     {
-        $operation = [
-            'add'       => 'Penjumlahan',
-            'multiply'  => 'Pengali'
-        ];
-
-        $result = [
-            'normal'      => 'Normal',
-            'percentage'  => 'Persentasi'
-        ];
         $formula = Formula::find($id);
         if($formula){
-            return view('admin.formula.detail',compact('formula','operation','result'));
+            return view('admin.formula.detail',compact('formula'));
         }
         else{
             abort(404);
@@ -204,8 +188,6 @@ class FormulaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' 	    => 'required',
-            'operation' => 'required',
-            'result' 	=> 'required',
         ]);
 
         if ($validator->fails()) {
@@ -217,8 +199,7 @@ class FormulaController extends Controller
 
         $formula = Formula::find($id);
         $formula->name = $request->name;
-        $formula->operation = $request->operation;
-        $formula->result = $request->result;
+        $formula->updated_by = Auth::id();
         $formula->save();
         if (!$formula) {
             return response()->json([
@@ -246,12 +227,46 @@ class FormulaController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'     => false,
-                'message'     => 'Error delete data'
+                'message'     => 'Error archive data'
             ], 400);
         }
         return response()->json([
             'status'     => true,
-            'message' => 'Success delete data'
+            'message' => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $formula = Formula::onlyTrashed()->find($id);
+            $formula->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+    
+    public function delete($id)
+    {
+        try {
+            $formula = Formula::onlyTrashed()->find($id);
+            $formula->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

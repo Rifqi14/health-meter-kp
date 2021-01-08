@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\FormulaDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Formula;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -14,9 +16,12 @@ class FormulaDetailController extends Controller
     public function read(Request $request)
     {
         $operation = [
-            'percentage'  => 'Presentasi',
-            'divide'  => 'Pembagian',
-            'origin'  => 'Asli'
+            'percentage'    => 'Persentasi',
+            'add'           => 'Penambahan',
+            'subtract'      => 'Pengurangan',
+            'multiplay'     => 'Pengkalian',
+            'divide'        => 'Pembagian',
+            'origin'        => 'Asli'
         ];
         $start = $request->start;
         $length = $request->length;
@@ -26,19 +31,13 @@ class FormulaDetailController extends Controller
         $formula_id = $request->formula_id;
 
         //Count Data
-        $query = DB::table('formula_details');
-        $query->select('formula_details.*');
-        $query->leftJoin('categories','categories.id','=','formula_details.category_id');
-        $query->leftJoin('formulas','formulas.id','=','formula_details.reference_id');
-        $query->where('formula_details.formula_id',$formula_id);
+        $query = FormulaDetail::with(['question', 'answer']);
+        $query->where('formula_id',$formula_id);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('formula_details');
-        $query->select('formula_details.*','categories.name as category_name','formulas.name as formula_name');
-        $query->leftJoin('categories','categories.id','=','formula_details.category_id');
-        $query->leftJoin('formulas','formulas.id','=','formula_details.reference_id');
-        $query->where('formula_details.formula_id',$formula_id);
+        $query = FormulaDetail::with(['question', 'answer']);
+        $query->where('formula_id',$formula_id);
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -50,7 +49,7 @@ class FormulaDetailController extends Controller
             $formuladetail->no = ++$start;
             $formuladetail->operation = $operation[$formuladetail->operation];
 			$data[] = $formuladetail;
-		}
+        }
         return response()->json([
             'draw'=>$request->draw,
 			'recordsTotal'=>$recordsTotal,
@@ -62,8 +61,9 @@ class FormulaDetailController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'formula_id'    => 'required',
-            'pick'          => 'required',
-            'operation'          => 'required',
+            'question_id'   => 'required',
+            'answer_id'     => 'required',
+            'operation'     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -73,13 +73,14 @@ class FormulaDetailController extends Controller
         	], 400);
         }
 
+        $order = FormulaDetail::max('order');
         $formuladetail = FormulaDetail::create([
-            'formula_id'   => $request->formula_id,
-			'pick'          => $request->pick,
-            'category_id' 	=> $request->pick=='category'?$request->category_id:null,
-            'reference_id' 	=> $request->pick=='formula'?$request->reference_id:null,
-            'operation'     => $request->operation,
-            'value'         => $request->value
+            'formula_id'            => $request->formula_id,
+			'assessment_question_id'=> $request->question_id,
+            'assessment_answer_id'  => $request->answer_id,
+            'order'                 => ++$order,
+            'operation'             => $request->operation,
+            'updated_by'            => Auth::id()
         ]);
         if (!$formuladetail) {
             return response()->json([
@@ -93,12 +94,7 @@ class FormulaDetailController extends Controller
         ], 200);
     }
     public function edit($id){
-        $formuladetail = FormulaDetail::select('formula_details.*','categories.name as category_name','formulas.name as formula_name')
-                            ->leftJoin('categories','categories.id','=','formula_details.category_id')
-                            ->leftJoin('formulas','formulas.id','=','formula_details.reference_id')
-                            ->where('formula_details.id',$id)
-                            ->get()
-                            ->first();
+        $formuladetail = FormulaDetail::with(['question', 'answer'])->find($id);
         return response()->json([
             'status' 	=> true,
             'data' => $formuladetail
@@ -107,7 +103,8 @@ class FormulaDetailController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'pick'          => 'required',
+            'question_id'   => 'required',
+            'answer_id'     => 'required',
             'operation'     => 'required',
         ]);
 
@@ -119,11 +116,10 @@ class FormulaDetailController extends Controller
         }
 
         $formuladetail = FormulaDetail::find($id);
-        $formuladetail->pick = $request->pick;
-        $formuladetail->category_id  = $request->pick=='category'?$request->category_id:null;
-        $formuladetail->reference_id  = $request->pick=='formula'?$request->reference_id:null;
-        $formuladetail->operation  = $request->operation;
-        $formuladetail->value  = $request->value;
+        $formuladetail->assessment_question_id  = $request->question_id;
+        $formuladetail->assessment_answer_id    = $request->answer_id;
+        $formuladetail->operation               = $request->operation;
+        $formuladetail->updated_by              = Auth::id();
         $formuladetail->save();
         if (!$formuladetail) {
             return response()->json([
