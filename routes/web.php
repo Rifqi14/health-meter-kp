@@ -82,6 +82,8 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Health Meter
         Route::get('/healthmeter/read', 'Admin\HealthMeterController@read')->name('healthmeter.read');
         Route::get('/healthmeter/select', 'Admin\HealthMeterController@select')->name('healthmeter.select');
+        Route::post('/healthmeter/restore', 'Admin\HealthMeterController@restore')->name('healthmeter.restore');
+        Route::post('/healthmeter/delete', 'Admin\HealthMeterController@delete')->name('healthmeter.delete');
         Route::resource('/healthmeter', 'Admin\HealthMeterController');
         //Province
         Route::get('/province/select', 'Admin\ProvinceController@select')->name('province.select');

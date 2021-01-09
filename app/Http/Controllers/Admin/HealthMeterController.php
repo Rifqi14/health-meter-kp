@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\HealthMeter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -32,15 +34,21 @@ class HealthMeterController extends Controller
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
+        $name = strtoupper($request->name);
+        $arsip = $request->category;
 
         //Count Data
-        $query = DB::table('health_meters');
-        $query->select('health_meters.*');
+        $query = HealthMeter::with(['site', 'workforcegroup'])->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('health_meters');
-        $query->select('health_meters.*');
+        $query = HealthMeter::with(['site', 'workforcegroup'])->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -77,11 +85,13 @@ class HealthMeterController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'min'      => 'required',
-            'max' => 'required',
-            'color' 	=> 'required',
-            'recomendation'=>'required'
+            'name'              => 'required',
+            'min'               => 'required',
+            'max'               => 'required',
+            'color' 	        => 'required',
+            'recomendation'     => 'required',
+            'site_id'           => 'required',
+            'workforce_group_id'=> 'required'
         ]);
 
         if ($validator->fails()) {
@@ -92,11 +102,14 @@ class HealthMeterController extends Controller
         }
 
         $healthmeter = HealthMeter::create([
-            'name' 	    => $request->name,
-            'min' 	    => $request->min,
-			'max' => $request->max,
-            'color' 	=> $request->color,
-            'recomendation'=>$request->recomendation
+            'name' 	            => $request->name,
+            'min' 	            => $request->min,
+			'max'               => $request->max,
+            'color' 	        => $request->color,
+            'recomendation'     => $request->recomendation,
+            'site_id'           => $request->site_id,
+            'workforce_group_id'=> $request->workforce_group_id,
+            'updated_by'        => Auth::id()
         ]);
         if (!$healthmeter) {
             return response()->json([
@@ -129,7 +142,7 @@ class HealthMeterController extends Controller
      */
     public function edit($id)
     {
-        $healthmeter = HealthMeter::find($id);
+        $healthmeter = HealthMeter::with(['site', 'workforcegroup'])->find($id);
         if($healthmeter){
             return view('admin.healthmeter.edit',compact('healthmeter'));
         }
@@ -148,11 +161,13 @@ class HealthMeterController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'min'      => 'required',
-            'max' => 'required',
-            'color' 	=> 'required',
-            'recomendation' => 'required'
+            'name'              => 'required',
+            'min'               => 'required',
+            'max'               => 'required',
+            'color' 	        => 'required',
+            'recomendation'     => 'required',
+            'site_id'           => 'required',
+            'workforce_group_id'=> 'required'
         ]);
 
         if ($validator->fails()) {
@@ -163,11 +178,13 @@ class HealthMeterController extends Controller
         }
 
         $healthmeter = HealthMeter::find($id);
-        $healthmeter->name = $request->name;
-        $healthmeter->min = $request->min;
-        $healthmeter->max = $request->max;
-        $healthmeter->color = $request->color;
+        $healthmeter->name          = $request->name;
+        $healthmeter->min           = $request->min;
+        $healthmeter->max           = $request->max;
+        $healthmeter->color         = $request->color;
         $healthmeter->recomendation = $request->recomendation;
+        $healthmeter->site_id       = $request->site_id;
+        $healthmeter->workforce_group_id = $request->workforce_group_id;
         $healthmeter->save();
 
         if (!$healthmeter) {
@@ -196,12 +213,46 @@ class HealthMeterController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'     => false,
-                'message'     => 'Error delete data'
+                'message'     => 'Error archive data'
             ], 400);
         }
         return response()->json([
             'status'     => true,
-            'message' => 'Success delete data'
+            'message' => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore(Request $request)
+    {
+        try {
+            $healthmeter = HealthMeter::onlyTrashed()->find($request->id);
+            $healthmeter->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $healthmeter = HealthMeter::onlyTrashed()->find($request->id);
+            $healthmeter->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

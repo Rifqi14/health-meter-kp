@@ -178,61 +178,61 @@
     $(document).on('click','.archive',function(){
         var id = $(this).data('id');
         bootbox.confirm({
-			buttons: {
-				confirm: {
-					label: '<i class="fa fa-check"></i>',
-					className: 'btn-primary btn-sm'
-				},
-				cancel: {
-					label: '<i class="fa fa-undo"></i>',
-					className: 'btn-default btn-sm'
-				},
-			},
-			title:'Mengarsipkan Kelompok Workforce?',
-			message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
-			callback: function(result) {
-        if(result) {
-          var data = { _token: "{{ csrf_token() }}" };
-          $.ajax({
-            url: `{{url('admin/workforcegroup')}}/${id}`,
-            dataType: 'json', 
-            data:data,
-            type:'DELETE',
-            beforeSend:function(){
-                $('.overlay').removeClass('hidden');
-            }
-          }).done(function(response){
-              if(response.status){
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengarsipkan Kelompok Workforce?',
+          message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = { _token: "{{ csrf_token() }}" };
+              $.ajax({
+                url: `{{url('admin/workforcegroup')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'DELETE',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
                   $('.overlay').addClass('hidden');
                   $.gritter.add({
-                      title: 'Success!',
+                      title: 'Error!',
                       text: response.message,
-                      class_name: 'gritter-success',
+                      class_name: 'gritter-error',
                       time: 1000,
                   });
-                  dataTable.ajax.reload( null, false );
-              }
-              else{
-                  $.gritter.add({
-                      title: 'Warning!',
-                      text: response.message,
-                      class_name: 'gritter-warning',
-                      time: 1000,
-                  });
-              }
-          }).fail(function(response){
-              var response = response.responseJSON;
-              $('.overlay').addClass('hidden');
-              $.gritter.add({
-                  title: 'Error!',
-                  text: response.message,
-                  class_name: 'gritter-error',
-                  time: 1000,
               });
-          });
-        }
-			}
-		});
+            }
+          }
+        });
     })
     $(document).on('click','.restore',function(){
         var id = $(this).data('id');
