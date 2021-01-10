@@ -125,7 +125,7 @@
           <ul class="list-group">
             @foreach(Auth::guard('admin')->user()->roles()->get() as $role)
             <li class="list-group-item ">
-              <a href="{{url('admin/site/set/'.$role->id)}}"
+              <a href="{{url('admin/role/set/'.$role->id)}}"
                 class="text-muted font-bold"><strong>{{$role->display_name}}</strong></a>
             </li>
             @endforeach

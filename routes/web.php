@@ -19,7 +19,7 @@ Route::get('/', function () {
 });
 Auth::routes();
 //Route Admin
-Route::group(['prefix' => 'admin'], function () {
+Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
     Route::get('/', 'Auth\AdminLoginController@index')->name('admin.login');
     Route::post('/login', 'Auth\AdminLoginController@login')->name('admin.login.post');
     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('admin.logout');
@@ -95,7 +95,6 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/config', 'Admin\ConfigController@index')->name('config.index');
         Route::put('/config', 'Admin\ConfigController@update')->name('config.update');
         //Route Site
-        Route::get('/site/set/{id}', 'Admin\SiteController@set');
         Route::get('/site/read', 'Admin\SiteController@read')->name('site.read');
         Route::get('/site/select', 'Admin\SiteController@select')->name('site.select');
         Route::resource('/site', 'Admin\SiteController')->except(['show']);
@@ -108,7 +107,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/menu/order', 'Admin\MenuController@order')->name('menu.order');
         Route::resource('/menu', 'Admin\MenuController')->only(['index', 'store', 'edit', 'update', 'destroy']);;
         //Route Role
-        Route::get('/role/set/{id}', 'Admin\RoleController@set');
+        Route::get('/role/set/{id}', 'Admin\RoleController@set')->name('role.set');
         Route::get('/role/read', 'Admin\RoleController@read')->name('role.read');
         Route::get('/role/select', 'Admin\RoleController@select')->name('role.select');
         Route::resource('/role', 'Admin\RoleController');
@@ -399,12 +398,12 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/attendance', 'Admin\AttendanceDescriptionController');
     });
 });
-Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
-    Route::get('/', 'Site\LoginController@index');
-    Route::post('/login', 'Site\LoginController@login');
-    Route::get('/logout', 'Site\LoginController@logout');
-    Route::group(['middleware' => 'check.site'], function () {
-        Route::get('/selectroel/{id}', 'Site\LoginController@selectrole');
-        // Route::get('/dashboard', 'Site\DashboardController@index')->name('dashboard.index');
+Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
+    Route::get('/', 'Auth\SiteLoginController@index')->name('site.login');
+    Route::post('/login', 'Auth\SiteLoginController@login')->name('site.login.post');
+    Route::post('/logout', 'Auth\SiteLoginController@logout')->name('site.logout');
+    Route::group(['middleware' => 'auth:site'], function () {
+        Route::get('/dashboard', 'Site\DashboardController@index')->name('site.dashboard.index');
+        Route::get('/role/set/{id}', 'Site\RoleController@set')->name('site.role.set');
     });
 });

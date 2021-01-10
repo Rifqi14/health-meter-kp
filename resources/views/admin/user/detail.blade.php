@@ -543,7 +543,7 @@
                                 class_name: 'gritter-success',
                                 time: 1000,
                             });
-                            dataTable.ajax.reload( null, false );
+                            dataTableSite.ajax.reload( null, false );
                         }
                         else{
                             $.gritter.add({

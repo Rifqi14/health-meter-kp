@@ -27,9 +27,9 @@
 <body class="sidebar-mini skin-blue-light fixed">
   <div class="wrapper">
     <header class="main-header">
-      <a href="{{route('dashboard.index')}}" class="logo">
-        <span class="logo-mini"><b>{{substr(config('configs.app_name'),0,3)}}</b></span>
-        <span class="logo-lg"><b>{{config('configs.app_name')}}</b></span>
+      <a href="{{route('site.dashboard.index',$siteinfo->code)}}" class="logo">
+        <span class="logo-mini"><b>{{substr($siteinfo->name,0,3)}}</b></span>
+        <span class="logo-lg"><b>{{strtoupper($siteinfo->name)}}</b></span>
       </a>
       <nav class="navbar navbar-static-top">
         <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
@@ -45,18 +45,18 @@
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <img
-                  src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
+                  src="{{is_file('assets/user/'.Auth::guard('site')->user()->id.'.png')?asset('assets/user/'.Auth::guard('site')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
                   class="user-image" alt="User Image">
-                <span class="hidden-xs">{{ Auth::guard('admin')->user()->name }}</span>
+                <span class="hidden-xs">{{ Auth::guard('site')->user()->name }}</span>
               </a>
               <ul class="dropdown-menu">
                 <li class="user-header">
                   <img
-                    src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
+                    src="{{is_file('assets/user/'.Auth::guard('site')->user()->id.'.png')?asset('assets/user/'.Auth::guard('site')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
                     class="img-circle" alt="User Image">
                   <p>
-                    {{ Auth::guard('admin')->user()->name }}
-                    <small>{{ Auth::guard('admin')->user()->email }}</small>
+                    {{ Auth::guard('site')->user()->name }}
+                    <small>{{ Auth::guard('site')->user()->email }}</small>
                   </p>
                 </li>
                 <li class="user-footer">
@@ -64,10 +64,10 @@
                     <a href="{{ route('account.info') }}" class="btn btn-default btn-flat">Akun</a>
                   </div>
                   <div class="pull-right">
-                    <a href="{{ route('admin.logout') }}" onclick="event.preventDefault();
+                    <a href="{{ route('site.logout',$siteinfo->code) }}" onclick="event.preventDefault();
                                           document.getElementById('logout-form').submit();" alt="Logout"
                       class="btn btn-default btn-flat">Sign out</a>
-                    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+                    <form id="logout-form" action="{{ route('site.logout',$siteinfo->code) }}" method="POST" style="display: none;">
                       @csrf
                     </form>
                   </div>
@@ -83,17 +83,17 @@
         <div class="user-panel">
           <div class="pull-left image">
             <img
-              src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
+              src="{{is_file('assets/user/'.Auth::guard('site')->user()->id.'.png')?asset('assets/user/'.Auth::guard('site')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}"
               class="img-circle" alt="User Image">
           </div>
           <div class="pull-left info">
-            <p>{{ Auth::guard('admin')->user()->name }}</p>
+            <p>{{ Auth::guard('site')->user()->name }}</p>
             <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
           </div>
         </div>
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">Main Navigation</li>
-          {!!buildMenuAdmin($menuaccess)!!}
+          {!!buildMenuAdmin($menuaccess,0,$siteinfo->code)!!}
         </ul>
       </section>
     </aside>
@@ -123,9 +123,9 @@
         </div>
         <div class="modal-body">
           <ul class="list-group">
-            @foreach(Auth::guard('admin')->user()->roles()->get() as $role)
+            @foreach(Auth::guard('site')->user()->roles()->get() as $role)
             <li class="list-group-item ">
-              <a href="{{url('admin/site/set/'.$role->id)}}"
+              <a href="{{url($siteinfo->code.'/role/set/'.$role->id)}}"
                 class="text-muted font-bold"><strong>{{$role->display_name}}</strong></a>
             </li>
             @endforeach

@@ -5,26 +5,27 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\Models\Site;
-use App\Rules\Admin;
+use App\Rules\Site;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
-class AdminLoginController extends Controller
+class SiteLoginController extends Controller
 {
     use AuthenticatesUsers;
-    protected $redirectTo = '/admin/dashboard';
     public function __construct()
     {
-        $this->middleware('guest.admin')->except('logout');
+        $this->middleware('guest.site')->except('logout');
     }
     public function index(Request $request)
     {
-        if (!$request->session()->get('admin')) {
-            $sites = Site::all();
-            return view('admin.login', compact('sites'));
+        if (!$request->session()->get('site')) {
+            $siteinfo = $request->siteinfo;
+            return view('site.login', compact('siteinfo'));
         } else {
-            return redirect('admin/dashboard');
+            return redirect($request->site . '/dashboard');
         }
+    }
+    public function redirectTo(){
+        return request()->site.'/dashboard';
     }
     public function username()
     {
@@ -32,24 +33,24 @@ class AdminLoginController extends Controller
     }
     public function guard()
     {
-        return Auth::guard('admin');
+        return Auth::guard('site');
     }
 
     public function showLoginForm()
     {
-        return view('admin.login');
+        return view('site.login');
     }
     public function logout(Request $request)
     {
-        Auth::guard("admin")->logout();
-        $request->session()->forget('role_id');
-        return redirect('/admin');
+        Auth::guard("site")->logout();
+        $request->session()->forget('site_role_id');
+        return redirect('/'.$request->site);
     }
     protected function validateLogin(Request $request)
     {
         $this->validate($request, [
             $this->username() => ['required',
-            new Admin()],
+            new Site($request->site)],
             'password' => 'required'
         ]);
     }

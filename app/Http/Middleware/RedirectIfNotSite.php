@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Middleware\Custom;
+namespace App\Http\Middleware;
 
 use Closure;
-
-class CheckAdmin
+use Illuminate\Support\Facades\Auth;
+class RedirectIfNotSite
 {
     /**
      * Handle an incoming request.
@@ -15,6 +15,9 @@ class CheckAdmin
      */
     public function handle($request, Closure $next)
     {
+        if (Auth::guard('site')->check()) {
+            return redirect('/'.$request->site.'/dashboard');
+        }
         return $next($request);
     }
 }

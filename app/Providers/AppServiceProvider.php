@@ -48,21 +48,5 @@ class AppServiceProvider extends ServiceProvider
                     ->toArray()
             ]);
         }
-        view()->composer('*', function ($view) {
-            if (Auth::guard('admin')->check()) {
-                $role = Auth::guard('admin')->user()->roles()->first();
-                if ($role) {
-                    $rolemenus = RoleMenu::select('menus.*')
-                        ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
-                        ->where('role_id', '=', $role->id)
-                        ->where('role_access', '=', 1)
-                        ->orderBy('menus.menu_sort', 'asc')
-                        ->get();
-                }
-                $view->with('menuaccess', $rolemenus);
-                $role = Role::find(Session::get('role_id'));
-                $view->with('rolesession', $role);
-            }
-        });
     }
 }

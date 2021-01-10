@@ -27,7 +27,7 @@
     <div class="login-logo">
       <a href="#">
         <img src="{{asset($siteinfo->logo)}}" class="site-logo">
-        <p class="site-name">{{ $siteinfo->name }}</p>
+        <p class="site-name">{{ strtoupper($siteinfo->name) }}</p>
       </a>
     </div>
     <form action="{{ url()->current().'/login' }}" id="form" method="post" autocomplete="off">
