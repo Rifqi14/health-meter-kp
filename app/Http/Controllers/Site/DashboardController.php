@@ -9,10 +9,9 @@ use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
-    // public function __construct($site)
-    // {
-    //     View::share('menu_active', url($site->site_id . '/dashboard'));
-    // }
+    function __construct(Request $request){
+        View::share('menu_active', url($request->site.'/'.'dashboard'));
+    }
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +19,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
+        return view('site.dashboard');
     }
 
     /**

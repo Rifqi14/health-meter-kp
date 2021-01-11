@@ -3,12 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Role;
 use App\Models\RoleMenu;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Session;
-class AccessMenu
+class AccessSiteMenu
 {
     /**
      * Handle an incoming request.
@@ -19,8 +17,8 @@ class AccessMenu
      */
     public function handle($request, Closure $next)
     {
-        if(Auth::guard('admin')->check()){
-            $role = Role::find(Session::get('role_id'));
+        if(Auth::guard('site')->check()){
+            $role = Role::find(Session::get('site_role_id'));
             $accessmenu = [];
             $route = explode('.',Route::currentRouteName());
             if($role){

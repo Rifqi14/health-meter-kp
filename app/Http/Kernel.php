@@ -59,20 +59,20 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'guest.admin' => \App\Http\Middleware\RedirectIfNotAdmin::class,
+        'guest.site' => \App\Http\Middleware\RedirectIfNotSite::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         // Custom Middleware
-        'check.admin'   => CheckAdmin::class,
-        'exist.site'    => \App\Http\Middleware\Custom\ExistSite::class,
-        'check.site'    => \App\Http\Middleware\Custom\CheckSite::class,
-        'check.api'     => \App\Http\Middleware\Custom\CheckAPI::class,
+        'page.site'    => \App\Http\Middleware\Custom\PageSite::class,
+        'page.admin'    => \App\Http\Middleware\Custom\PageAdmin::class,
         // THIS LINES HAS BEEN ADDED to JWT Implementation
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
         'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
         // Access Menu
         'accessmenu' => \App\Http\Middleware\AccessMenu::class,
+        'accesssitemenu' => \App\Http\Middleware\AccessSiteMenu::class,
     ];
 
     /**

@@ -18,7 +18,7 @@ class RoleController extends Controller
     function __construct()
     {
         View::share('menu_active', url('admin/' . 'role'));
-        $this->middleware('accessmenu', ['except' => 'select']);
+        $this->middleware('accessmenu', ['except' => ['select','set']]);
     }
     /**
      * Display a listing of the resource.
@@ -293,5 +293,12 @@ class RoleController extends Controller
             'status'     => true,
             'message' => 'Success delete data'
         ], 200);
+    }
+
+
+    public function set(Request $request)
+    {
+        $request->session()->put('role_id', $request->id);
+        return redirect()->back();
     }
 }
