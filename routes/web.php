@@ -397,6 +397,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/attendance/restore', 'Admin\AttendanceDescriptionController@restore')->name('attendance.restore');
         Route::post('/attendance/delete', 'Admin\AttendanceDescriptionController@delete')->name('attendance.delete');
         Route::resource('/attendance', 'Admin\AttendanceDescriptionController');
+
+        // Assessment
+        Route::get('/assessment/read', 'Admin\AssessmentController@read')->name('assessment.read');
+        Route::get('/assessment/select', 'Admin\AssessmentController@select')->name('assessment.select');
+        Route::post('/assessment/restore', 'Admin\AssessmentController@restore')->name('assessment.restore');
+        Route::post('/assessment/delete', 'Admin\AssessmentController@delete')->name('assessment.delete');
+        Route::resource('/assessment', 'Admin\AssessmentController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'exist.site'], function () {
