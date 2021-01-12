@@ -6,9 +6,8 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WorkforceGroup extends Model
+class Assessment extends Model
 {
-    use SoftDeletes;
     protected $guarded = [];
 
     public function user()
@@ -17,6 +16,10 @@ class WorkforceGroup extends Model
     }
     public function question()
     {
-        return $this->hasMany(AssessmentQuestionWorkforceGroup::class, 'workforce_group_id');
+        return $this->belongsTo(AssessmentQuestion::class, 'assessment_question_id');
+    }
+    public function answer()
+    {
+        return $this->belongsTo(AssessmentAnswer::class, 'assessment_answer_id');
     }
 }

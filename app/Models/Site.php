@@ -23,4 +23,8 @@ class Site extends Model
     {
         return $this->hasMany(Partner::class, 'site_id', 'id');
     }
+    public function question()
+    {
+        return $this->hasMany(AssessmentQuestionSite::class, 'site_id');
+    }
 }

@@ -17,11 +17,11 @@ class AssessmentQuestion extends Model
     }
     public function workforcegroup()
     {
-        return $this->belongsTo(WorkforceGroup::class, 'workforce_group_id');
+        return $this->hasMany(AssessmentQuestionWorkforceGroup::class, 'assessment_question_id');
     }
     public function site()
     {
-        return $this->belongsTo(Site::class, 'site_id');
+        return $this->hasMany(AssessmentQuestionSite::class, 'assessment_question_id');
     }
     public function parent()
     {
@@ -30,5 +30,9 @@ class AssessmentQuestion extends Model
     public function answer()
     {
         return $this->hasMany(AssessmentAnswer::class, 'assessment_question_id');
+    }
+    public function answercode()
+    {
+        return $this->belongsTo(AssessmentAnswer::class, 'answer_parent_code');
     }
 }

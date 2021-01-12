@@ -402,6 +402,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
         Route::get('/assessment/select', 'Admin\AssessmentController@select')->name('assessment.select');
         Route::post('/assessment/restore', 'Admin\AssessmentController@restore')->name('assessment.restore');
         Route::post('/assessment/delete', 'Admin\AssessmentController@delete')->name('assessment.delete');
+        Route::post('/assessment/question', 'Admin\AssessmentController@question')->name('assessment.question');
+        Route::post('/assessment/information', 'Admin\AssessmentController@information')->name('assessment.information');
         Route::resource('/assessment', 'Admin\AssessmentController');
     });
 });
@@ -412,5 +414,14 @@ Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
     Route::group(['middleware' => 'auth:site'], function () {
         Route::get('/dashboard', 'Site\DashboardController@index')->name('site.dashboard.index');
         Route::get('/role/set/{id}', 'Site\RoleController@set')->name('site.role.set');
+        
+        // Assessment
+        Route::get('/assessment/read', 'Site\AssessmentController@read')->name('site.assessment.read');
+        Route::get('/assessment/select', 'Site\AssessmentController@select')->name('site.assessment.select');
+        Route::post('/assessment/restore', 'Site\AssessmentController@restore')->name('site.assessment.restore');
+        Route::post('/assessment/delete', 'Site\AssessmentController@delete')->name('site.assessment.delete');
+        Route::post('/assessment/question', 'Site\AssessmentController@question')->name('site.assessment.question');
+        Route::post('/assessment/information', 'Site\AssessmentController@information')->name('site.assessment.information');
+        Route::resource('/assessment', 'Site\AssessmentController');
     });
 });

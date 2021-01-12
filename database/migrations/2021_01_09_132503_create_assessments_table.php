@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAssessmentAnswersTable extends Migration
+class CreateAssessmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,20 @@ class CreateAssessmentAnswersTable extends Migration
      */
     public function up()
     {
-        Schema::create('assessment_answers', function (Blueprint $table) {
+        Schema::create('assessments', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->date('assessment_date')->nullable();
+            $table->unsignedBigInteger('employee_id')->nullable();
             $table->unsignedBigInteger('assessment_question_id')->nullable();
-            $table->string('answer_type')->nullable();
-            $table->text('description')->nullable();
+            $table->unsignedBigInteger('assessment_answer_id')->nullable();
             $table->float('rating')->nullable();
+            $table->text('description')->nullable();
             $table->integer('updated_by')->nullable();
-            $table->text('information')->nullable();
-            $table->softDeletes()->nullable();
             $table->timestamps();
 
             $table->foreign('assessment_question_id')->references('id')->on('assessment_questions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('assessment_answer_id')->references('id')->on('assessment_answers')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -35,6 +37,6 @@ class CreateAssessmentAnswersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assessment_answers');
+        Schema::dropIfExists('assessments');
     }
 }
