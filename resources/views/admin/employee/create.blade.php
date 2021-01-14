@@ -33,6 +33,13 @@
         <form id="form" action="{{route('employee.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
           <div class="well well-sm">
+
+            <div class="form-group">
+              <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required>
+              </div>
+            </div>
             <div class="form-group">
               <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
@@ -93,12 +100,6 @@
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="grade_id" name="grade_id"
                   data-placeholder="Pilih Jenjang Jabatan" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required>
               </div>
             </div>
           </div>
@@ -233,6 +234,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {
