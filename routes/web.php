@@ -434,6 +434,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/agencysite/restore/{id}', 'Admin\AgencySiteController@restore')->name('agencysite.restore');
         Route::get('/agencysite/delete/{id}', 'Admin\AgencySiteController@delete')->name('agencysite.delete');
         Route::resource('/agencysite', 'Admin\AgencySiteController');
+
+        // Authorized Official
+        Route::get('/authorizedofficial/read', 'Admin\AuthorizedOfficialController@read')->name('authorizedofficial.read');
+        Route::get('/authorizedofficial/select', 'Admin\AuthorizedOfficialController@select')->name('authorizedofficial.select');
+        Route::get('/authorizedofficial/restore/{id}', 'Admin\AuthorizedOfficialController@restore')->name('authorizedofficial.restore');
+        Route::get('/authorizedofficial/delete/{id}', 'Admin\AuthorizedOfficialController@delete')->name('authorizedofficial.delete');
+        Route::resource('/authorizedofficial', 'Admin\AuthorizedOfficialController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
