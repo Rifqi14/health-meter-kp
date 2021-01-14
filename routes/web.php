@@ -20,17 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('admin/error', function () {
-    if(Auth::guard('admin')->user()->employee){
-        if(Auth::guard('admin')->user()->employee->site){
-            return redirect('/admin');
-        }
-        else{
-            return view('admin.error.index');
-        }
-    }
-    else{
-        return view('admin.error.index');
-    }
+    return view('admin.error.index');
 });
 Auth::routes();
 //Route Admin
