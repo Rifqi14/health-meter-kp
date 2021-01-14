@@ -34,11 +34,11 @@ Route::get('admin/error', function () {
 });
 Auth::routes();
 //Route Admin
-Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
+Route::group(['prefix' => 'admin'], function () {
     Route::get('/', 'Auth\AdminLoginController@index')->name('admin.login');
     Route::post('/login', 'Auth\AdminLoginController@login')->name('admin.login.post');
     Route::post('/logout', 'Auth\AdminLoginController@logout')->name('admin.logout');
-    Route::group(['middleware' => 'auth:admin'], function () {
+    Route::group(['middleware' => ['auth:admin','page.admin']], function () {
         Route::get('/dashboard', 'Admin\DashboardController@index')->name('dashboard.index');
         Route::get('/dashboard/medicalrecord/{id}', 'Admin\DashboardController@medicalrecord')->name('dashboard.medicalrecord');
         Route::get('/dashboard/healthmeter/{id}', 'Admin\DashboardController@healthmeter')->name('dashboard.healthmeter');
