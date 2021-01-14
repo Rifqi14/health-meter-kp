@@ -405,6 +405,20 @@ Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
         Route::post('/assessment/question', 'Admin\AssessmentController@question')->name('assessment.question');
         Route::post('/assessment/information', 'Admin\AssessmentController@information')->name('assessment.information');
         Route::resource('/assessment', 'Admin\AssessmentController');
+
+        // Guarantor
+        Route::get('/guarantor/read', 'Admin\GuarantorController@read')->name('guarantor.read');
+        Route::get('/guarantor/select', 'Admin\GuarantorController@select')->name('guarantor.select');
+        Route::get('/guarantor/restore/{id}', 'Admin\GuarantorController@restore')->name('guarantor.restore');
+        Route::get('/guarantor/delete/{id}', 'Admin\GuarantorController@delete')->name('guarantor.delete');
+        Route::resource('/guarantor', 'Admin\GuarantorController');
+
+        // Agency
+        Route::get('/agency/read', 'Admin\AgencyController@read')->name('agency.read');
+        Route::get('/agency/select', 'Admin\AgencyController@select')->name('agency.select');
+        Route::get('/agency/restore/{id}', 'Admin\AgencyController@restore')->name('agency.restore');
+        Route::get('/agency/delete/{id}', 'Admin\AgencyController@delete')->name('agency.delete');
+        Route::resource('/agency', 'Admin\AgencyController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
@@ -420,7 +434,8 @@ Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
         Route::get('/assessment/select', 'Site\AssessmentController@select')->name('site.assessment.select');
         Route::post('/assessment/restore', 'Site\AssessmentController@restore')->name('site.assessment.restore');
         Route::post('/assessment/delete', 'Site\AssessmentController@delete')->name('site.assessment.delete');
-        Route::post('/assessment/question', 'Site\AssessmentController@question')->name('site.assessment.question');
+        Route::post('/assessment/questionchild', 'Site\AssessmentController@questionChild')->name('site.assessment.questionchild');
+        Route::post('/assessment/questionparent', 'Site\AssessmentController@questionParent')->name('site.assessment.questionparent');
         Route::post('/assessment/information', 'Site\AssessmentController@information')->name('site.assessment.information');
         Route::resource('/assessment', 'Site\AssessmentController');
     });

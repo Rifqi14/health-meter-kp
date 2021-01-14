@@ -68,7 +68,7 @@ $(function(){
         responsive: true,
         order: [[ 3, "desc" ]],
         ajax: {
-            url: "{{route('assessment.read')}}",
+            url: "{{route('site.assessment.read', $site)}}",
             type: "GET",
             data:function(data){
             }

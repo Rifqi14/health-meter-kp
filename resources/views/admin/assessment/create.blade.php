@@ -57,14 +57,6 @@
           <!--/.direct-chat-messages-->
         </form>
       </div>
-      <div class="box-footer">
-        <div class="input-group">
-          <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-          <span class="input-group-btn">
-            <button type="button" class="btn btn-primary btn-flat" onclick="reply()">Send</button>
-          </span>
-        </div>
-      </div>
       <div class="overlay hidden">
         <i class="fa fa-refresh fa-spin"></i>
       </div>
@@ -98,12 +90,14 @@
   let assessment_data = @json($questions, JSON_PRETTY_PRINT);
   let information_data = [];
   let question_data = [];
+  let question_child_data = [];
   let question_parameter = {
     offset: 0,
     limit: 0,
   };
   let message = [];
   let answer_choice = [];
+  // To assign QuestionType Informasi to information_data variable
   function informationData(params) {
     $.each(params, function(i, message) {
       if (message.type == 'Informasi') {  
@@ -111,31 +105,39 @@
       }
     });
   }
+  // To assign QuestionType Question Parent to question_data variable
   function questionData(params) {
     $.each(params, function(i, message) {
-      if (message.type == 'Pertanyaan') {  
+      if (message.type == 'Pertanyaan' && message.is_parent == 0) {  
         question_data.push(message);
       }
     });
   }
+  // To assign QuestionType Question Child to question_child_data variable
+  function questionChildData(params) {
+    $.each(params, function(i, message) {
+      if (message.type == 'Pertanyaan' && message.is_parent == 1) {  
+        question_child_data.push(message);
+      }
+    });
+  }
+  // To Start conversation with bot
+  // Can be change
   function reply() {
     var start = $('input[name=message]').val();
     if (start === '/mulai') {
-      $('.information-msg').empty();
-      message.push(question(question_data));
-      console.log(question_parameter);
-      $('.information-msg').append(message);
-      $('input[name=message]').val('')
+      rerenderMsg(question(question_data));
+      $('input[name=message]').val('');
+      $('.box-footer').addClass('hidden');
     } else {
       let message_not_found = [{
         type: 'Informasi',
         description: 'Maaf kami tidak mengerti perintah ini.'
       }];
-      $('.information-msg').empty();
-      message.push(information(message_not_found));
-      $('.information-msg').append(message);
+      rerenderMsg(information(message_not_found));
     }
   }
+  // To Render question from question_data variable to message bubble
   function question(params) {
     html = '';
     countData = params.length;
@@ -148,24 +150,24 @@
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
                   <div class="direct-chat-text pull-left">${message.description}</div>
                 </div>`
+        html += `<div class="direct-chat-msg right">
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-right">User</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                  <div class="pull-right form-inline">`
         if (message.answer.length > 0) {
-          html += `<div class="direct-chat-msg right">
-                    <div class="direct-chat-info clearfix">
-                      <span class="direct-chat-name pull-right">User</span>
-                    </div>
-                    <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                    <div class="pull-right form-inline">`
           $.each(message.answer, function(i, answer) {
             switch (answer.answer_type) {
               case 'checkbox':
                 html += `<div class="checkbox direct-chat-text">
-                          <input type="checkbox" value="${answer.id}">
+                          <input type="checkbox" name="answer_choice" value="${answer.id}" data-description="${answer.description}">
                           ${answer.description}
                         </div>`
                 break;
               case 'radio':
               html += `<div class="radio direct-chat-text">
-                        <input type="radio" name="answer_radio" id="answerRadio${answer.id}" value="${answer.id}">
+                        <input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-description="${answer.description}">
                         ${answer.description}
                       </div>`
               break;
@@ -174,13 +176,16 @@
                 break;
             }
           });
-          html += `<button type="button" class="btn btn-default" data-question_id="${message.id}" data-answer_type="${message.answer[0].answer_type}" onclick="answer(this)">Pilih</button></div></div>`;
+          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer[0].answer_type}" onclick="answer(this)">Kirim</button></div></div>`;
+        } else {
+          html += `<input type="text" class="form-control direct-chat-text"name="answer_choice" id="freeText${message.id}" placeholder="...">`
+          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="freetext" onclick="answer(this)">Kirim</button></div></div>`;
         }
       }
     });
     return html;
   }
-
+  // To Render information from information_data variable to message bubble
   function information(params) {
     html = '';
     countData = params.length;
@@ -193,13 +198,173 @@
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assesment Bot">
                   <div class="direct-chat-text pull-left">${message.description}${i === (countData - 1) ? '<br>Ketik <b>/mulai</b> untuk melakukan assessment' : ''}</div>
                 </div>`;
+        if (i === (countData - 1)) {
+          html += `<div class="direct-chat-msg right">
+                    <div class="direct-chat-info clearfix">
+                      <span class="direct-chat-name pull-right">User</span>
+                    </div>
+                    <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                    <div class="pull-right form-inline">
+                      <input type="text" name="message" placeholder="Type Message ..." class="form-control direct-chat-text" value="/mulai" readonly>
+                      <button type="button" class="btn btn-default" onclick="reply()">Send</button>
+                    </div></div>`;
+        }
       }
     });
     return html;
   }
-
+  // To Render Question child from question_child_data variable to message bubble
+  function child(params) {
+    html = '';
+    $.each(question_child_data, function(i, child){
+      if (child.question_parent_code == params.question_id && child.answer_parent_code == params.answer_id) {
+        html += `<div class="direct-chat-msg">
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                  <div class="direct-chat-text pull-left">${child.description}</div>
+                </div>`
+        html += `<div class="direct-chat-msg right">
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-right">User</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                  <div class="pull-right form-inline">`
+        if (child.answer.length > 0) {
+          $.each(child.answer, function(i, answer) {
+            switch (answer.answer_type) {
+              case 'checkbox':
+                html += `<div class="checkbox direct-chat-text">
+                          <input type="checkbox" name="answer_choice" value="${answer.id}" data-description="${answer.description}">
+                          ${answer.description}
+                        </div>`
+                break;
+              case 'radio':
+              html += `<div class="radio direct-chat-text">
+                        <input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-description="${answer.description}">
+                        ${answer.description}
+                      </div>`
+              break;
+            
+              default:
+                break;
+            }
+          });
+          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="${child.answer[0].answer_type}" onclick="answer(this)">Kirim</button></div></div>`;
+        } else {
+          html += `<input type="text" class="form-control direct-chat-text" name="answer_choice" id="freeText${child.id}" placeholder="...">`
+          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="freetext" onclick="answer(this)">Kirim</button></div></div>`;
+        }
+      }
+    });
+    return html;
+  }
+  // To take value of choosen answer
   function answer(params) {
-    console.log($(params).data('answer_type'));
+    var choice = {
+      question: $(params).data('question'),
+      question_id: $(params).data('question_id'),
+      answer_id: answerValue($(params).data('answer_type')),
+      label: answerDesc($(params).data('answer_type'))
+    };
+    answer_choice.push(choice);
+    if (child(choice)) {
+      message[message.length - 1] = `<div class="direct-chat-msg">
+                                      <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-left">Bot Assessment</span>
+                                      </div>
+                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                                      <div class="direct-chat-text pull-left">${answer_choice[answer_choice.length - 1].question}</div>
+                                    </div>
+                                    <div class="direct-chat-msg right">
+                                      <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">User</span>
+                                      </div>
+                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                                      <div class="direct-chat-text pull-right">${answer_choice[answer_choice.length - 1].label}</div>
+                                    </div>`;
+      rerenderMsg(child(choice));
+    } else {
+      ++question_parameter.limit;
+      message[message.length - 1] = `<div class="direct-chat-msg">
+                                      <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-left">Bot Assessment</span>
+                                      </div>
+                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                                      <div class="direct-chat-text pull-left">${answer_choice[answer_choice.length - 1].question}</div>
+                                    </div>
+                                    <div class="direct-chat-msg right">
+                                      <div class="direct-chat-info clearfix">
+                                        <span class="direct-chat-name pull-right">User</span>
+                                      </div>
+                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+                                      <div class="direct-chat-text pull-right">${answer_choice[answer_choice.length - 1].label}</div>
+                                    </div>`;
+      rerenderMsg(question(question_data));
+    }
+  }
+  // To get value from data button
+  function answerValue(params) {
+    let answer_id = [];
+    switch (params) {
+      case 'checkbox':
+        answer_id = $('input:checkbox[name=answer_choice]:checked').map(function(){
+            return this.value;
+        }).get();
+        break;
+      
+      case 'radio':
+        answer_id = $('input:radio[name=answer_choice]:checked').val();    
+        break;
+
+      case 'select':
+        answer_id = $('select[name=answer_choice]').val();
+        break;
+
+      case 'freetext':
+        answer_id = $('input:text[name=answer_choice]').val();
+        break;
+
+      default:
+        answer_id = $('input[name=answer_choice]').val();
+        break;
+    }
+    return answer_id;
+  }
+  // To get label from answer data button
+  function answerDesc(params) {
+    let answer_id = [];
+    switch (params) {
+      case 'checkbox':
+        answer_id = $('input:checkbox[name=answer_choice]:checked').map(function(){
+            return $(this).data('description');
+        }).get();
+        break;
+      
+      case 'radio':
+        answer_id = $('input:radio[name=answer_choice]:checked').data('description');    
+        break;
+
+      case 'select':
+        answer_id = $('select[name=answer_choice]').data('description');
+        break;
+
+      case 'freetext':
+        answer_id = $('input:text[name=answer_choice]').val();
+        break;
+
+      default:
+        answer_id = $('input[name=answer_choice]').val();
+        break;
+    }
+    return answer_id;
+  }
+  // Re render message bubble, can call everywhere to refresh
+  function rerenderMsg(params) {
+    $('.information-msg').empty();
+    message.push(params);
+    $('.information-msg').append(message);
   }
   $(document).ready(function(){
     question_param = {
@@ -209,9 +374,8 @@
     };
     informationData(assessment_data);
     questionData(assessment_data);
-    $('.information-msg').empty();
-    message.push(information(information_data));
-    $('.information-msg').append(message);
+    questionChildData(assessment_data);
+    rerenderMsg(information(information_data));
      $('input[name=report_date]').datepicker({
         autoclose: true,
         format: 'yyyy-mm-dd'

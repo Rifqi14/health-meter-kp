@@ -59,22 +59,104 @@ class AssessmentController extends Controller
         return view('admin.assessment.create', compact('questions', 'site'));
     }
 
-    public function information()
+    public function information(Request $request)
     {
-        $information = AssessmentQuestion::with(['answer', 'parent', 'answercode'])->where('type', 'Informasi')->orderBy('order', 'asc')->get();
-        return response()->json([
-            'status'    => true,
-            'information'  => $information,
-        ], 200);
+      $site = $request->site;
+      $site_id = Site::where('code', $site)->first();
+      $nid = Auth::user()->username;
+      $employee = Employee::where('nid', $nid)->get()->first();
+      $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
+      $informations = AssessmentQuestion::with([
+          'answer',
+          'parent',
+          'answercode',
+          'site' => function($q) use ($site_id){
+              $q->where('site_id', $site_id->id);
+          },
+          'workforcegroup' => function($q) use ($workforce)
+          {
+              $q->where('workforce_group_id', $workforce);
+          },
+      ])->where('type', 'Informasi')->orderBy('order', 'asc')->get();
+      $information = [];
+      foreach ($informations as $key => $value) {
+        $information[] =  "<div class='direct-chat-msg'>
+                              <div class='direct-chat-info clearfix'>
+                                <span class='direct-chat-name pull-left'>Bot Assessment</span>
+                              </div>
+                              <img class='direct-chat-img' src='". asset('assets/user/1.png') ."' alt='Assesment Bot'>
+                              <div class='direct-chat-text pull-left'>". $value->description ."</div>
+                          </div>";
+      }
+      return response()->json([
+          'status'       => true,
+          'information'  => $information,
+      ], 200);
     }
     
-    public function question(Request $request)
+    public function questionParent(Request $request)
     {
-        $limit = $request->limit;
-        $questions = AssessmentQuestion::with(['answer', 'parent', 'answercode'])->limit($limit)->where('type', 'Pertanyaan')->orderBy('order', 'asc')->get();
+        $site = $request->site;
+        $site_id = Site::where('code', $site)->first();
+        $nid = Auth::user()->username;
+        $employee = Employee::where('nid', $nid)->get()->first();
+        $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
+        $questionParents = AssessmentQuestion::with([
+            'answer',
+            'parent',
+            'answercode',
+            'site' => function($q) use ($site_id){
+                $q->where('site_id', $site_id->id);
+            },
+            'workforcegroup' => function($q) use ($workforce)
+            {
+                $q->where('workforce_group_id', $workforce);
+            },
+        ])->where('type', 'Pertanyaan')->where('is_parent', 0)->orderBy('order', 'asc')->get();
+        $questionParent = [];
+        foreach ($questionParents as $key => $value) {
+          $questionParent[] =  "<div class='direct-chat-msg'>
+                                  <div class='direct-chat-info clearfix'>
+                                    <span class='direct-chat-name pull-left'>Bot Assessment</span>
+                                  </div>
+                                  <img class='direct-chat-img' src='". asset('assets/user/1.png') ."' alt='Assesment Bot'>
+                                  <div class='direct-chat-text pull-left'>". $value->description . "</div>
+                                </div>";
+          $questionParent[] = "<div class='direct-chat-msg right'>
+                                <div class='direct-chat-info clearfix'>
+                                  <span class='direct-chat-name pull-right'>User</span>
+                                </div>
+                                <img class='direct-chat-img' src='{{ asset('assets/user/1.png') }}' alt='Assessment Bot'>
+                              <div class='pull-right form-inline'>";
+        }
         return response()->json([
             'status'    => true,
-            'question'  => $questions,
+            'question'  => $questionParent,
+        ], 200);
+    }
+
+    public function questionChild(Request $request)
+    {
+        $site = $request->site;
+        $site_id = Site::where('code', $site)->first();
+        $nid = Auth::user()->username;
+        $employee = Employee::where('nid', $nid)->get()->first();
+        $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
+        $questionChild = AssessmentQuestion::with([
+            'answer',
+            'parent',
+            'answercode',
+            'site' => function($q) use ($site_id){
+                $q->where('site_id', $site_id->id);
+            },
+            'workforcegroup' => function($q) use ($workforce)
+            {
+                $q->where('workforce_group_id', $workforce);
+            },
+        ])->where('type', 'Pertanyaan')->where('is_parent', 1)->orderBy('order', 'asc')->get();
+        return response()->json([
+            'status'    => true,
+            'question'  => $questionChild,
         ], 200);
     }
 
