@@ -24,7 +24,7 @@ class PageAdmin
     public function handle($request, Closure $next)
     {
         if (Auth::guard('admin')->check()) {
-            if(Auth::guard('admin')->user()->employee->id){
+            if(Auth::guard('admin')->user()->employee){
                 $employee  = Employee::select('titles.*')
                                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
                                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
