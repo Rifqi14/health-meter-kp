@@ -8,6 +8,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentAnswer;
 use App\Models\AssessmentQuestion;
 use App\Models\Employee;
+use App\Models\Site;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
@@ -35,9 +36,24 @@ class AssessmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $questions = AssessmentQuestion::with(['answer', 'parent', 'answercode'])->where('workforce_group_id', 1)->where('site_id', 1)->orderBy('order', 'asc')->get();
+        $site = $request->site;
+        $site_id = Site::where('code', $site)->first();
+        $nid = Auth::user()->employee_id;
+        $employee = Employee::find($nid);
+        $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
+        $questions = AssessmentQuestion::with([
+          'answer',
+          'parent',
+          'answercode',
+          'site' => function ($q) use ($site_id) {
+            $q->where('site_id', $site_id->id);
+          },
+          'workforcegroup' => function ($q) use ($workforce) {
+            $q->where('workforce_group_id', $workforce);
+          },
+        ])->orderBy('order', 'asc')->get();
         return view('admin.assessment.create', compact('questions'));
     }
 

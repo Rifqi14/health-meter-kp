@@ -1,15 +1,15 @@
-@extends('site.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', 'Tambah Assessment (Individu)')
 @push('breadcrump')
-<li><a href="{{route('assessment.index', $site)}}">Assessment (Individu)</a></li>
+<li><a href="{{route('assessment.index')}}">Assessment (Individu)</a></li>
 <li class="active">Tambah</li>
 @endpush
 @section('stylesheets')
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style>
   .direct-chat-messages {
-    height: 100% !important;
+    height: 400px !important;
   }
 
   .right .direct-chat-text {
@@ -33,8 +33,7 @@
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('assessment.store', $site)}}" class="form-horizontal" method="post"
-          autocomplete="off">
+        <form id="form" action="{{route('assessment.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
           <!-- Conversations are loaded here -->
           <div class="direct-chat-messages assessment-msg">
@@ -136,6 +135,7 @@
       }];
       rerenderMsg(information(message_not_found));
     }
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000);
   }
   // To Render question from question_data variable to message bubble
   function question(params) {
@@ -198,19 +198,17 @@
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assesment Bot">
                   <div class="direct-chat-text pull-left">${message.description}${i === (countData - 1) ? '<br>Ketik <b>/mulai</b> untuk melakukan assessment' : ''}</div>
                 </div>`;
-        if (i === (countData - 1)) {
-          html += `<div class="direct-chat-msg right">
-                    <div class="direct-chat-info clearfix">
-                      <span class="direct-chat-name pull-right">User</span>
-                    </div>
-                    <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                    <div class="pull-right form-inline">
-                      <input type="text" name="message" placeholder="Type Message ..." class="form-control direct-chat-text" value="/mulai" readonly>
-                      <button type="button" class="btn btn-default" onclick="reply()">Send</button>
-                    </div></div>`;
-        }
       }
     });
+    html += `<div class="direct-chat-msg right">
+              <div class="direct-chat-info clearfix">
+                <span class="direct-chat-name pull-right">User</span>
+              </div>
+              <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
+              <div class="pull-right form-inline">
+                <input type="text" name="message" placeholder="Type Message ..." class="form-control direct-chat-text" value="/mulai" readonly>
+                <button type="button" class="btn btn-default" onclick="reply()">Send</button>
+              </div></div>`;
     return html;
   }
   // To Render Question child from question_child_data variable to message bubble
@@ -303,6 +301,7 @@
                                     </div>`;
       rerenderMsg(question(question_data));
     }
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000);
   }
   // To get value from data button
   function answerValue(params) {
@@ -376,90 +375,72 @@
     questionData(assessment_data);
     questionChildData(assessment_data);
     rerenderMsg(information(information_data));
-     $('input[name=report_date]').datepicker({
-        autoclose: true,
-        format: 'yyyy-mm-dd'
-      })
-      $('input[name=report_date]').on('change', function(){
-        if (!$.isEmptyObject($(this).closest("form").validate().submitted)) {
-          $(this).closest("form").validate().form();
+    $("#form").validate({
+      errorElement: 'span',
+      errorClass: 'help-block',
+      focusInvalid: false,
+      highlight: function (e) {
+        $(e).closest('.form-group').removeClass('has-success').addClass('has-error');
+      },
+  
+      success: function (e) {
+        $(e).closest('.form-group').removeClass('has-error').addClass('has-success');
+        $(e).remove();
+      },
+      errorPlacement: function (error, element) {
+        if(element.is(':file')) {
+          error.insertAfter(element.parent().parent().parent());
+        }else
+        if(element.parent('.input-group').length) {
+          error.insertAfter(element.parent());
+        } 
+        else
+        if (element.attr('type') == 'checkbox') {
+          error.insertAfter(element.parent());
         }
-      });
-      $('.range').inputmask('decimal', {
-        rightAlign: false
-      });
-      $('.select2').select2({
-        allowClear:true
-      });
-      $('.select2').on('change',function(){
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
+        else{
+          error.insertAfter(element);
         }
-      });
-      $("#form").validate({
-        errorElement: 'span',
-        errorClass: 'help-block',
-        focusInvalid: false,
-        highlight: function (e) {
-          $(e).closest('.form-group').removeClass('has-success').addClass('has-error');
-        },
-    
-        success: function (e) {
-          $(e).closest('.form-group').removeClass('has-error').addClass('has-success');
-          $(e).remove();
-        },
-        errorPlacement: function (error, element) {
-          if(element.is(':file')) {
-            error.insertAfter(element.parent().parent().parent());
-          }else
-          if(element.parent('.input-group').length) {
-            error.insertAfter(element.parent());
-          } 
-          else
-          if (element.attr('type') == 'checkbox') {
-            error.insertAfter(element.parent());
+      },
+      submitHandler: function() { 
+        var data = {
+                      _token: "{{ csrf_token() }}",
+                      answer_choice: answer_choice
+                    };
+        $.ajax({
+          url:$('#form').attr('action'),
+          method:'post',
+          data: data,
+          dataType: 'json', 
+          beforeSend:function(){
+              $('.overlay').removeClass('hidden');
           }
-          else{
-            error.insertAfter(element);
-          }
-        },
-        submitHandler: function() { 
-          $.ajax({
-            url:$('#form').attr('action'),
-            method:'post',
-            data: new FormData($('#form')[0]),
-            processData: false,
-            contentType: false,
-            dataType: 'json', 
-            beforeSend:function(){
-               $('.overlay').removeClass('hidden');
-            }
-          }).done(function(response){
-                $('.overlay').addClass('hidden');
-                if(response.status){
-                  document.location = response.results;
-                }
-                else{	
-                  $.gritter.add({
-                      title: 'Warning!',
-                      text: response.message,
-                      class_name: 'gritter-warning',
-                      time: 1000,
-                  });
-                }
-                return;
-          }).fail(function(response){
+        }).done(function(response){
               $('.overlay').addClass('hidden');
-              var response = response.responseJSON;
-              $.gritter.add({
-                  title: 'Error!',
-                  text: response.message,
-                  class_name: 'gritter-error',
-                  time: 1000,
-              });
-          })		
-        }
-      });
+              if(response.status){
+                document.location = response.results;
+              }
+              else{	
+                $.gritter.add({
+                    title: 'Warning!',
+                    text: response.message,
+                    class_name: 'gritter-warning',
+                    time: 1000,
+                });
+              }
+              return;
+        }).fail(function(response){
+            $('.overlay').addClass('hidden');
+            var response = response.responseJSON;
+            $.gritter.add({
+                title: 'Error!',
+                text: response.message,
+                class_name: 'gritter-error',
+                time: 1000,
+            });
+        })		
+      }
+    });
   });
 </script>
 @endpush

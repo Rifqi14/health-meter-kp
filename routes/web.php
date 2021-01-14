@@ -438,13 +438,13 @@ Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
         Route::get('/role/set/{id}', 'Site\RoleController@set')->name('site.role.set');
         
         // Assessment
-        Route::get('/assessment/read', 'Site\AssessmentController@read')->name('site.assessment.read');
-        Route::get('/assessment/select', 'Site\AssessmentController@select')->name('site.assessment.select');
-        Route::post('/assessment/restore', 'Site\AssessmentController@restore')->name('site.assessment.restore');
-        Route::post('/assessment/delete', 'Site\AssessmentController@delete')->name('site.assessment.delete');
-        Route::post('/assessment/questionchild', 'Site\AssessmentController@questionChild')->name('site.assessment.questionchild');
-        Route::post('/assessment/questionparent', 'Site\AssessmentController@questionParent')->name('site.assessment.questionparent');
-        Route::post('/assessment/information', 'Site\AssessmentController@information')->name('site.assessment.information');
-        Route::resource('/assessment', 'Site\AssessmentController');
+        // Route::get('/assessment/read', 'Site\AssessmentController@read')->name('site.assessment.read');
+        // Route::get('/assessment/select', 'Site\AssessmentController@select')->name('site.assessment.select');
+        // Route::post('/assessment/restore', 'Site\AssessmentController@restore')->name('site.assessment.restore');
+        // Route::post('/assessment/delete', 'Site\AssessmentController@delete')->name('site.assessment.delete');
+        // Route::post('/assessment/questionchild', 'Site\AssessmentController@questionChild')->name('site.assessment.questionchild');
+        // Route::post('/assessment/questionparent', 'Site\AssessmentController@questionParent')->name('site.assessment.questionparent');
+        // Route::post('/assessment/information', 'Site\AssessmentController@information')->name('site.assessment.information');
+        // Route::resource('/assessment', 'Site\AssessmentController');
     });
 });

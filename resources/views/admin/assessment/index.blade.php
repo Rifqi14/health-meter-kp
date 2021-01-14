@@ -1,4 +1,4 @@
-@extends('site.layouts.app')
+@extends('admin.layouts.app')
 
 @section('title', 'Assessment (Individu)')
 @section('stylesheets')
@@ -15,8 +15,7 @@
         <h3 class="box-title">Data Assessment (Individu)</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('assessment.create', $site)}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="Tambah">
+          <a href="{{route('assessment.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
         </div>
@@ -26,7 +25,7 @@
         @if(!$assessment)
         <div class="alert alert-warning">
           <h4><i class="fa fa-warning"></i> Anda Belum Mengisi Assessment (Individu) Hari Ini</h4>
-          <p>Silahkan Klik Link <a href="{{route('assessment.create', $site)}}">Disini</a> Untuk Mengisi Assessment
+          <p>Silahkan Klik Link <a href="{{route('assessment.create')}}">Disini</a> Untuk Mengisi Assessment
             (Individu)
           </p>
         </div>
@@ -68,7 +67,7 @@ $(function(){
         responsive: true,
         order: [[ 3, "desc" ]],
         ajax: {
-            url: "{{route('site.assessment.read', $site)}}",
+            url: "{{route('assessment.read')}}",
             type: "GET",
             data:function(data){
             }
