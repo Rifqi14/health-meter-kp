@@ -53,11 +53,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
         Route::resource('/department', 'Admin\DepartmentController');
         //Route Title
         Route::get('/title/read', 'Admin\TitleController@read')->name('title.read');
+        Route::get('/title/readrole', 'Admin\TitleController@readrole')->name('title.readrole');
         Route::get('/title/employee', 'Admin\TitleController@employee')->name('title.employee');
         Route::get('/title/select', 'Admin\TitleController@select')->name('title.select');
         Route::get('/title/import', 'Admin\TitleController@import')->name('title.import');
         Route::post('/title/preview', 'Admin\TitleController@preview')->name('title.preview');
         Route::post('/title/storemass', 'Admin\TitleController@storemass')->name('title.storemass');
+        Route::post('/title/assignrole', 'Admin\TitleController@assignrole')->name('title.assignrole');
+        Route::delete('/title/deleterole', 'Admin\TitleController@deleterole')->name('title.deleterole');
         Route::resource('/title', 'Admin\TitleController');
         //Route Grade
         Route::get('/grade/read', 'Admin\GradeController@read')->name('grade.read');
@@ -110,6 +113,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {
         Route::get('/role/set/{id}', 'Admin\RoleController@set')->name('role.set');
         Route::get('/role/read', 'Admin\RoleController@read')->name('role.read');
         Route::get('/role/select', 'Admin\RoleController@select')->name('role.select');
+        Route::get('/role/selecttitle', 'Admin\RoleController@selecttitle')->name('role.selecttitle');
         Route::resource('/role', 'Admin\RoleController');
         //Route Role Menu
         Route::post('/rolemenu/update', 'Admin\RoleMenuController@update');

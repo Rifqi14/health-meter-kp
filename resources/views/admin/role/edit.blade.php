@@ -42,6 +42,14 @@
                       <input type="text" class="form-control" id="description" name="description" value="{{$role->description}}"  placeholder="Keterangan">
                     </div>
                   </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" style="padding-top: 1px" for="data_manager">Akses Distrik</label>
+                    <div class="col-sm-4">
+                      <label><input class="form-control" type="checkbox" name="data_manager" @if ($role->data_manager)
+                        checked
+                        @endif> <i></i></label>
+                    </div>
+                  </div>
                 </div>
               </form>
         </div>
@@ -57,6 +65,10 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+    $('input[name=data_manager]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
       $("input[name=name]").inputmask("Regex", { regex: "[a-z]*" });
       $("#form").validate({
         errorElement: 'span',

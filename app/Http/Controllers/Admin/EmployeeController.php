@@ -206,6 +206,7 @@ class EmployeeController extends Controller
             'username'     => $request->nid,
             'password'    => Hash::make($request->password),
             'status'     => 1,
+            'employee_id'     => $employee->id,
         ]);
         if (!$user) {
             DB::rollback();

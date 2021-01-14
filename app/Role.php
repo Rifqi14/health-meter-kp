@@ -13,5 +13,5 @@ class Role extends Model
      * Role profile to get value from ntrust config file.
      */
     protected $guarded = [];
-    protected static $roleProfile = 'user';
+    protected static $roleProfile = 'title';
 }

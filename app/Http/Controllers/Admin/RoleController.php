@@ -18,7 +18,7 @@ class RoleController extends Controller
     function __construct()
     {
         View::share('menu_active', url('admin/' . 'role'));
-        $this->middleware('accessmenu', ['except' => ['select','set']]);
+        $this->middleware('accessmenu', ['except' => ['select','set','selectitle']]);
     }
     /**
      * Display a listing of the resource.
@@ -62,6 +62,49 @@ class RoleController extends Controller
         $query->select('roles.*');
         $query->whereRaw("upper(display_name) like '%$display_name%'");
         if ($request->user_id) {
+            $query->whereNotIn('id', $id_except);
+        }
+        $query->offset($start);
+        $query->limit($length);
+        $roles = $query->get();
+
+        $data = [];
+        foreach ($roles as $role) {
+            $role->no = ++$start;
+            $data[] = $role;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+    public function selecttitle(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $display_name = strtoupper($request->display_name);
+        $id_except = [];
+        if ($request->title_id) {
+            $roleusers = DB::table('role_titles')->where('title_id', $request->title_id)->get();
+            foreach ($roleusers as $roleuser) {
+                array_push($id_except, $roleuser->role_id);
+            }
+        }
+
+        //Count Data
+        $query = DB::table('roles');
+        $query->select('roles.*');
+        $query->whereRaw("upper(display_name) like '%$display_name%'");
+        if ($request->title_id) {
+            $query->whereNotIn('id', $id_except);
+        }
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = DB::table('roles');
+        $query->select('roles.*');
+        $query->whereRaw("upper(display_name) like '%$display_name%'");
+        if ($request->title_id) {
             $query->whereNotIn('id', $id_except);
         }
         $query->offset($start);
@@ -145,7 +188,8 @@ class RoleController extends Controller
         $role = Role::create([
             'name'     => $request->name,
             'display_name'     => $request->display_name,
-            'description'     => $request->description
+            'description'     => $request->description,
+            'data_manager'     => $request->data_manager?1:0,
         ]);
         if (!$role) {
             return response()->json([
@@ -259,6 +303,7 @@ class RoleController extends Controller
         $role->name = $request->name;
         $role->display_name = $request->display_name;
         $role->description = $request->description;
+        $role->data_manager = $request->data_manager?1:0;
         $role->save();
         if (!$role) {
             return response()->json([

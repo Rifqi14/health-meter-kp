@@ -32,6 +32,7 @@
                         <th width="100">Kode</th>
                         <th width="120">Nama</th>
                         <th width="200">Keterangan</th>
+                        <th width="100">Akses Distrik</th>
                         <th width="100">Dibuat</th>
                         <th width="10">#</th>
                     </tr>
@@ -95,7 +96,7 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 5, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('role.read')}}",
             type: "GET",
@@ -111,7 +112,16 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [5] },
+            { className: "text-center", targets: [4,6] },
+            { render: function ( data, type, row ) {
+              if (row.data_manager) {
+                teks = 'Tiap Unit';
+              } else {
+                teks = 'Terpusat';
+              }
+              return `<span class="label bg-blue">${teks}</span>`
+            },targets: [4]
+            },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                     <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -122,7 +132,7 @@ $(function(){
                         <li><a class="dropdown-item" href="{{url('admin/role/')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                         <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                     </ul></div>`
-            },targets: [5]
+            },targets: [6]
             }
         ],
         columns: [
@@ -130,6 +140,7 @@ $(function(){
             { data: "name" },
             { data: "display_name" },
             { data: "description" },
+            { data: "data_manager" },
             { data: "created_at" },
             { data: "id" },
         ]

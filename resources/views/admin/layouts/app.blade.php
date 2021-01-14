@@ -149,12 +149,9 @@
   <script src="{{asset('adminlte/component/bootbox/bootbox.min.js')}}"></script>
   <script>
     $(function() {
-            @if(!$rolesession)
-             $('#select-role').modal('show');
-             @endif
-              $(".sidebar-menu").find("a[href='{{@$menu_active}}']").parent().addClass("active");
-              $(".sidebar-menu").find("a[href='{{@$menu_active}}']").closest('.treeview').addClass("active menu-open");
-          })
+          $(".sidebar-menu").find("a[href='{{@$menu_active}}']").parent().addClass("active");
+          $(".sidebar-menu").find("a[href='{{@$menu_active}}']").closest('.treeview').addClass("active menu-open");
+      })
   </script>
   <script src="{{asset('adminlte/js/adminlte.min.js')}}"></script>
   @stack('scripts')
