@@ -35,11 +35,11 @@ class PageAdmin
                 if($title){
 
                     $role_id = [];
-                    $roletitles = RoleTitle::where('title_id','=',$employee->id)->get();
-                    $accesssite = 0;
+                    $roletitles = RoleTitle::with('role')->where('title_id','=',$employee->id)->get();
+                    $data_manager = 0;
                     foreach($roletitles as $roletitle){
-                        if($roletitle->data_manager){
-                            $accesssite = 1;
+                        if($roletitle->role->data_manager){
+                            $data_manager = 1;
                         }
                         array_push($role_id,$roletitle->role_id);
                     }
@@ -52,7 +52,7 @@ class PageAdmin
                         ->get();
                         if(Auth::guard('admin')->user()->employee->site){
                             View::share('menuaccess', $rolemenus);
-                            View::share('accesssite', $rolemenus);
+                            View::share('accesssite', $data_manager);
                             View::share('siteinfo', Auth::guard('admin')->user()->employee->site);
                         }
                         else{

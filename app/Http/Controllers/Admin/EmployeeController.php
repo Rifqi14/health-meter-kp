@@ -53,6 +53,8 @@ class EmployeeController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
 
         //Count Data
         $query = DB::table('employees');
@@ -60,6 +62,9 @@ class EmployeeController extends Controller
         $query->whereRaw("upper(employees.name) like '%$name%'");
         if ($site) {
             $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
@@ -73,6 +78,9 @@ class EmployeeController extends Controller
         $query->whereRaw("upper(employees.name) like '%$name%'");
         if ($site) {
             $query->where('employees.site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
