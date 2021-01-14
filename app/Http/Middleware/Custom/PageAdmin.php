@@ -50,13 +50,13 @@ class PageAdmin
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        if($employee->site){
+                        if(Auth::guard('admin')->user()->employee->site){
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $rolemenus);
-                            View::share('siteinfo', $employee->site);
+                            View::share('siteinfo', Auth::guard('admin')->user()->employee->site);
                         }
                         else{
-                            return redirect('/error');
+                            return redirect('/admin/error');
                         }
                 }
                 else{
@@ -74,7 +74,7 @@ class PageAdmin
                             View::share('siteinfo', $employee->site);
                         }
                         else{
-                            return redirect('/error');
+                            return redirect('/admin/error');
                         }
                 }  
             }

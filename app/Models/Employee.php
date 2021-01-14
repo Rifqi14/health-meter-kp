@@ -18,6 +18,6 @@ class Employee extends Model
     }
     public function site()
     {
-        return $this->hasOne(Site::class, 'id', 'site_id');
+        return $this->hasOne('App\Models\Site', 'id', 'site_id');
     }
 }

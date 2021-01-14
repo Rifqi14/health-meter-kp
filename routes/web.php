@@ -13,12 +13,19 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return redirect('/admin');
 });
-Route::get('/error', function () {
-    return view('admin.error.index');
+
+Route::get('admin/error', function () {
+    if(Auth::guard('admin')->user()->employee->site){
+        return redirect('/admin');
+    }
+    else{
+        return view('admin.error.index');
+    }
 });
 Auth::routes();
 //Route Admin
