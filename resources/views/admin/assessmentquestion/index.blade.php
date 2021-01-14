@@ -32,8 +32,6 @@
               <th width="10">#</th>
               <th width="100">Jenis</th>
               <th width="200">Deskripsi</th>
-              <th width="50">Kelompok Workforce</th>
-              <th width="50">Unit</th>
               <th width="50">Status</th>
               <th width="10">#</th>
             </tr>
@@ -102,7 +100,7 @@
       info:false,
       lengthChange:true,
       responsive: true,
-      order: [[ 6, "asc" ]],
+      order: [[ 4, "asc" ]],
       ajax: {
           url: "{{route('assessmentquestion.read')}}",
           type: "GET",
@@ -118,13 +116,7 @@
               orderable: false,targets:[0]
           },
           { className: "text-right", targets: [0] },
-          { className: "text-center", targets: [3,4,5,6] },
-          { render: function (data, type, row) {
-            return `<span class="label bg-blue">${row.workforcegroup ? row.workforcegroup.name : ''}</span>`
-          }, targets: [3] },
-          { render: function (data, type, row) {
-            return `<span class="label bg-blue">${row.site ? row.site.name : ''}</span>`
-          }, targets: [4] },
+          { className: "text-center", targets: [3,4] },
           { render: function (data, type, row) {
             if (row.deleted_at) {
               bg = 'bg-red', teks = 'Non-Aktif';
@@ -132,7 +124,7 @@
               bg = 'bg-green', teks = 'Aktif';
             }
             return `<span class="label ${bg}">${teks}</span>`
-          }, targets: [5] },
+          }, targets: [3] },
           { render: function ( data, type, row ) {
               return `<div class="dropdown">
                         <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -149,15 +141,13 @@
                             }
                         </ul>
                       </div>`
-          },targets: [6]
+          },targets: [4]
           }
       ],
       columns: [
           { data: "no" },
           { data: "type" },
           { data: "description" },
-          { data: "workforce_group_id" },
-          { data: "site_id" },
           { data: "deleted_at" },
           { data: "id" },
       ]

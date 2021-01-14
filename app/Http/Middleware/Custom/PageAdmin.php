@@ -43,7 +43,8 @@ class PageAdmin
                         }
                         array_push($role_id,$roletitle->role_id);
                     }
-                    $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    if(count($role_id) > 0){
+                        $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
                         ->whereIn('role_id',$role_id)
                         ->where('role_access', '=', 1)
@@ -58,28 +59,58 @@ class PageAdmin
                         else{
                             return redirect('/admin/error');
                         }
+                    }
+                    else{
+                        $role = Role::where('guest',1)->first();
+                        if($role){
+                            $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                            ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
+                            ->where('role_id',$role->id)
+                            ->where('role_access', '=', 1)
+                            ->orderBy('menus.menu_sort', 'asc')
+                            ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                            ->get();
+                            if( Auth::guard('admin')->user()->employee->site){
+                                View::share('menuaccess', $rolemenus);
+                                View::share('accesssite', $role->data_manager);
+                                View::share('siteinfo',  Auth::guard('admin')->user()->employee->site);
+                            }
+                            else{
+                                return redirect('/admin/error');
+                            }
+                        }
+                        else{
+                            return redirect('/admin/error');
+                        }
+                    }
+                   
                 }
                 else{
                     $role = Role::where('guest',1)->first();
-                    $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    if($role){
+                        $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
                         ->where('role_id',$role->id)
                         ->where('role_access', '=', 1)
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        if($employee->site){
+                        if( Auth::guard('admin')->user()->employee->site){
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $role->data_manager);
-                            View::share('siteinfo', $employee->site);
+                            View::share('siteinfo',  Auth::guard('admin')->user()->employee->site);
                         }
                         else{
                             return redirect('/admin/error');
                         }
+                    }
+                    else{
+                        return redirect('/admin/error');
+                    }
                 }  
             }
             else{
-                return redirect('/error');
+                return redirect('/admin/error');
             }  
         }
         return $next($request);

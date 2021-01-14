@@ -44,7 +44,12 @@
             <div class="form-group">
               <label for="type" class="col-sm-2 control-label">Jenis Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="type" placeholder="Jenis Pertanyaan" name="type" required>
+                <select id="type" name="type" class="form-control select2" placeholder="Pilih Type"
+                  required>
+                  <option value=""></option>
+                  <option value="Informasi">Informasi</option>
+                  <option value="Pertanyaan">Pertanyaan</option>
+                </select>
               </div>
             </div>
             <div class="form-group">
@@ -83,14 +88,39 @@
               <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
                   class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="workforce_group_id" placeholder="Kelompok Workforce"
-                  name="workforce_group_id" required>
+                  <table class="table table-bordered table-striped" id="table-workforcegroup">
+                    <thead>
+                        <th>Nama</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody>
+                      @foreach ($workforcegroups as $workforcegroup)
+                      <tr>
+                      <td><input type="hidden" name="workforcegroup[]" value="{{$workforcegroup->id}}"/>{{$workforcegroup->name}}</td>
+                        <td class="text-center"><input type="checkbox" name="workforcegroup_status[{{$workforcegroup->id}}]" checked></td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                </table>
               </div>
             </div>
             <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" placeholder="Unit" name="site_id" required>
+                <table class="table table-bordered table-striped" id="table-workforcegroup">
+                  <thead>
+                      <th>Nama</th>
+                      <th>Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($sites as $site)
+                    <tr>
+                    <td><input type="hidden" name="site[]" value="{{$site->id}}"/>{{$site->name}}</td>
+                      <td class="text-center"><input type="checkbox" name="site_status[{{$site->id}}]" checked></td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+              </table>
               </div>
             </div>
           </div>
@@ -114,40 +144,16 @@
         autoclose: true,
         format: 'yyyy-mm-dd'
       })
+      $('input[name^=workforcegroup_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
+      });
+      $('input[name^=site_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
+      });
       $('.select2').select2();
-      $("#workforce_group_id").select2({
-        ajax: {
-          url: "{{route('workforcegroup.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#workforce_group_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
+      
       $("#site_id").select2({
         ajax: {
           url: "{{route('site.select')}}",
