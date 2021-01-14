@@ -125,12 +125,14 @@ class EmployeeController extends Controller
         $query = DB::table('employees');
         $query->select('employees.*');
         $query->whereRaw("upper(name) like '%$name%'");
+        $query->whereNull('deleted_at');
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = DB::table('employees');
         $query->select('employees.*');
         $query->whereRaw("upper(name) like '%$name%'");
+        $query->whereNull('deleted_at');
         $query->offset($start);
         $query->limit($length);
         $employees = $query->get();

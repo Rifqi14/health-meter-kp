@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -31,12 +32,18 @@ class SiteController extends Controller
         $dir = $request->order[0]['dir'];
         $code = strtoupper($request->code);
         $name = strtoupper($request->name);
+        $category = $request->category;
 
         //Count Data
         $query = DB::table('sites');
         $query->select('sites.*');
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
+        if ($category) {
+            $query->whereNotNull('deleted_at');
+        } else {
+            $query->whereNull('deleted_at');
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
@@ -44,6 +51,11 @@ class SiteController extends Controller
         $query->select('sites.*');
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
+        if ($category) {
+            $query->whereNotNull('deleted_at');
+        } else {
+            $query->whereNull('deleted_at');
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -273,18 +285,49 @@ class SiteController extends Controller
         try {
             $site = Site::find($id);
             $site->delete();
-            if (file_exists($site->logo)) {
-                unlink($site->logo);
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Data has been used to another page'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $site = Site::onlyTrashed()->find($id);
+            $site->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $site = Site::onlyTrashed()->find($id);
+            $site->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 
