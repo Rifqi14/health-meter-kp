@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return redirect('/admin');
 });
-
 Route::get('admin/error', function () {
     if(Auth::guard('admin')->user()->employee->site){
         return redirect('/admin');
