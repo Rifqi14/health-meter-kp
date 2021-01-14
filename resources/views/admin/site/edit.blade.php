@@ -119,7 +119,7 @@
 <script>
   $(document).ready(function(){
     //Input Mask Component 
-      $("input[name=code]").inputmask("Regex", { regex: "[a-z]*" });
+      $("input[name=code]").inputmask("Regex", { regex: "[A-Z]*" });
       //Select2 Component
       $( "#province_id" ).select2({
         ajax: {
