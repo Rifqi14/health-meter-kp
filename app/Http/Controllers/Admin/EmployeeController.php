@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 
 class EmployeeController extends Controller
 {
@@ -55,6 +56,7 @@ class EmployeeController extends Controller
         $site = $request->site;
         $data_manager = $request->data_manager;
         $site_id = $request->site_id;
+        $category = $request->category;
 
         //Count Data
         $query = DB::table('employees');
@@ -66,14 +68,20 @@ class EmployeeController extends Controller
         if($data_manager){
             $query->where('site_id',$site_id);
         }
+        if ($category) {
+            $query->whereNotNull('deleted_at');
+        } else {
+            $query->whereNull('deleted_at');
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = DB::table('employees');
-        $query->select('employees.*', 'titles.name as title_name', 'regions.name as place_of_birth');
+        $query->select('employees.*', 'titles.name as title_name', 'regions.name as place_of_birth', 'sites.name as site_name');
         $query->leftJoin('employee_movements', 'employee_movements.employee_id', '=', 'employees.id');
         $query->leftJoin('titles', 'titles.id', '=', 'employee_movements.title_id');
         $query->leftJoin('regions', 'regions.id', '=', 'employees.place_of_birth');
+        $query->leftJoin('sites', 'sites.id', '=', 'employees.site_id');
         $query->whereNull('finish');
         $query->whereRaw("upper(employees.name) like '%$name%'");
         if ($site) {
@@ -81,6 +89,11 @@ class EmployeeController extends Controller
         }
         if($data_manager){
             $query->where('site_id',$site_id);
+        }
+        if ($category) {
+            $query->whereNotNull('deleted_at');
+        } else {
+            $query->whereNull('deleted_at');
         }
         $query->offset($start);
         $query->limit($length);
@@ -552,6 +565,7 @@ class EmployeeController extends Controller
             'results'     => route('employee.index'),
         ], 200);
     }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -561,17 +575,51 @@ class EmployeeController extends Controller
     public function destroy($id)
     {
         try {
-            $title = Employee::find($id);
-            $title->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+            $employee = Employee::find($id);
+            $employee->delete();
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $employee = Employee::onlyTrashed()->find($id);
+            $employee->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $employee = Employee::onlyTrashed()->find($id);
+            $employee->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 

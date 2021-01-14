@@ -81,6 +81,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/employee/temperature', 'Admin\EmployeeController@temperature')->name('employee.temperature');
         Route::get('/employee/saturasi', 'Admin\EmployeeController@saturasi')->name('employee.saturasi');
         Route::get('/employee/exportmedis', 'Admin\EmployeeController@exportmedis')->name('employee.exportmedis');
+        Route::get('/employee/restore/{id}', 'Admin\EmployeeController@restore')->name('employee.restore');
+        Route::get('/employee/delete/{id}', 'Admin\EmployeeController@delete')->name('employee.delete');
         Route::resource('/employee', 'Admin\EmployeeController');
         //Route Employee Detail
         Route::get('/employeefamily/read', 'Admin\EmployeeFamilyController@read')->name('employeefamily.read');

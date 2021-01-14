@@ -26,8 +26,7 @@
             <div class="box-header">
                 <h3 class="box-title">Detail Pegawai</h3>
                 <div class="pull-right box-tools">
-                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-                            class="fa fa-reply"></i></a>
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
                 </div>
             </div>
             <div class="box-body box-profile">
@@ -60,8 +59,7 @@
                     </tr>
                     <tr>
                         <td><strong>Umur</strong></td>
-                        <td class="text-right"><span
-                                class="label label-success">{{ Carbon\Carbon::parse($employee->birth_date)->age }} Tahun
+                        <td class="text-right"><span class="label label-success">{{ Carbon\Carbon::parse($employee->birth_date)->age }} Tahun
                             </span>
                         </td>
                     </tr>
@@ -85,7 +83,7 @@
                     </tr>
                     <tr>
                         <td><strong>Unit</strong></td>
-                        <td class="text-right" id="unit">{{$employee->site->name}}</td>
+                        <td class="text-right" id="unit">{{@$employee->site->name}}</td>
                     </tr>
                 </table>
 
@@ -104,8 +102,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="employeefamily">
                     <div class="overlay-wrapper">
-                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i
-                                class="fa fa-plus"></i></a>
+                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
                         <table class="table table-bordered table-striped" id="table-family">
                             <thead>
                                 <tr>
@@ -130,8 +127,7 @@
                                     <h3 class="box-title">Riwayat Pengisian</h3>
                                 </div>
                                 <div class="box-body">
-                                    <table class="table table-bordered table-striped" style="width:100%"
-                                        id="table-history">
+                                    <table class="table table-bordered table-striped" style="width:100%" id="table-history">
                                         <thead>
                                             <tr>
                                                 <th style="text-align:right" width="10">#</th>
@@ -175,8 +171,7 @@
                 </div>
                 <div class="tab-pane" id="employeemedis">
                     <div class="overlay-wrapper">
-                        <a href="#" class="btn btn-primary pull-right btn-sm export-file" title="Example"><i
-                                class="fa fa-download"></i></a>
+                        <a href="#" class="btn btn-primary pull-right btn-sm export-file" title="Example"><i class="fa fa-download"></i></a>
                         <table class="table table-bordered table-striped" id="table-medis" style="width:100%">
                             <thead>
                                 <tr>
@@ -197,8 +192,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-    aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -216,8 +210,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="type">Tipe</label>
-                                <select name="type" class="form-control select2" placeholder="Pilih Tipe Tanggungan"
-                                    required>
+                                <select name="type" class="form-control select2" placeholder="Pilih Tipe Tanggungan" required>
                                     <option value=""></option>
                                     <option value="couple">Pasangan</option>
                                     <option value="child">Anak</option>
@@ -236,8 +229,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="control-label" for="birth_date">Tgl Lahir <b
-                                        class="text-danger">*</b></label>
+                                <label class="control-label" for="birth_date">Tgl Lahir <b class="text-danger">*</b></label>
                                 <input type="text" name="birth_date" class="form-control" placeholder="Tgl Lahir">
                             </div>
                         </div>
@@ -245,8 +237,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
-                        class="fa fa-save"></i></button>
+                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i class="fa fa-save"></i></button>
             </div>
         </div>
     </div>
@@ -258,8 +249,7 @@
 <script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
-<script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
 <script>
     function adddetail(){
         $('#add-detail .modal-title').html('Tambah Tangungan');
