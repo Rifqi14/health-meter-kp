@@ -69,9 +69,9 @@ class EmployeeController extends Controller
             $query->where('site_id',$site_id);
         }
         if ($category) {
-            $query->whereNotNull('deleted_at');
+            $query->whereNotNull('employees.deleted_at');
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('employees.deleted_at');
         }
         $recordsTotal = $query->count();
 
@@ -91,9 +91,9 @@ class EmployeeController extends Controller
             $query->where('site_id',$site_id);
         }
         if ($category) {
-            $query->whereNotNull('deleted_at');
+            $query->whereNotNull('employees.deleted_at');
         } else {
-            $query->whereNull('deleted_at');
+            $query->whereNull('employees.deleted_at');
         }
         $query->offset($start);
         $query->limit($length);
