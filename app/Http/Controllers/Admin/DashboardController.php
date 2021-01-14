@@ -82,7 +82,7 @@ class DashboardController extends Controller
             $department_id = $employee->department_id;                
         }
         //All
-        $departmentall = Department::where('is_show',1)->orderBy('name','asc')->get();
+        $departmentall = Department::orderBy('name','asc')->get();
         $departments = [];
 
 

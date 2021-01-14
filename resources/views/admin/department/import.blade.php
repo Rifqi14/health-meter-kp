@@ -6,48 +6,47 @@
 <link href="{{asset('adminlte/component/bootstrap-fileinput/css/fileinput.min.css')}}" rel="stylesheet">
 <link href="{{asset('adminlte/component/bootstrap-fileinput/themes/explorer/theme.min.css')}}" rel="stylesheet">
 <style type="text/css">
-    .overlay-wrapper{
-      position:relative;
+    .overlay-wrapper {
+        position: relative;
     }
 </style>
 @endsection
 @push('breadcrump')
-    <li><a href="{{route('department.index')}}">Department</a></li>
-    <li class="active">Import</li>
+<li><a href="{{route('department.index')}}">Department</a></li>
+<li class="active">Import</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-    <div class="box box-primary" id="department-preview">
-        <div class="box-header">
-          <h3 class="box-title">Pratinjau Import</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-             <a onclick="addImport()" class="btn btn-success btn-sm" data-toggle="tooltip" title="Tambah">
-                <i class="fa fa-upload"></i>
-              </a>
-              <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-              <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+        <div class="box box-primary" id="department-preview">
+            <div class="box-header">
+                <h3 class="box-title">Pratinjau Import</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <a onclick="addImport()" class="btn btn-success btn-sm" data-toggle="tooltip" title="Tambah">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                    <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+                </div>
+                <!-- /. tools -->
             </div>
-          <!-- /. tools -->
+            <div class="box-body">
+                <form id="form" action="{{route('department.storemass')}}">
+                </form>
+                <table class="table table-striped table-bordered" style="width:100%" id="table-item">
+                    <thead>
+                        <tr>
+                            <th width="100">Kode</th>
+                            <th width="100">Nama</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-        <div class="box-body">
-            <form id="form" action="{{route('department.storemass')}}">
-            </form>
-            <table class="table table-striped table-bordered" style="width:100%" id="table-item">
-                <thead>
-                    <tr>
-                        <th width="100">Parent</th>
-                        <th width="100">Kode</th>
-                        <th width="100">Nama</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="overlay hidden">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div>
     </div>
 </div>
 <div class="modal" id="select-file" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
@@ -67,7 +66,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="file">File Excel</label>
                                 <div class="col-sm-9">
-                                    <input type="file" class="form-control" id="file" name="file" required accept=".xlsx"/>	
+                                    <input type="file" class="form-control" id="file" name="file" required accept=".xlsx" />
                                 </div>
                             </div>
                         </div>
@@ -92,7 +91,7 @@
 <script src="{{asset('adminlte/component/bootstrap-fileinput/js/fileinput.min.js')}}"></script>
 <script src="{{asset('adminlte/component/bootstrap-fileinput/themes/explorer/theme.min.js')}}"></script>
 <script type="text/javascript">
-var items = {},count=0;
+    var items = {},count=0;
 function addImport(){
     $('#form-import')[0].reset();
     $('#form-import').find('.help-block').remove();
@@ -104,7 +103,6 @@ function loadItem(table_item){
     count=0;
     $.each(items, function() {
         table_item.row.add([
-                this.parent_name,
                 this.code,
                 this.name
         ]).draw(false);

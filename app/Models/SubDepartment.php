@@ -6,7 +6,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Department extends Model
+class SubDepartment extends Model
 {
     use SoftDeletes;
     protected $guarded = [];
@@ -15,8 +15,8 @@ class Department extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-    public function subdepartment()
+    public function department()
     {
-        return $this->hasMany(SubDepartment::class, 'department_id');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 }

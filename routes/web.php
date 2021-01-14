@@ -52,6 +52,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/department/read', 'Admin\DepartmentController@read')->name('department.read');
         Route::get('/department/select', 'Admin\DepartmentController@select')->name('department.select');
         Route::get('/department/import', 'Admin\DepartmentController@import')->name('department.import');
+        Route::get('/department/restore/{id}', 'Admin\DepartmentController@restore')->name('department.restore');
+        Route::get('/department/delete/{id}', 'Admin\DepartmentController@delete')->name('department.delete');
         Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
         Route::post('/department/storemass', 'Admin\DepartmentController@storemass')->name('department.storemass');
         Route::resource('/department', 'Admin\DepartmentController');
@@ -445,6 +447,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/authorizedofficial/restore/{id}', 'Admin\AuthorizedOfficialController@restore')->name('authorizedofficial.restore');
         Route::get('/authorizedofficial/delete/{id}', 'Admin\AuthorizedOfficialController@delete')->name('authorizedofficial.delete');
         Route::resource('/authorizedofficial', 'Admin\AuthorizedOfficialController');
+
+        // Sub Department
+        Route::get('/subdepartment/read', 'Admin\SubDepartmentController@read')->name('subdepartment.read');
+        Route::get('/subdepartment/select', 'Admin\SubDepartmentController@select')->name('subdepartment.select');
+        Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
+        Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
+        Route::resource('/subdepartment', 'Admin\SubDepartmentController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
