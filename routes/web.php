@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/admin');
 });
+Route::get('/error', function () {
+    return view('admin.error.index');
+});
 Auth::routes();
 //Route Admin
 Route::group(['prefix' => 'admin', 'middleware' => 'page.admin'], function () {

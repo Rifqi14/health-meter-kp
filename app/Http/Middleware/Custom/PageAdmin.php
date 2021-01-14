@@ -25,7 +25,7 @@ class PageAdmin
     {
         if (Auth::guard('admin')->check()) {
             if(Auth::guard('admin')->user()->employee){
-                $employee  = Employee::select('titles.*')
+                $employee  = Employee::with('site')->select('titles.*')
                                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
                                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
                                         ->whereNull('finish') 
@@ -36,7 +36,11 @@ class PageAdmin
 
                     $role_id = [];
                     $roletitles = RoleTitle::where('title_id','=',$employee->id)->get();
+                    $accesssite = 0;
                     foreach($roletitles as $roletitle){
+                        if($roletitle->data_manager){
+                            $accesssite = 1;
+                        }
                         array_push($role_id,$roletitle->role_id);
                     }
                     $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
@@ -46,7 +50,14 @@ class PageAdmin
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        View::share('menuaccess', $rolemenus);
+                        if($employee->site){
+                            View::share('menuaccess', $rolemenus);
+                            View::share('accesssite', $rolemenus);
+                            View::share('siteinfo', $employee->site);
+                        }
+                        else{
+                            return redirect('/error');
+                        }
                 }
                 else{
                     $role = Role::where('guest',1)->first();
@@ -57,19 +68,18 @@ class PageAdmin
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        View::share('menuaccess', $rolemenus);
+                        if($employee->site){
+                            View::share('menuaccess', $rolemenus);
+                            View::share('accesssite', $role->data_manager);
+                            View::share('siteinfo', $employee->site);
+                        }
+                        else{
+                            return redirect('/error');
+                        }
                 }  
             }
             else{
-                $role = Role::where('guest',1)->first();
-                $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
-                    ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
-                    ->where('role_id',$role->id)
-                    ->where('role_access', '=', 1)
-                    ->orderBy('menus.menu_sort', 'asc')
-                    ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
-                    ->get();
-                    View::share('menuaccess', $rolemenus);
+                return redirect('/error');
             }  
         }
         return $next($request);
