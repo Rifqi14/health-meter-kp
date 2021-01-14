@@ -51,6 +51,7 @@ class AccessMenu
                     }
                 }
                 else{
+                    $route = explode('.',Route::currentRouteName());
                     $role = Role::where('guest',1)->first();
                     $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                     ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
@@ -65,6 +66,7 @@ class AccessMenu
                 }
             }
             else{
+                $route = explode('.',Route::currentRouteName());
                 $role = Role::where('guest',1)->first();
                 $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                 ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
