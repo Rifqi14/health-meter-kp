@@ -23,24 +23,52 @@ class AccessMenu
     public function handle($request, Closure $next)
     {
         if(Auth::guard('admin')->check()){
-            $employee  = Employee::select('titles.*')
-                                    ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
-                                    ->leftJoin('titles','titles.id','=','employee_movements.title_id')
-                                    ->whereNull('finish') 
-                                    ->where('employees.id',Auth::guard('admin')->user()->employee->id)
-                                    ->first();
-            $title = Title::find($employee->id);
-            $accessmenu = [];
-            $route = explode('.',Route::currentRouteName());
-            if($title){
-                $role_id = [];
-                $roletitles = RoleTitle::where('title_id',$employee->id)->get();
-                foreach($roletitles as $roletitle){
-                    array_push($role_id,$roletitle->role_id);
+            if(Auth::guard('admin')->user()->employee){
+                $employee  = Employee::select('titles.*')
+                                        ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
+                                        ->leftJoin('titles','titles.id','=','employee_movements.title_id')
+                                        ->whereNull('finish') 
+                                        ->where('employees.id',Auth::guard('admin')->user()->employee->id)
+                                        ->first();
+                $title = Title::find($employee->id);
+                $accessmenu = [];
+                $route = explode('.',Route::currentRouteName());
+                if($title){
+                    $role_id = [];
+                    $roletitles = RoleTitle::where('title_id',$employee->id)->get();
+                    foreach($roletitles as $roletitle){
+                        array_push($role_id,$roletitle->role_id);
+                    }
+                    $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
+                    ->whereIn('role_id',$role_id)
+                    ->where('role_access', '=', 1)
+                    ->orderBy('menus.menu_sort', 'asc')
+                    ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->get();
+                    foreach($rolemenus as $rolemenu){
+                        $accessmenu[] = $rolemenu->menu_route;
+                    }
                 }
+                else{
+                    $role = Role::where('guest',1)->first();
+                    $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
+                    ->whereIn('role_id',$role->id)
+                    ->where('role_access', '=', 1)
+                    ->orderBy('menus.menu_sort', 'asc')
+                    ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->get();
+                    foreach($rolemenus as $rolemenu){
+                        $accessmenu[] = $rolemenu->menu_route;
+                    }
+                }
+            }
+            else{
+                $role = Role::where('guest',1)->first();
                 $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                 ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
-                ->whereIn('role_id',$role_id)
+                ->whereIn('role_id',$role->id)
                 ->where('role_access', '=', 1)
                 ->orderBy('menus.menu_sort', 'asc')
                 ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
@@ -48,9 +76,6 @@ class AccessMenu
                 foreach($rolemenus as $rolemenu){
                     $accessmenu[] = $rolemenu->menu_route;
                 }
-            }
-            else{
-                $accessmenu = [];
             }
             if(!in_array($route[0],$accessmenu)){
                 abort(403);

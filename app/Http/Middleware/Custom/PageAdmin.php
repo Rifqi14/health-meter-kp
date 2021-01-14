@@ -49,11 +49,27 @@ class PageAdmin
                         View::share('menuaccess', $rolemenus);
                 }
                 else{
-                    View::share('menuaccess', []);
+                    $role = Role::where('guest',1)->first();
+                    $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                        ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
+                        ->whereIn('role_id',$role->id)
+                        ->where('role_access', '=', 1)
+                        ->orderBy('menus.menu_sort', 'asc')
+                        ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                        ->get();
+                        View::share('menuaccess', $rolemenus);
                 }  
             }
             else{
-                View::share('menuaccess', []);
+                $role = Role::where('guest',1)->first();
+                $rolemenus = RoleMenu::select('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->leftJoin('menus', 'menus.id', '=', 'role_menus.menu_id')
+                    ->whereIn('role_id',$role->id)
+                    ->where('role_access', '=', 1)
+                    ->orderBy('menus.menu_sort', 'asc')
+                    ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
+                    ->get();
+                    View::share('menuaccess', $rolemenus);
             }  
         }
         return $next($request);
