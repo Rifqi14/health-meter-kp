@@ -38,17 +38,16 @@ class AssessmentController extends Controller
      */
     public function create(Request $request)
     {
-        $site = $request->site;
-        $site_id = Site::where('code', $site)->first();
         $nid = Auth::user()->employee_id;
         $employee = Employee::find($nid);
         $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
+        $site = @$employee->site_id;
         $questions = AssessmentQuestion::with([
           'answer',
           'parent',
           'answercode',
-          'site' => function ($q) use ($site_id) {
-            $q->where('site_id', $site_id->id);
+          'site' => function ($q) use ($site) {
+            $q->where('site_id', $site);
           },
           'workforcegroup' => function ($q) use ($workforce) {
             $q->where('workforce_group_id', $workforce);
