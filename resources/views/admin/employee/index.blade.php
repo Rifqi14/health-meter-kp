@@ -112,6 +112,8 @@ $(function(){
                 var site = $('#form-search').find('input[name=site]').val();
                 data.site = site;
                 data.name = name;
+                data.data_manager = {{$accesssite}};
+                data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
@@ -166,6 +168,8 @@ $(function(){
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {

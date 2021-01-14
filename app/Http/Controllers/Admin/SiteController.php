@@ -67,11 +67,16 @@ class SiteController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
 
         //Count Data
         $query = Site::select('sites.*');
         if ($name) {
             $query->where('name', 'like', "%$name%");
+        }
+        if($data_manager){
+            $query->where('id',$site_id);
         }
         $recordsTotal = $query->count();
 
@@ -79,6 +84,9 @@ class SiteController extends Controller
         $query = Site::select('sites.*');
         if ($name) {
             $query->where('name', 'like', "%$name%");
+        }
+        if($data_manager){
+            $query->where('id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);

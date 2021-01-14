@@ -35,6 +35,14 @@
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
           <div class="well well-sm">
+
+            <div class="form-group">
+              <label for="unit" class="col-sm-2 control-label">Unit</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="unit" name="unit" value="{{$employee->site_id}}"
+                  placeholder="Pilih Unit">
+              </div>
+            </div>
             <div class="form-group">
               <label for="name" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
@@ -120,13 +128,6 @@
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="longitude" name="longitude" value="{{$employee->longitude}}"
                   placeholder="Longitude">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="unit" class="col-sm-2 control-label">Unit</label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="unit" name="unit" value="{{$employee->site_id}}"
-                  placeholder="Pilih Unit">
               </div>
             </div>
           </div>
@@ -218,6 +219,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {
