@@ -27,4 +27,8 @@ class Site extends Model
     {
         return $this->hasMany(AssessmentQuestionSite::class, 'site_id');
     }
+    public function agency()
+    {
+        return $this->belongsToMany('App\Models\Agency', 'agency_sites');
+    }
 }
