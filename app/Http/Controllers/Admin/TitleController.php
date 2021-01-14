@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Title;
+use App\Role;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -64,7 +65,71 @@ class TitleController extends Controller
 			'data'=>$data
         ], 200);
     }
+    public function readrole(Request $request)
+    {
+        $start = $request->start;
+        $length = $request->length;
+        $query = $request->search['value'];
+        $sort = $request->columns[$request->order[0]['column']]['data'];
+        $dir = $request->order[0]['dir'];
+        $title_id = $request->title_id;
 
+        //Count Data
+        $query = DB::table('role_titles');
+        $query->select('roles.*');
+        $query->leftJoin('roles', 'roles.id', '=', 'role_titles.role_id');
+        $query->where('title_id', $title_id);
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = DB::table('role_titles');
+        $query->select('roles.*');
+        $query->leftJoin('roles', 'roles.id', '=', 'role_titles.role_id');
+        $query->where('title_id', $title_id);
+        $query->offset($start);
+        $query->limit($length);
+        $query->orderBy($sort, $dir);
+        $roles = $query->get();
+
+        $data = [];
+        foreach ($roles as $role) {
+            $role->no = ++$start;
+            $data[] = $role;
+        }
+        return response()->json([
+            'draw' => $request->draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsTotal,
+            'data' => $data
+        ], 200);
+    }
+    public function assignrole(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'role_id'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'     => false,
+                'message'     => $validator->errors()->first()
+            ], 400);
+        }
+
+        $title = Title::find($request->title_role_id);
+        $role = Role::find($request->role_id);
+        $title->attachRole($role);
+        if (!$title) {
+            return response()->json([
+                'status' => false,
+                'message'     => $title
+            ], 400);
+        }
+        return response()->json([
+            'status' => true,
+            'message'     => 'Role has been added'
+        ], 200);
+    }
     public function select(Request $request){
         $start = $request->page?$request->page - 1:0;
         $length = $request->limit;
@@ -377,6 +442,25 @@ class TitleController extends Controller
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('title.index'),
+        ], 200);
+    }
+    public function deleterole(Request $request)
+    {
+        $role_id = $request->role_id;
+        $title_id = $request->title_id;
+        try {
+            $title = Title::find($title_id);
+            $role = Role::find($role_id);
+            $title->detachRole($role);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status'     => false,
+                'message'     => 'Error delete data'
+            ], 400);
+        }
+        return response()->json([
+            'status'     => true,
+            'message' => 'Success delete data'
         ], 200);
     }
 }

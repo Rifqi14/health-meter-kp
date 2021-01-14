@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Klaravel\Ntrust\Traits\NtrustUserTrait;
 class Title extends Model
 {
+    use NtrustUserTrait;
+
+    protected static $roleProfile = 'title';
     protected $guarded = [];
     public function department() {
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
@@ -19,5 +22,9 @@ class Title extends Model
     }
     public function grade() {
         return $this->hasOne('App\Models\Grade', 'id', 'grade_id');
+    }
+    public function roles()
+    {
+        return $this->belongsToMany('App\Role', 'role_titles', 'title_id', 'role_id');
     }
 }

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>@yield('title') - {{config('configs.app_name')}}</title>
+  <title>Error - {{config('configs.app_name')}}</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -93,19 +93,12 @@
         </div>
         <ul class="sidebar-menu" data-widget="tree">
           <li class="header">Main Navigation</li>
-          {!!buildMenuAdmin($menuaccess)!!}
         </ul>
       </section>
     </aside>
     <div class="content-wrapper">
-      <section class="content-header">
-        <ol class="breadcrumb">
-          <li><a href="{{route('dashboard.index')}}"><i class="fa fa-home"></i> Home</a></li>
-          @stack('breadcrump')
-        </ol>
-      </section>
       <section class="content">
-        @yield('content')
+          Anda belum terdaftar ke site manapun , silahkan hubungi administrator.
       </section>
     </div>
     <footer class="main-footer">
@@ -147,12 +140,6 @@
   <script src="{{asset('adminlte/component/gritter/js/jquery.gritter.min.js')}}"></script>
   <script src="{{asset('adminlte/component/iCheck/icheck.min.js')}}"></script>
   <script src="{{asset('adminlte/component/bootbox/bootbox.min.js')}}"></script>
-  <script>
-    $(function() {
-          $(".sidebar-menu").find("a[href='{{@$menu_active}}']").parent().addClass("active");
-          $(".sidebar-menu").find("a[href='{{@$menu_active}}']").closest('.treeview').addClass("active menu-open");
-      })
-  </script>
   <script src="{{asset('adminlte/js/adminlte.min.js')}}"></script>
   @stack('scripts')
 </body>

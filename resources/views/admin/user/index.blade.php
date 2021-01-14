@@ -14,15 +14,6 @@
             <div class="box-header">
                 <h3 class="box-title">Data User</h3>
                 <!-- tools box -->
-                <div class="pull-right box-tools">
-                    <a href="{{route('user.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-                        title="Tambah">
-                        <i class="fa fa-plus"></i>
-                    </a>
-                    <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
-                        <i class="fa fa-search"></i>
-                    </a>
-                </div>
                 <!-- /. tools -->
             </div>
             <div class="box-body">
@@ -146,9 +137,7 @@ $(function(){
                         <i class="fa fa-bars"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a class="dropdown-item" href="{{url('admin/user')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
                         <li><a class="dropdown-item" href="{{url('admin/user')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                        <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                     </ul></div>`
             },targets: [6]
             }

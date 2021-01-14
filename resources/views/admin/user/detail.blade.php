@@ -43,11 +43,18 @@
             </span>
           </li>
           <li class="list-group-item">
+            <b>NID</b> <span class="pull-right">{{$user->employee->nid}}</span>
+          </li>
+          <li class="list-group-item">
+            <b>Pegawai</b> <span class="pull-right">{{$user->employee->name}}</span>
+          </li>
+          <li class="list-group-item">
             <b>Dibuat</b> <span class="pull-right">{{$user->created_at}}</span>
           </li>
           <li class="list-group-item">
             <b>Login Terakhir</b> <span class="pull-right">{{$user->last_login}}</span>
           </li>
+          
         </ul>
         <a onclick="event.preventDefault(); document.getElementById('reset-form').submit();" alt="Reset"
           class="btn btn-primary btn-block">
@@ -65,12 +72,12 @@
   <div class="col-lg-8">
     <div class="nav-tabs-custom tab-primary">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#site" data-toggle="tab">Akses Unit</a></li>
-        <li><a href="#role" data-toggle="tab">Assign Role</a></li>
-        <li><a href="#log" data-toggle="tab">Log Login</a></li>
+        <!--<li class="active"><a href="#site" data-toggle="tab">Akses Unit</a></li>
+        <li><a href="#role" data-toggle="tab">Assign Role</a></li>-->
+        <li class="active"><a href="#log" data-toggle="tab">Log Login</a></li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane active" id="site">
+        <div class="tab-pane " id="site">
           <div class="overlay-wrapper">
             <form id="form" class="form-horizontal" action="{{url('admin/siteuser/store')}}" method="post"
               autocomplete="off">
@@ -139,7 +146,7 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane" id="log">
+        <div class="tab-pane active" id="log">
           <table class="table table-bordered table-striped" id="table-log">
             <thead>
               <tr>

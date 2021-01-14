@@ -135,12 +135,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $query = DB::table('users');
-        $query->select('users.*', 'roles.display_name', 'role_user.role_id');
-        $query->leftJoin('role_user', 'role_user.user_id', '=', 'users.id');
-        $query->leftJoin('roles', 'role_user.role_id', '=', 'roles.id');
-        $query->where('users.id', '=', $id);
-        $user = $query->get()->first();
+        $user = User::find($id);
         if ($user) {
             return view('admin.user.detail', compact('user'));
         } else {
