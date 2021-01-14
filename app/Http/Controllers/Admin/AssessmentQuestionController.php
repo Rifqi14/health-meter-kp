@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\AssessmentQuestion;
+use App\Models\WorkforceGroup;
+use App\Models\Site;
+use App\Models\AssessmentQuestionWorkforceGroup;
+use App\Models\AssessmentQuestionSite;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -100,7 +105,9 @@ class AssessmentQuestionController extends Controller
      */
     public function create()
     {
-        return view('admin.assessmentquestion.create');
+        $workforcegroups = WorkforceGroup::whereNull('deleted_at')->get();
+        $sites = Site::get();
+        return view('admin.assessmentquestion.create',compact('workforcegroups','sites'));
     }
 
     /**
@@ -115,9 +122,7 @@ class AssessmentQuestionController extends Controller
             'order'                 => 'required|unique:assessment_questions',
             'type'                  => 'required',
             'description'           => 'required',
-            'frequency'             => 'required',
-            'workforce_group_id'    => 'required',
-            'site_id'               => 'required'
+            'frequency'             => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -126,8 +131,7 @@ class AssessmentQuestionController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-
-        try {
+        DB::beginTransaction();
             $question = AssessmentQuestion::create([
                 'order'                 => $request->order,
                 'is_parent'             => $request->question_parent_code ? 1 : 0,
@@ -138,16 +142,52 @@ class AssessmentQuestionController extends Controller
                 'frequency'             => $request->frequency,
                 'start_date'            => $request->start_date,
                 'finish_date'           => $request->finish_date,
-                'workforce_group_id'    => $request->workforce_group_id,
-                'site_id'               => $request->site_id,
                 'updated_by'            => Auth::id()
             ]);
-        } catch (QueryException $ex) {
-            return response()->json([
-                'status'      => false,
-                'message'     => $ex->errorInfo[2]
-            ], 400);
-        }
+            if (!$question) {
+                DB::rollback();
+                return response()->json([
+                    'status' => false,
+                    'message' 	=> $question
+                ], 400);
+            }
+            if($request->workforcegroup){
+                foreach($request->workforcegroup as $key => $value){
+                    if(isset($request->workforcegroup_status[$value])){
+                        $assessmentquestionworkforcegroup = AssessmentQuestionWorkforceGroup::create([
+                            'assessment_question_id' => $question->id,
+                            'workforce_group_id' => $value
+                        ]);
+                        if (!$assessmentquestionworkforcegroup) {
+                            DB::rollback();
+                            return response()->json([
+                                'status' => false,
+                                'message' 	=> $assessmentquestionworkforcegroup
+                            ], 400);
+                        }
+                    }
+                    
+                }
+            }
+            if($request->site){
+                foreach($request->site as $key => $value){
+                    if(isset($request->site_status[$value])){
+                        $assessmentquestionsite = AssessmentQuestionSite::create([
+                            'assessment_question_id' => $question->id,
+                            'site_id' => $value
+                        ]);
+                        if (!$assessmentquestionsite) {
+                            DB::rollback();
+                            return response()->json([
+                                'status' => false,
+                                'message' 	=> $assessmentquestionsite
+                            ], 400);
+                        }
+                    }
+                    
+                }
+            }
+            DB::commit();
         return response()->json([
             'status'     => true,
             'results'     => route('assessmentquestion.index'),

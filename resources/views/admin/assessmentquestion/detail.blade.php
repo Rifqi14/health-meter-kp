@@ -37,12 +37,6 @@
                         <b>Waktu</b> <span
                             class="pull-right">{{$question->start_date . ' s/d ' . $question->finish_date}}</span>
                     </li>
-                    <li class="list-group-item">
-                        <b>Kelompok Workforce</b> <span class="pull-right">{{$question->workforcegroup->name}}</span>
-                    </li>
-                    <li class="list-group-item">
-                        <b>Unit</b> <span class="pull-right">{{$question->site->name}}</span>
-                    </li>
                 </ul>
                 <b>Deskripsi</b><br><span>{{$question->description}}</span>
             </div>
