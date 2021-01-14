@@ -50,6 +50,14 @@
                         @endif> <i></i></label>
                     </div>
                   </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" style="padding-top: 1px" for="guest">Default</label>
+                    <div class="col-sm-4">
+                      <label><input class="form-control" type="checkbox" name="guest" @if ($role->guest)
+                        checked
+                        @endif> <i></i></label>
+                    </div>
+                  </div>
                 </div>
               </form>
         </div>
@@ -66,6 +74,10 @@
 <script>
   $(document).ready(function(){
     $('input[name=data_manager]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
+      $('input[name=guest]').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
       });

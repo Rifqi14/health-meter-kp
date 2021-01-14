@@ -190,7 +190,13 @@ class RoleController extends Controller
             'display_name'     => $request->display_name,
             'description'     => $request->description,
             'data_manager'     => $request->data_manager?1:0,
+            'guest'     => $request->guest?1:0,
         ]);
+        if($request->guest){
+            Role::where('id','<>',$role->id)->update([
+                'guest'=>0
+            ]);
+        }
         if (!$role) {
             return response()->json([
                 'status' => false,
@@ -304,12 +310,18 @@ class RoleController extends Controller
         $role->display_name = $request->display_name;
         $role->description = $request->description;
         $role->data_manager = $request->data_manager?1:0;
+        $role->guest = $request->guest?1:0;
         $role->save();
         if (!$role) {
             return response()->json([
                 'status' => false,
                 'message'     => $role
             ], 400);
+        }
+        if($request->guest){
+            Role::where('id','<>',$role->id)->update([
+                'guest'=>0
+            ]);
         }
         return response()->json([
             'status'     => true,
