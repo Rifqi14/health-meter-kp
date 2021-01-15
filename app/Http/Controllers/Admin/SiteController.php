@@ -6,6 +6,7 @@ use App\Models\Site;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -140,15 +141,6 @@ class SiteController extends Controller
         $validator = Validator::make($request->all(), [
             'code'              => 'required|unique:sites',
             'name'              => 'required',
-            'phone'             => 'required',
-            'email'             => 'required|email',
-            'province_id'       => 'required',
-            'region_id'         => 'required',
-            'district_id'       => 'required',
-            'address'           => 'required',
-            'postal_code'       => 'required',
-            'resep_dokter'      => 'required',
-            'surat_pengantar'   => 'required',
             'logo'              => 'required|mimes:png',
         ]);
 
@@ -162,20 +154,12 @@ class SiteController extends Controller
         $site = Site::create([
             'code'                  => $request->code,
             'name'                  => $request->name,
-            'phone'                 => $request->phone,
-            'email'                 => $request->email,
-            'province_id'           => $request->province_id,
-            'region_id'             => $request->region_id,
-            'district_id'           => $request->district_id,
-            'address'               => $request->address,
-            'postal_code'           => $request->postal_code,
-            'cover_letter'          => $request->surat_pengantar,
-            'doctor_prescription'   => $request->resep_dokter
+            'updated_by'            => Auth::id()
         ]);
         if (!$site) {
             return response()->json([
-                'status' => false,
-                'message'     => $site
+                'status'    => false,
+                'message'   => $site
             ], 400);
         }
         $logo = $request->file('logo');
@@ -200,7 +184,7 @@ class SiteController extends Controller
      */
     public function edit($id)
     {
-        $site = Site::with('province', 'region', 'district')->find($id);
+        $site = Site::withTrashed()->find($id);
         if ($site) {
             return view('admin.site.edit', compact('site'));
         } else {
@@ -220,15 +204,7 @@ class SiteController extends Controller
         $validator = Validator::make($request->all(), [
             'code'              => 'required|unique:sites,code,' . $id,
             'name'              => 'required',
-            'phone'             => 'required',
-            'email'             => 'required|email',
-            'province_id'       => 'required',
-            'region_id'         => 'required',
-            'district_id'       => 'required',
-            'address'           => 'required',
-            'postal_code'       => 'required',
-            'resep_dokter'      => 'required',
-            'surat_pengantar'   => 'required'
+            'logo'              => 'required|mimes:png',
         ]);
 
         if ($validator->fails()) {
@@ -241,14 +217,7 @@ class SiteController extends Controller
         $site = Site::find($id);
         $site->code = $request->code;
         $site->name = $request->name;
-        $site->email = $request->email;
-        $site->province_id = $request->province_id;
-        $site->region_id = $request->region_id;
-        $site->district_id = $request->district_id;
-        $site->address = $request->address;
-        $site->postal_code = $request->postal_code;
-        $site->cover_letter = $request->surat_pengantar;
-        $site->doctor_prescription = $request->resep_dokter;
+        $site->updated_by = Auth::id();
         $site->save();
         if (!$site) {
             return response()->json([
