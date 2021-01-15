@@ -7,6 +7,8 @@ use App\Role;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -34,20 +36,22 @@ class TitleController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $code = strtoupper($request->code);
+        $shortname = strtoupper($request->shortname);
+        $category = $request->category;
 
         //Count Data
-        $query = DB::table('titles');
-        $query->select('titles.*');
-        $query->whereRaw("upper(titles.name) like '%$name%'");
+        $query = Title::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('titles');
-        $query->select('titles.*','departments.name as department_name','parent.name as parent_name','grades.name as grade_name');
-        $query->leftJoin('departments','titles.department_id','=','departments.id');
-        $query->leftJoin('grades','titles.grade_id','=','grades.id');
-        $query->leftJoin('titles as parent','parent.id','=','titles.parent_id');
-        $query->whereRaw("upper(titles.name) like '%$name%'");
+        $query = Title::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -178,10 +182,9 @@ class TitleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'department_id'  => 'required',
             'code'      => 'required|unique:titles',
             'name'      => 'required',
-            'grade_id'  => 'required'
+            'shortname' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -192,12 +195,10 @@ class TitleController extends Controller
         }
 
         $title = Title::create([
-            'department_id'  => $request->department_id,
-            'parent_id' 	    => $request->parent_id?$request->parent_id:0,
-            'code' 	    => $request->code,
-            'name' 	    => $request->name,
-            'grade_id' 	    => $request->grade_id,
-            
+            'name'      => $request->name,
+            'code'      => strtoupper($request->code),
+            'shortname' => $request->shortname,
+            'updated_by'=> Auth::id()
         ]);
         if (!$title) {
             return response()->json([
@@ -219,10 +220,9 @@ class TitleController extends Controller
      */
     public function show($id)
     {
-        $title = Title::find($id);
+        $title = Title::with(['user'])->find($id);
         // dd($title);
         if($title){
-
             return view('admin.title.detail',compact('title'));
         }
         else{
@@ -283,7 +283,7 @@ class TitleController extends Controller
      */
     public function edit($id)
     {
-        $title = Title::with('department','grade')->find($id);
+        $title = Title::with(['user'])->withTrashed()->find($id);
         if($title){
             return view('admin.title.edit',compact('title'));
         }
@@ -302,10 +302,9 @@ class TitleController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'department_id'  => 'required',
             'code'      => 'required|unique:titles,code,'.$id,
             'name'      => 'required',
-            'grade_id'  => 'required'
+            'shortname' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -315,12 +314,11 @@ class TitleController extends Controller
         	], 400);
         }
 
-        $title = Title::find($id);
-        $title->department_id = $request->department_id;
-        $title->parent_id = $request->parent_id;
+        $title = Title::withTrashed()->find($id);
         $title->code = $request->code;
         $title->name = $request->name;
-        $title->grade_id = $request->grade_id;
+        $title->shortname = $request->shortname;
+        $title->updated_by = Auth::id();
         $title->save();
 
         if (!$title) {
@@ -346,31 +344,52 @@ class TitleController extends Controller
         try {
             $title = Title::find($id);
             $title->delete();
-            $this->destroychild($title->id);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
         ], 200);
     }
 
-    function destroychild($parent_id){
-        $titles= Title::where('parent_id','=',$parent_id)->get();
-		foreach($titles as $title){
-            try {
-                Title::find($title->id)->delete();
-                $this->destroychild($title->id);
-            } catch (\Illuminate\Database\QueryException $e) {
-                
-            }
-		}
-		
+    public function restore($id)
+    {
+        try {
+            $title = Title::onlyTrashed()->find($id);
+            $title->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
     }
+
+    public function delete($id)
+    {
+        try {
+            $title = Title::onlyTrashed()->find($id);
+            $title->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
+        ], 200);
+    }
+    
     public function import()
     {
         return view('admin.title.import');
@@ -396,15 +415,13 @@ class TitleController extends Controller
         for ($row = 2; $row <= $highestRow; $row++){ 
             $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
             $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
-            $department_code = $sheet->getCellByColumnAndRow(2, $row)->getValue();
-            $department = Department::whereRaw("upper(code) = '$department_code'")->first();
+            $shortname = $sheet->getCellByColumnAndRow(2, $row)->getValue();
             if($code){
                 $data[] = array(
                     'index'=>$no,
-                    'department_id'=>$department?$department->id:0,
-                    'department_name' => $department?$department->name:'',
                     'code' => $code,
                     'name' => $name,
+                    'shortname' => $shortname,
                 );
                 $no++; 
             }
@@ -432,10 +449,10 @@ class TitleController extends Controller
             $cek = Title::whereRaw("upper(code) = '$title->code'")->first();
             if(!$cek){
                 $title = Title::create([
-                    'department_id' => $title->department_id,
-                    'parent_id' => 0,
                     'code' 	=> strtoupper($title->code),
-                    'name' => $title->name
+                    'name' => $title->name,
+                    'shortname' => $title->shortname,
+                    'updated_by'=> Auth::id()
                 ]);
             }
         }

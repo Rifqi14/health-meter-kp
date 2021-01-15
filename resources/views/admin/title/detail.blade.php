@@ -7,7 +7,6 @@
     .overlay-wrapper {
         position: relative;
     }
-
 </style>
 @endsection
 @push('breadcrump')
@@ -21,24 +20,26 @@
             <div class="box-header">
                 <h3 class="box-title">Detail Jabatan</h3>
                 <div class="pull-right box-tools">
-                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-                            class="fa fa-reply"></i></a>
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
                 </div>
             </div>
             <div class="box-body box-profile">
                 <input type="hidden" name="title_id" value="{{ $title->id }}">
                 <ul class="list-group list-group-unbordered">
                     <li class="list-group-item">
-                        <b>Bidang</b> <span class="pull-right">{{ isset($title->department->name)?$title->department->name:'Tidak Ada' }}</span>
-                    </li>
-                    <li class="list-group-item">
-                        <b>Jenjang</b> <span class="pull-right">{{ isset($title->grade->name)?$title->grade->name:'Tidak Ada' }}</span>
-                    </li>
-                    <li class="list-group-item">
                         <b>Nama</b> <span class="pull-right">{{ $title->name }}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>Dibuat</b> <span class="pull-right">{{ $title->created_at }}</span>
+                        <b>Nama Singkat</b> <span class="pull-right">{{ $title->shortname }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Kode</b> <span class="pull-right">{{ $title->code }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Terakhir Dirubah</b> <span class="pull-right">{{ $title->updated_at }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Dirubah Oleh</b> <span class="pull-right">{{ $title->updated_by ? $title->user->name : '' }}</span>
                     </li>
                 </ul>
 
@@ -74,40 +75,38 @@
                 </div>
                 <div class="tab-pane" id="role">
                     <div class="overlay-wrapper">
-                      <form id="form-role" class="form-horizontal" action="{{url('admin/title/assignrole')}}" method="post"
-                        autocomplete="off">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="title_role_id" value="{{$title->id}}" />
-                        <div class="form-group">
-                          <label class="col-sm-2 control-label">Role</label>
-                          <div class="col-sm-6">
-                            <div class="input-group">
-                              <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role"
-                                required />
-                              <div class="input-group-btn">
-                                <button class="btn btn-primary" type="submit">
-                                  <i class="fa fa-plus"></i>
-                                </button>
-                              </div>
+                        <form id="form-role" class="form-horizontal" action="{{url('admin/title/assignrole')}}" method="post" autocomplete="off">
+                            {{ csrf_field() }}
+                            <input type="hidden" name="title_role_id" value="{{$title->id}}" />
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Role</label>
+                                <div class="col-sm-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role" required />
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-primary" type="submit">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                          </div>
+                        </form>
+                        <table class="table table-bordered table-striped" id="table-role">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center" width="10">#</th>
+                                    <th width="100">Kode</th>
+                                    <th width="250">Nama</th>
+                                    <th width="10">#</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div class="overlay hidden">
+                            <i class="fa fa-refresh fa-spin"></i>
                         </div>
-                      </form>
-                      <table class="table table-bordered table-striped" id="table-role">
-                        <thead>
-                          <tr>
-                            <th style="text-align:center" width="10">#</th>
-                            <th width="100">Kode</th>
-                            <th width="250">Nama</th>
-                            <th width="10">#</th>
-                          </tr>
-                        </thead>
-                      </table>
-                      <div class="overlay hidden">
-                        <i class="fa fa-refresh fa-spin"></i>
-                      </div>
                     </div>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
