@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -33,15 +35,21 @@ class GradeController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $code = strtoupper($request->code);
+        $category = $request->category;
 
         //Count Data
-        $query = Grade::select('grades.*');
-        $query->whereRaw("upper(grades.name) like '%$name%'");
+        $query = Grade::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Grade::select('grades.*');
-        $query->whereRaw("upper(grades.name) like '%$name%'");
+        $query = Grade::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -106,7 +114,6 @@ class GradeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'inpatient_id'  => 'required',
             'code'      => 'required|unique:grades',
             'name'      => 'required'
         ]);
@@ -119,9 +126,9 @@ class GradeController extends Controller
         }
 
         $grade = Grade::create([
-            'inpatient_id'  => $request->inpatient_id,
-            'code' 	    => $request->code,
+            'code' 	    => strtoupper($request->code),
             'name' 	    => $request->name,
+            'updated_by'=> Auth::id()
         ]);
         if (!$grade) {
             return response()->json([
@@ -173,7 +180,6 @@ class GradeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'inpatient_id'  => 'required',
             'code'      => 'required|unique:grades,code,'.$id,
             'name'      => 'required'
         ]);
@@ -186,9 +192,9 @@ class GradeController extends Controller
         }
 
         $grade = Grade::find($id);
-        $grade->inpatient_id = $request->inpatient_id;
-        $grade->code = $request->code;
+        $grade->code = strtoupper($request->code);
         $grade->name = $request->name;
+        $grade->updated_by = Auth::id();
         $grade->save();
 
         if (!$grade) {
@@ -214,15 +220,49 @@ class GradeController extends Controller
         try {
             $grade = Grade::find($id);
             $grade->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $grade = Grade::onlyTrashed()->find($id);
+            $grade->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $grade = Grade::onlyTrashed()->find($id);
+            $grade->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

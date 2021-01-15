@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Grade extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
-    public function inpatient() {
-        return $this->hasOne('App\Models\Inpatient', 'id', 'inpatient_id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

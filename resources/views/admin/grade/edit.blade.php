@@ -2,53 +2,47 @@
 
 @section('title', 'Ubah Jenjang Jabatan')
 @push('breadcrump')
-    <li><a href="{{route('title.index')}}">Jenjang Jabatan</a></li>
-    <li class="active">Ubah</li>
+<li><a href="{{route('title.index')}}">Jenjang Jabatan</a></li>
+<li class="active">Ubah</li>
 @endpush
 @section('content')
 <div class="row">
-    <div class="col-lg-12">
+  <div class="col-lg-12">
     <div class="box box-primary">
-        <div class="box-header">
-          <h3 class="box-title">Ubah Jenjang Jabatan</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-            <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+      <div class="box-header">
+        <h3 class="box-title">Ubah Jenjang Jabatan</h3>
+        <!-- tools box -->
+        <div class="pull-right box-tools">
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+        </div>
+        <!-- /. tools -->
+      </div>
+      <div class="box-body">
+        <form id="form" action="{{route('grade.update',['id'=>$grade->id])}}" class="form-horizontal" method="post" autocomplete="off">
+          {{ csrf_field() }}
+          <input type="hidden" name="_method" value="put">
+          <div class="box-body">
+            <div class="form-group">
+              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{$grade->code}}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="{{$grade->name}}" required>
+              </div>
+            </div>
           </div>
-          <!-- /. tools -->
-        </div>
-        <div class="box-body">
-            <form id="form" action="{{route('grade.update',['id'=>$grade->id])}}" class="form-horizontal" method="post" autocomplete="off">
-               {{ csrf_field() }}
-               <input type="hidden" name="_method" value="put">
-                <div class="box-body">
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Hak Rawat Inap <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                      <input type="text" class="form-control" id="inpatient_id" name="inpatient_id" data-placeholder="Pilih Hak Rawat Inap" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                    <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{$grade->code}}" required>
-                    </div>
-                  </div>
-                  <div class="form-group">
-                    <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
-                    <div class="col-sm-6">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="{{$grade->name}}" required>
-                    </div>
-                  </div>
-                </div>
-              </form>
-        </div>
-        <div class="overlay hidden">
-          <i class="fa fa-refresh fa-spin"></i>
-        </div>
+        </form>
+      </div>
+      <div class="overlay hidden">
+        <i class="fa fa-refresh fa-spin"></i>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
 @endsection
 
@@ -56,40 +50,6 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $( "#inpatient_id" ).select2({
-        ajax: {
-          url: "{{route('inpatient.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $("#inpatient_id").select2('data',{id:{{$grade->inpatient_id}},text:'{{$grade->inpatient->name}}'}).trigger('change');
-      $(document).on("change", "#inpatient_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
 
       $("#form").validate({
         errorElement: 'span',

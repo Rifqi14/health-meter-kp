@@ -73,6 +73,8 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Grade
         Route::get('/grade/read', 'Admin\GradeController@read')->name('grade.read');
         Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
+        Route::get('/grade/restore/{id}', 'Admin\GradeController@restore')->name('grade.restore');
+        Route::get('/grade/delete/{id}', 'Admin\GradeController@delete')->name('grade.delete');
         Route::resource('/grade', 'Admin\GradeController');
         //Route Employee
         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
