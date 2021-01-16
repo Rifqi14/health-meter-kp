@@ -7,6 +7,7 @@ use App\Role;
 use App\Models\Employee;
 use App\Models\Title;
 use App\Models\RoleMenu;
+use App\Models\Workforce;
 use App\RoleTitle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -23,19 +24,20 @@ class AccessMenu
     public function handle($request, Closure $next)
     {
         if(Auth::guard('admin')->check()){
-            if(Auth::guard('admin')->user()->employee){
-                $employee  = Employee::select('titles.*')
-                                        ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
-                                        ->leftJoin('titles','titles.id','=','employee_movements.title_id')
-                                        ->whereNull('finish') 
-                                        ->where('employees.id',Auth::guard('admin')->user()->employee->id)
-                                        ->first();
-                $title = Title::find($employee->id);
+            if(Auth::guard('admin')->user()->workforce){
+                // $employee  = Employee::select('titles.*')
+                //                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
+                //                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
+                //                         ->whereNull('finish') 
+                //                         ->where('employees.id',Auth::guard('admin')->user()->employee->id)
+                //                         ->first();
+                $workforce = Workforce::with(['site', 'title'])->where('id', Auth::guard('admin')->user()->workforce->id)->first();
+                $title = Title::find($workforce->title->id);
                 $accessmenu = [];
                 $route = explode('.',Route::currentRouteName());
                 if($title){
                     $role_id = [];
-                    $roletitles = RoleTitle::where('title_id',$employee->id)->get();
+                    $roletitles = RoleTitle::where('title_id',$workforce->title->id)->get();
                     foreach($roletitles as $roletitle){
                         array_push($role_id,$roletitle->role_id);
                     }

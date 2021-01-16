@@ -11,6 +11,7 @@ use App\Models\Employee;
 use App\Models\RoleMenu;
 use App\RoleTitle;
 use App\Models\Title;
+use App\Models\Workforce;
 use Session;
 class PageAdmin
 {
@@ -24,18 +25,19 @@ class PageAdmin
     public function handle($request, Closure $next)
     {
         if (Auth::guard('admin')->check()) {
-            if(Auth::guard('admin')->user()->employee){
-                $employee  = Employee::with('site')->select('titles.*')
-                                        ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
-                                        ->leftJoin('titles','titles.id','=','employee_movements.title_id')
-                                        ->whereNull('finish') 
-                                        ->where('employees.id',Auth::guard('admin')->user()->employee->id)
-                                        ->first();
-                $title = Title::find($employee->id);
+            if(Auth::guard('admin')->user()->workforce){
+                // $employee  = Employee::with('site')->select('titles.*')
+                //                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
+                //                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
+                //                         ->whereNull('finish') 
+                //                         ->where('employees.id',Auth::guard('admin')->user()->employee->id)
+                //                         ->first();
+                $workforce = Workforce::with(['site', 'title'])->where('id', Auth::guard('admin')->user()->workforce->id)->first();
+                $title = Title::find($workforce->title->id);
                 if($title){
 
                     $role_id = [];
-                    $roletitles = RoleTitle::with('role')->where('title_id','=',$employee->id)->get();
+                    $roletitles = RoleTitle::with('role')->where('title_id','=',$workforce->title->id)->get();
                     $data_manager = 0;
                     foreach($roletitles as $roletitle){
                         if($roletitle->role->data_manager){
@@ -51,10 +53,10 @@ class PageAdmin
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        if(Auth::guard('admin')->user()->employee->site){
+                        if(Auth::guard('admin')->user()->workforce->site){
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $data_manager);
-                            View::share('siteinfo', Auth::guard('admin')->user()->employee->site);
+                            View::share('siteinfo', Auth::guard('admin')->user()->workforce->site);
                         }
                         else{
                             return redirect('/admin/error');
@@ -70,10 +72,10 @@ class PageAdmin
                             ->orderBy('menus.menu_sort', 'asc')
                             ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                             ->get();
-                            if( Auth::guard('admin')->user()->employee->site){
+                            if( Auth::guard('admin')->user()->workforce->site){
                                 View::share('menuaccess', $rolemenus);
                                 View::share('accesssite', $role->data_manager);
-                                View::share('siteinfo',  Auth::guard('admin')->user()->employee->site);
+                                View::share('siteinfo',  Auth::guard('admin')->user()->workforce->site);
                             }
                             else{
                                 return redirect('/admin/error');
@@ -95,10 +97,10 @@ class PageAdmin
                         ->orderBy('menus.menu_sort', 'asc')
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
-                        if( Auth::guard('admin')->user()->employee->site){
+                        if( Auth::guard('admin')->user()->workforce->site){
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $role->data_manager);
-                            View::share('siteinfo',  Auth::guard('admin')->user()->employee->site);
+                            View::share('siteinfo',  Auth::guard('admin')->user()->workforce->site);
                         }
                         else{
                             return redirect('/admin/error');

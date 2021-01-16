@@ -20,7 +20,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'username', 'password', 'status'
+        'name', 'email', 'username', 'password', 'status', 'workforce_id'
     ];
 
     /**
@@ -65,5 +65,9 @@ class User extends Authenticatable implements JWTSubject
     public function employee()
     {
         return $this->hasOne('App\Models\Employee', 'id', 'employee_id');
+    }
+    public function workforce()
+    {
+        return $this->hasOne('App\Models\Workforce', 'id', 'workforce_id');
     }
 }

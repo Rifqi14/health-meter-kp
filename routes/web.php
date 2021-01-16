@@ -458,6 +458,16 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
         Route::resource('/subdepartment', 'Admin\SubDepartmentController');
+
+        // Workforce
+        Route::get('/workforce/read', 'Admin\WorkforceController@read')->name('workforce.read');
+        Route::get('/workforce/select', 'Admin\WorkforceController@select')->name('workforce.select');
+        Route::get('/workforce/restore/{id}', 'Admin\WorkforceController@restore')->name('workforce.restore');
+        Route::get('/workforce/delete/{id}', 'Admin\WorkforceController@delete')->name('workforce.delete');
+        Route::get('/workforce/import', 'Admin\WorkforceController@import')->name('workforce.import');
+        Route::post('/workforce/preview', 'Admin\WorkforceController@preview')->name('workforce.preview');
+        Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
+        Route::resource('/workforce', 'Admin\WorkforceController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
