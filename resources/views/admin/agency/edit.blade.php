@@ -27,14 +27,20 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode"
-                  value="{{ $agency->code }}" required>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required readonly>
               </div>
             </div>
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Name <b class="text-danger">*</b></label>
+              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode"
+                  value="{{ $agency->code }}" required readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="name" name="name" placeholder="Name"
                   value="{{ $agency->name }}" required>
@@ -94,6 +100,44 @@
          }
       });
       $("select[name=authentication]").trigger('change');
+      $("#site_id").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      @if($agency->site)
+      $("#site_id").select2('data',{id:{{$agency->site->id}},text:'{{$agency->site->name}}'}).trigger('change');
+      @endif
+      $(document).on("change", "#site_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',

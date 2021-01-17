@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Agency;
+use App\Models\Site;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -35,11 +36,19 @@ class AgencyController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $arsip = $request->category;
-
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
         //Count Data
         $query = Agency::with(['user', 'site'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
@@ -47,6 +56,12 @@ class AgencyController extends Controller
         $query = Agency::with(['user', 'site'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -114,7 +129,8 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'code'          => 'required|unique:agencies',
             'name'          => 'required',
-            'authentication'=> 'required'
+            'authentication'=> 'required',
+            'site_id'       => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -123,20 +139,20 @@ class AgencyController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-
-        try {
-            $agency = Agency::create([
-                'code'          => $request->code,
-                'name'          => $request->name,
-                'authentication'=> $request->authentication,
-                'host'          => $request->authentication == 'ldap'?$request->host:null,
-                'port'          => $request->authentication == 'ldap'?$request->port:null,
-                'updated_by'    => Auth::id()
-            ]);
-        } catch (QueryException $ex) {
+        $site = Site::find($request->site_id);
+        $agency = Agency::create([
+            'code'          => $site->code.strtoupper($request->code),
+            'name'          => $request->name,
+            'authentication'=> $request->authentication,
+            'host'          => $request->authentication == 'ldap'?$request->host:null,
+            'port'          => $request->authentication == 'ldap'?$request->port:null,
+            'updated_by'    => Auth::id(),
+            'site_id'       => $request->site_id,
+        ]);
+        if (!$agency) {
             return response()->json([
-                'status'      => false,
-                'message'     => $ex->errorInfo[2]
+                'status' => false,
+                'message' 	=> $agency
             ], 400);
         }
         return response()->json([
@@ -200,7 +216,7 @@ class AgencyController extends Controller
         }
 
         $agency = Agency::find($id);
-        $agency->code           = $request->code;
+        //$agency->code           = $request->code;
         $agency->name           = $request->name;
         $agency->authentication = $request->authentication;
         $agency->host           = $request->authentication == 'ldap'?$request->host:null;

@@ -17,6 +17,6 @@ class Agency extends Model
     }
     public function site()
     {
-        return $this->belongsToMany(Site::class, 'agency_sites');
+        return $this->hasOne('App\Models\Site', 'id', 'site_id');
     }
 }

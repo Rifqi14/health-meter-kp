@@ -23,25 +23,25 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->department->site->name}}</p>
               </div>
             </div>
             <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
+              <label for="department_id" class="col-sm-2 control-label">Bidang</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->department->name}}</p>
               </div>
             </div>
             <div class="form-group">
-              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="code" class="col-sm-2 control-label">Kode</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->code}}</p>
               </div>
             </div>
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
+              <label for="name" class="col-sm-2 control-label">Nama</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->name}}</p>
               </div>
