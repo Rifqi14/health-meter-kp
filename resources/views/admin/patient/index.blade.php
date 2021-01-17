@@ -1,26 +1,23 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Workforce')
+@section('title', 'Pasien')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Workforce</li>
+<li class="active">Pasien</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Workforce</h3>
+        <h3 class="box-title">Data Pasien</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('workforce.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
+          <a href="{{route('patient.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
-          {{-- <a href="{{route('workforce.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
-          <i class="fa fa-upload"></i>
-          </a> --}}
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -33,8 +30,7 @@
             <tr>
               <th width="10">#</th>
               <th width="200">Nama</th>
-              <th width="200">Kelompok Workforce</th>
-              <th width="200">Instansi</th>
+              <th width="200">Status</th>
               <th width="200">Unit</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
@@ -70,26 +66,14 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="nid">NID</label>
-                <input type="text" name="nid" class="form-control" placeholder="NID">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="agency_id">Instansi</label>
-                <input type="text" name="agency_id" id="agency_id" class="form-control" data-placeholder="Instansi">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
-                <input type="text" name="workforce_group_id" id="workforce_group_id" class="form-control" data-placeholder="Kelompok Workforce">
+                <label class="control-label" for="status">Status</label>
+                <input type="text" name="status" class="form-control" placeholder="Status">
               </div>
             </div>
             <div class="col-md-12">
               <div class="form-group">
                 <label class="control-label" for="site_id">Unit</label>
-                <input type="text" name="site_id" id="site_id" class="form-control" data-placeholder="Unit">
+                <input type="text" name="site_id" id="site_id" class="form-control" placeholder="Unit">
               </div>
             </div>
             <div class="col-md-12">
@@ -121,112 +105,44 @@
   }
   $(function(){
     $(".select2").select2();
+      $("#site_id").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#site_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
     $('#form-search').submit(function(e){
       e.preventDefault();
       dataTable.draw();
       $('#add-filter').modal('hide');
-    });
-    $("#site_id").select2({
-      ajax: {
-          url: "{{route('site.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-          return {
-              name:term,
-              page:page,
-              limit:30,
-              data_manager:{{$accesssite}},
-              site_id : {{$siteinfo->id}}
-          };
-          },
-          results: function (data,page) {
-          var more = (page * 30) < data.total;
-          var option = [];
-          $.each(data.rows,function(index,item){
-              option.push({
-              id:item.id,  
-              text: `${item.name}`
-              });
-          });
-          return {
-              results: option, more: more,
-          };
-          },
-      },
-      allowClear: true,
-    });
-    $(document).on("change", "#site_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
-    });
-    $("#workforce_group_id").select2({
-      ajax: {
-          url: "{{route('workforcegroup.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-          return {
-              name:term,
-              page:page,
-              limit:30
-          };
-          },
-          results: function (data,page) {
-          var more = (page * 30) < data.total;
-          var option = [];
-          $.each(data.rows,function(index,item){
-              option.push({
-              id:item.id,  
-              text: `${item.name}`
-              });
-          });
-          return {
-              results: option, more: more,
-          };
-          },
-      },
-      allowClear: true,
-    });
-    $(document).on("change", "#workforce_group_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
-    });
-    $("#agency_id").select2({
-      ajax: {
-          url: "{{route('agency.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-          return {
-              name:term,
-              page:page,
-              limit:30
-          };
-          },
-          results: function (data,page) {
-          var more = (page * 30) < data.total;
-          var option = [];
-          $.each(data.rows,function(index,item){
-              option.push({
-              id:item.id,  
-              text: `${item.name}`
-              });
-          });
-          return {
-              results: option, more: more,
-          };
-          },
-      },
-      allowClear: true,
-    });
-    $(document).on("change", "#agency_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
-    });
+    })
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -235,21 +151,17 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 8, "asc" ]],
+        order: [[ 7, "asc" ]],
         ajax: {
-            url: "{{route('workforce.read')}}",
+            url: "{{route('patient.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
-              var nid = $('#form-search').find('input[name=nid]').val();
-              var agency_id = $('#form-search').find('input[name=agency_id]').val();
-              var workforce_group_id = $('#form-search').find('input[name=workforce_group_id]').val();
+              var status = $('#form-search').find('input[name=status]').val();
               var site_id = $('#form-search').find('input[name=site_id]').val();
               var category = $('#form-search').find('select[name=category]').val();
               data.name = name;
-              data.nid = nid;
-              data.agency_id = agency_id;
-              data.workforce_group_id = workforce_group_id;
+              data.status = status;
               data.site_id = site_id;
               data.category = category;
             }
@@ -258,23 +170,23 @@
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [6,7,8] },
-            { render: function ( data, type, row) {
-              return `${row.name}<br><small>${row.nid}</small>`
-            },targets: [1] },
-            { render: function ( data, type, row) {
-              return `${row.workforce_group_id ? row.workforcegroup.name : ''}`
-            },targets: [2] },
-            { render: function ( data, type, row) {
-              return `${row.agency_id ? row.agency.name : ''}`
-            },targets: [3] },
-            { render: function ( data, type, row) {
-              return `${row.site_id ? row.site.name : ''}`
-            },targets: [4] },
+            { className: "text-right", targets: [0,4] },
+            { className: "text-center", targets: [5,6,7] },
             { render: function ( data, type, row ) {
-                  return `<span class="label bg-blue">${row.updatedby ? row.updatedby.name : ''}</span>`
-            },targets: [6]
+              return `${row.name}<br><small>${row.nid}</small>`
+            },targets: [1]
+            },
+            { render: function ( data, type, row ) {
+              return row.status ? `${row.status}<br><small>dari <b>${row.workforce_id ? row.workforce.name : ''}</b></small>` : ``
+            },targets: [2]
+            },
+            { render: function ( data, type, row ) {
+              return `<span class="label bg-blue">${row.site_id ? row.site.name : ''}</span>`
+            },targets: [3]
+            },
+            { render: function ( data, type, row ) {
+                  return `<span class="label bg-blue">${row.updated_by ? row.updatedby.name : ''}</span>`
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -283,7 +195,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [7]
+            },targets: [6]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -295,20 +207,18 @@
                             `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
-                            `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                            <li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/patient')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
                       </div>`
-            },targets: [8]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
             { data: "name" },
-            { data: "workforce_group_id" },
-            { data: "agency_id" },
+            { data: "status" },
             { data: "site_id" },
             { data: "updated_at" },
             { data: "updated_by" },
@@ -329,13 +239,13 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengarsipkan Workforce?',
+          title:'Mengarsipkan Pasien?',
           message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
           callback: function(result) {
             if(result) {
               var data = { _token: "{{ csrf_token() }}" };
               $.ajax({
-                url: `{{url('admin/workforce')}}/${id}`,
+                url: `{{url('admin/patient')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'DELETE',
@@ -388,7 +298,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengembalikan Workforce?',
+          title:'Mengembalikan Pasien?',
           message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -396,7 +306,7 @@
                               _token: "{{ csrf_token() }}"
                           };
               $.ajax({
-                url: `{{url('admin/workforce/restore')}}/${id}`,
+                url: `{{url('admin/patient/restore')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'GET',
@@ -449,7 +359,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus Workforce?',
+          title:'Menghapus Pasien?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {
@@ -457,7 +367,7 @@
                               _token: "{{ csrf_token() }}"
                           };
               $.ajax({
-                url: `{{url('admin/workforce/delete')}}/${id}`,
+                url: `{{url('admin/patient/delete')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'GET',
