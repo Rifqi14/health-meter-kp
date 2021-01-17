@@ -1,42 +1,39 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Penanggung Jawab')
+@section('title', 'Detail Penanggung Jawab')
 @push('breadcrump')
 <li><a href="{{route('guarantor.index')}}">Penanggung Jawab</a></li>
-<li class="active">Tambah</li>
+<li class="active">Detail</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Penanggung Jawab</h3>
+        <h3 class="box-title">Detail Penanggung Jawab</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
           <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
               class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('guarantor.store')}}" class="form-horizontal" method="post" autocomplete="off">
+        <form id="form" action="{{route('guarantor.update', ['id' => $guarantor->id])}}" class="form-horizontal"
+          method="post" autocomplete="off">
           {{ csrf_field() }}
+          @method('PUT')
           <div class="box-body">
-
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+              <label for="position_code" class="col-sm-2 control-label">Distrik</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik"
-                  required>
+                <p class="form-control-static">{{$guarantor->site->name}}</p>
               </div>
             </div>
             <div class="form-group">
-              <label for="title_id" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
+              <label for="position_code" class="col-sm-2 control-label">Jabatan</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan"
-                  required>
+                <p class="form-control-static">{{$guarantor->title->name}}</p>
               </div>
             </div>
           </div>
@@ -64,8 +61,6 @@
               name:term,
               page:page,
               limit:30,
-              data_manager:{{$accesssite}},
-              site_id : {{$siteinfo->id}}
             };
           },
           results: function (data,page) {
@@ -85,39 +80,6 @@
         allowClear: true,
       });
       $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $( "#title_id" ).select2({
-        ajax: {
-          url: "{{route('title.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name} - ${item.code}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#title_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -186,6 +148,9 @@
           })		
         }
       });
+      @if(isset($guarantor->site_id))
+      $("#site_id").select2('data',{id:{{$guarantor->site->id}},text:'{{$guarantor->site->name}}'}).trigger('change');
+      @endif
   });
 </script>
 @endpush

@@ -19,4 +19,8 @@ class Guarantor extends Model
     {
         return $this->belongsTo(Site::class, 'site_id');
     }
+    public function title()
+    {
+        return $this->belongsTo(Title::class, 'title_id');
+    }
 }

@@ -231,7 +231,11 @@ class RoleController extends Controller
                     RoleMenu::create([
                         'role_id' => $id,
                         'menu_id' => $menu->id,
-                        'role_access' => 0
+                        'role_access' => 0,
+                        'create' => 0,
+                        'read' => 0,
+                        'update' => 0,
+                        'delete' => 0,
                     ]);
                 }
             }
@@ -253,7 +257,11 @@ class RoleController extends Controller
                     RoleDashboard::create([
                         'role_id' => $id,
                         'dashboard_id' => $dashboard->id,
-                        'role_access' => 0
+                        'role_access' => 0,
+                        'create' => 0,
+                        'read' => 0,
+                        'update' => 0,
+                        'delete' => 0,
                     ]);
                 }
             }

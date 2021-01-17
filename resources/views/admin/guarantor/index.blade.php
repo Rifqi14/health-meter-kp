@@ -29,12 +29,11 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Kode</th>
-              <th width="200">Unit</th>
-              <th width="200">NID</th>
+              <th width="100">Distrik</th>
+              <th width="200">Jabatan</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
-              <th width="100">Status</th>
+              <th width="50">Status</th>
               <th width="10">#</th>
             </tr>
           </thead>
@@ -61,10 +60,10 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="name">Nama</label>
-                <input type="text" name="name" class="form-control" placeholder="Nama">
+                  <label for="site" class="control-label">Distrik</label>
+                  <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
               </div>
-            </div>
+          </div>
             <div class="col-md-12">
               <div class="form-group">
                 <label for="name" class="control-label">Arsip Kelompok</label>
@@ -100,6 +99,36 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+    });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -108,30 +137,36 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 7, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('guarantor.read')}}",
             type: "GET",
             data:function(data){
-              var name = $('#form-search').find('input[name=name]').val();
+              var site = $('#form-search').find('input[name=site]').val();
               var category = $('#form-search').find('select[name=category]').val();
-              data.name = name;
               data.category = category;
+              data.site = site;
+              data.data_manager = {{$accesssite}};
+              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,4] },
-            { className: "text-center", targets: [5,6,7] },
+            { className: "text-right", targets: [0] },
+            { className: "text-center", targets: [5,6] },
             { render: function ( data, type, row ) {
-                  return `<span class="label bg-blue">${row.site ? row.site.name : ''}</span>`
+                  return `${row.site.name}`
+            },targets: [1]
+            },
+            { render: function ( data, type, row ) {
+                  return `${row.title.name} <br> <small>${row.title.code}</small>`
             },targets: [2]
             },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [5]
+            },targets: [4]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -140,7 +175,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [6]
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -152,19 +187,18 @@
                             `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
-                            `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
                       </div>`
-            },targets: [7]
+            },targets: [6]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "position_code" },
             { data: "site_id" },
-            { data: "nid" },
+            { data: "title_id" },
             { data: "updated_at" },
             { data: "updated_by" },
             { data: "deleted_at" },

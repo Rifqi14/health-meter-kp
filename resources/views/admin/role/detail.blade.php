@@ -70,7 +70,11 @@
                   <tr>
                       <th style="text-align:center" width="10">#</th>
                       <th width="250" >Nama Modul</th>
-                      <th width="50"  style="text-align:center">#</th>
+                      <th width="50"  style="text-align:center">Tampil</th>
+                      <th width="50"  style="text-align:center">C</th>
+                      <th width="50"  style="text-align:center">R</th>
+                      <th width="50"  style="text-align:center">U</th>
+                      <th width="50"  style="text-align:center">D</th>
                   </tr>
               </thead>
               <tbody>
@@ -88,6 +92,14 @@
                           @endif
                           </td>
                       <td style="text-align:center" ><input type="checkbox" value="{{$rolemenu->id}}" class="i-checks updatemenu" @if($rolemenu->role_access) checked @endif autocomplete="off"/></td>
+                          @if($rolemenu->parent_id)
+                          <td style="text-align:center" ><input type="checkbox" value="{{$rolemenu->id}}" class="i-checks create" @if($rolemenu->create) checked @endif autocomplete="off"/></td>
+                          <td style="text-align:center" ><input type="checkbox" value="{{$rolemenu->id}}" class="i-checks read" @if($rolemenu->read) checked @endif autocomplete="off"/></td>
+                          <td style="text-align:center" ><input type="checkbox" value="{{$rolemenu->id}}" class="i-checks update" @if($rolemenu->update) checked @endif autocomplete="off"/></td>
+                          <td style="text-align:center" ><input type="checkbox" value="{{$rolemenu->id}}" class="i-checks delete" @if($rolemenu->delete) checked @endif autocomplete="off"/></td>
+                          @else
+                          <td colspan="4"></td>
+                          @endif
                   </tr>	
                   @endforeach
               </tbody>
@@ -145,7 +157,8 @@
 				data: {
           _token: "{{ csrf_token() }}",
 					id:this.value,
-					role_access:this.checked?1:0
+					type:'access',
+					checked:this.checked?1:0
 				},
 				type:'POST',
 				dataType:'json',
@@ -183,7 +196,186 @@
           });
       })
 		});
+    $('.create').on('ifChanged',function(){
+			$.ajax({
+				url: "{{url('admin/rolemenu/update')}}",
+				data: {
+          _token: "{{ csrf_token() }}",
+					id:this.value,
+          type:'create',
+					checked:this.checked?1:0
+				},
+				type:'POST',
+				dataType:'json',
+        beforeSend:function(){
+          $('#menuweb .overlay').removeClass('hidden');
+        }
+			}).done(function(response){
+          $('#menuweb .overlay').addClass('hidden');
+          if(response.status){
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+          }
+          else{	
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+          return;
 
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('#menuweb  .overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      })
+    });
+    $('.read').on('ifChanged',function(){
+			$.ajax({
+				url: "{{url('admin/rolemenu/update')}}",
+				data: {
+          _token: "{{ csrf_token() }}",
+					id:this.value,
+					type:'read',
+					checked:this.checked?1:0
+				},
+				type:'POST',
+				dataType:'json',
+        beforeSend:function(){
+          $('#menuweb .overlay').removeClass('hidden');
+        }
+			}).done(function(response){
+          $('#menuweb .overlay').addClass('hidden');
+          if(response.status){
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+          }
+          else{	
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+          return;
+
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('#menuweb  .overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      })
+    });
+    $('.update').on('ifChanged',function(){
+			$.ajax({
+				url: "{{url('admin/rolemenu/update')}}",
+				data: {
+          _token: "{{ csrf_token() }}",
+          id:this.value,
+          type:'update',
+					checked:this.checked?1:0
+				},
+				type:'POST',
+				dataType:'json',
+        beforeSend:function(){
+          $('#menuweb .overlay').removeClass('hidden');
+        }
+			}).done(function(response){
+          $('#menuweb .overlay').addClass('hidden');
+          if(response.status){
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+          }
+          else{	
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+          return;
+
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('#menuweb  .overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      })
+    });
+    $('.delete').on('ifChanged',function(){
+			$.ajax({
+				url: "{{url('admin/rolemenu/update')}}",
+				data: {
+          _token: "{{ csrf_token() }}",
+          id:this.value,
+          type:'delete',
+					checked:this.checked?1:0
+				},
+				type:'POST',
+				dataType:'json',
+        beforeSend:function(){
+          $('#menuweb .overlay').removeClass('hidden');
+        }
+			}).done(function(response){
+          $('#menuweb .overlay').addClass('hidden');
+          if(response.status){
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+          }
+          else{	
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+          return;
+
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('#menuweb  .overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      })
+		});
     $('.updatedashboard').on('ifChanged',function(){
 			$.ajax({
 				url: "{{url('admin/roledashboard/update')}}",

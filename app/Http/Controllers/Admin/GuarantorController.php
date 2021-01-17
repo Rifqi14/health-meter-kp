@@ -33,18 +33,18 @@ class GuarantorController extends Controller
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $name = strtoupper($request->name);
+        $title_id = $request->title_id;
         $arsip = $request->category;
 
         //Count Data
-        $query = Guarantor::with(['user', 'site'])->whereRaw("upper(nid) like '%$name%'");
+        $query = Guarantor::with(['user', 'site','title']);
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Guarantor::with(['user', 'site'])->whereRaw("upper(nid) like '%$name%'");
+        $query = Guarantor::with(['user', 'site','title']);
         if ($arsip) {
             $query->onlyTrashed();
         }
@@ -112,8 +112,7 @@ class GuarantorController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'position_code'      => 'required|unique:guarantors',
-            'nid'       => 'required|unique:guarantors',
+            'title_id'  => 'required',
             'site_id'   => 'required'
         ]);
 
@@ -123,18 +122,15 @@ class GuarantorController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-
-        try {
-            $guarantor = Guarantor::create([
-                'site_id'       => $request->site_id,
-                'position_code' => $request->position_code,
-                'nid'           => $request->nid,
-                'updated_by'    => Auth::id()
-            ]);
-        } catch (QueryException $ex) {
+        $guarantor = Guarantor::create([
+            'site_id'       => $request->site_id,
+            'title_id'      => $request->title_id,
+            'updated_by'    => Auth::id()
+        ]);
+        if (!$guarantor) {
             return response()->json([
-                'status'      => false,
-                'message'     => $ex->errorInfo[2]
+                'status' => false,
+                'message' 	=> $guarantor
             ], 400);
         }
         return response()->json([
@@ -151,7 +147,12 @@ class GuarantorController extends Controller
      */
     public function show($id)
     {
-        //
+        $guarantor = Guarantor::with(['site','user'])->withTrashed()->find($id);
+        if ($guarantor) {
+            return view('admin.guarantor.detail', compact('guarantor'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
