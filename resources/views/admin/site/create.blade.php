@@ -41,7 +41,7 @@
           <div class="form-group">
             <label for="logo" class="col-sm-2 control-label">Logo </label>
             <div class="col-sm-6">
-              <input type="file" class="form-control" name="logo" id="logo" accept="image/*" required />
+              <input type="file" class="form-control" name="logo" id="logo" accept="image/*" />
             </div>
           </div>
         </form>

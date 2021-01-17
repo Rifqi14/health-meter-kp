@@ -135,8 +135,7 @@ class SiteController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code'              => 'required|unique:sites',
-            'name'              => 'required',
-            'logo'              => 'required|mimes:png',
+            'name'              => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -198,8 +197,7 @@ class SiteController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code'              => 'required|unique:sites,code,' . $id,
-            'name'              => 'required',
-            'logo'              => 'required|mimes:png',
+            'name'              => 'required'
         ]);
 
         if ($validator->fails()) {
