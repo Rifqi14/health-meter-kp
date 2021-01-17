@@ -85,13 +85,20 @@ class DepartmentController extends Controller
         $start = $request->page?$request->page - 1:0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $site_id = $request->site_id;
 
         //Count Data
         $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $departments = $query->get();
@@ -130,16 +137,16 @@ class DepartmentController extends Controller
             'site_id'      => 'required',
         ]);
         
-        $site = Site::find($request->site_id);
         if ($validator->fails()) {
-        	return response()->json([
-        		'status' 	=> false,
+            return response()->json([
+                'status' 	=> false,
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
+        $site = Site::find($request->site_id);
 
         $department = Department::create([
-            'code' 	    => $site->code.$request->code,
+            'code' 	    => $site->code.strtoupper($request->code),
             'name' 	    => $request->name,
             'site_id' 	=> $request->site_id,
             'updated_by'=> Auth::id()

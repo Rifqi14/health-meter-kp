@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Sub Divisi Bidang')
+@section('title', 'Sub Bidang')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Sub Divisi Bidang</li>
+<li class="active">Sub Bidang</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Sub Divisi Bidang</h3>
+        <h3 class="box-title">Data Sub Bidang</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <a href="{{route('subdepartment.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
@@ -29,10 +29,11 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Parent Divisi</th>
+              <th width="100">Distrik</th>
+              <th width="150">Bidang</th>
               <th width="200">Nama</th>
-              <th width="100">Terakhir Dirubah</th>
-              <th width="100">Dirubah Oleh</th>
+              <th width="150">Terakhir Dirubah</th>
+              <th width="150">Dirubah Oleh</th>
               <th width="100">Status</th>
               <th width="10">#</th>
             </tr>
@@ -65,6 +66,12 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
+                  <label for="site" class="control-label">Distrik</label>
+                  <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
                 <label for="name" class="control-label">Arsip Kelompok</label>
                 <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
                   <option value="">Non-Arsip</option>
@@ -92,6 +99,36 @@
   }
   $(function(){
     $(".select2").select2();
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+    });
     $('#form-search').submit(function(e){
       e.preventDefault();
       dataTable.draw();
@@ -105,34 +142,41 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 6, "asc" ]],
+        order: [[ 7, "asc" ]],
         ajax: {
             url: "{{route('subdepartment.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
               var category = $('#form-search').find('select[name=category]').val();
+              var site = $('#form-search').find('input[name=site]').val();
               data.name = name;
               data.category = category;
+              data.site = site;
+              data.data_manager = {{$accesssite}};
+              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
-                orderable: false,targets:[0]
+                orderable: false,targets:[0,1,5]
             },
-            { className: "text-right", targets: [0,3] },
-            { className: "text-center", targets: [4,5,6] },
+            { className: "text-right", targets: [0,5] },
+            { className: "text-center", targets: [6,6,7] },
+            { render:function( data, type, row ) {
+              return `${row.department ? row.department.site.name : ''}`
+            },targets: [1] },
             { render: function ( data, type, row ) {
-                  return `<p>${row.department ? row.department.name + '<br>' + row.department.code : ''}</p>`
-            },targets: [1]
-            },
-            { render: function ( data, type, row ) {
-                  return `<p>${row.name + '<br>' + row.code}</p>`
+                  return `${row.department ? row.department.name : ''}`
             },targets: [2]
             },
             { render: function ( data, type, row ) {
+                  return `<p>${row.name + '<br>' + row.code}</p>`
+            },targets: [3]
+            },
+            { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [4]
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -141,7 +185,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [5]
+            },targets: [6]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -150,19 +194,22 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/subdepartment')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/subdepartment')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/subdepartment')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
                       </div>`
-            },targets: [6]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
+            { data: "site_name" },
             { data: "department_id" },
             { data: "name" },
             { data: "updated_at" },
@@ -184,7 +231,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengarsipkan Sub Divisi Bidang?',
+          title:'Mengarsipkan Sub Bidang?',
           message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -243,7 +290,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengembalikan Sub Divisi Bidang?',
+          title:'Mengembalikan Sub Bidang?',
           message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -304,7 +351,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus Sub Divisi Bidang?',
+          title:'Menghapus Sub Bidang?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {

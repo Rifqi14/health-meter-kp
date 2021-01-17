@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\SubDepartment;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -35,18 +36,34 @@ class SubDepartmentController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $arsip = $request->category;
-
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
         //Count Data
-        $query = SubDepartment::with(['user', 'department'])->whereRaw("upper(name) like '%$name%'");
+        $query = SubDepartment::with(['user', 'department'])->whereRaw("upper(sub_departments.name) like '%$name%'");
+        $query->leftJoin('departments','departments.id','=','sub_departments.department_id');
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = SubDepartment::with(['user', 'department'])->whereRaw("upper(name) like '%$name%'");
+        $query = SubDepartment::with(['user', 'department'])->select('sub_departments.*')->whereRaw("upper(sub_departments.name) like '%$name%'");
+        $query->leftJoin('departments','departments.id','=','sub_departments.department_id');
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -56,6 +73,7 @@ class SubDepartmentController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
+            $result->site_name = $result->department->site->name;
             $data[] = $result;
         }
         return response()->json([
@@ -115,6 +133,7 @@ class SubDepartmentController extends Controller
             'code'          => 'required|unique:sub_departments',
             'department_id' => 'required',
             'name'          => 'required',
+            'site_id'       => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -123,18 +142,17 @@ class SubDepartmentController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-
-        try {
-            $subdepartment = SubDepartment::create([
-                'department_id' => $request->department_id,
-                'code'          => strtoupper($request->code),
-                'name'          => $request->name,
-                'updated_by'    => Auth::id(),
-            ]);
-        } catch (QueryException $ex) {
+        $department = Department::find($request->department_id);
+        $subdepartment = SubDepartment::create([
+            'department_id' => $request->department_id,
+            'code'          => $department->code.strtoupper($request->code),
+            'name'          => $request->name,
+            'updated_by'    => Auth::id(),
+        ]);
+        if (!$subdepartment) {
             return response()->json([
-                'status'      => false,
-                'message'     => $ex->errorInfo[2]
+                'status' => false,
+                'message' 	=> $subdepartment
             ], 400);
         }
         return response()->json([
@@ -151,7 +169,13 @@ class SubDepartmentController extends Controller
      */
     public function show($id)
     {
-        //
+        $subdepartment = SubDepartment::with('department')->withTrashed()->find($id);
+        if($subdepartment){
+            return view('admin.subdepartment.detail',compact('subdepartment'));
+        }
+        else{
+            abort(404);
+        }
     }
 
     /**
@@ -194,7 +218,7 @@ class SubDepartmentController extends Controller
 
         $subdepartment = SubDepartment::withTrashed()->find($id);
         $subdepartment->department_id = $request->department_id;
-        $subdepartment->code = strtoupper($request->code);
+        //$subdepartment->code = strtoupper($request->code);
         $subdepartment->name = $request->name;
         $subdepartment->updated_by = Auth::id();
         $subdepartment->save();

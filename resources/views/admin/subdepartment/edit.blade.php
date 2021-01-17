@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Sub Divisi Bidang')
+@section('title', 'Ubah Sub Bidang')
 @push('breadcrump')
-<li><a href="{{route('subdepartment.index')}}">Sub Divisi Bidang</a></li>
+<li><a href="{{route('subdepartment.index')}}">Sub Bidang</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('content')
@@ -10,7 +10,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Sub Divisi Bidang</h3>
+        <h3 class="box-title">Ubah Sub Bidang</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
@@ -24,15 +24,21 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Parent Department <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="department_id" name="department_id" placeholder="Parent Department" aria-placeholder="Pilih Parent" value="{{ $subdepartment->department_id }}" required>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="department_id" name="department_id" placeholder="Bidang" aria-placeholder="Pilih Parent" value="{{ $subdepartment->department_id }}" required readonly>
               </div>
             </div>
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $subdepartment->code }}" required>
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $subdepartment->code }}" required readonly>
               </div>
             </div>
             <div class="form-group">
@@ -56,6 +62,39 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+    $("#site_id").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      @if($subdepartment->department->site)
+      $("#site_id").select2('data',{id:{{$subdepartment->department->site->id}},text:'{{$subdepartment->department->site->name}}'}).trigger('change');
+      @endif
       $( "#department_id" ).select2({
         ajax: {
           url: "{{url('admin/department/select')}}",

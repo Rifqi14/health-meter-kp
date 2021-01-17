@@ -152,7 +152,7 @@ $(function(){
         },
         columnDefs:[
             {
-                orderable: false,targets:[0]
+                orderable: false,targets:[0,1,4]
             },
             { className: "text-right", targets: [0] },
             { className: "text-center", targets: [5,6] },
