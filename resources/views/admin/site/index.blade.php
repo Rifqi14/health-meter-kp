@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Unit')
+@section('title', 'Distrik')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Unit</li>
+<li class="active">Distrik</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Data Unit</h3>
+                <h3 class="box-title">Data Distrik</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     <a href="{{route('site.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">

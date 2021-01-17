@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Unit')
+@section('title', 'Tambah Distrik')
 @push('breadcrump')
-<li><a href="{{route('site.index')}}">Unit</a></li>
+<li><a href="{{route('site.index')}}">Distrik</a></li>
 <li class="active">Tambah</li>
 @endpush
 @section('stylesheets')
@@ -15,7 +15,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Unit</h3>
+        <h3 class="box-title">Tambah Distrik</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
