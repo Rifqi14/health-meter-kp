@@ -29,7 +29,6 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Kode</th>
               <th width="200">Name</th>
               <th width="100">Authentikasi</th>
               <th width="200">Link</th>
@@ -109,7 +108,7 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 7, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('agency.read')}}",
             type: "GET",
@@ -124,8 +123,14 @@
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,5] },
-            { className: "text-center", targets: [6,7,8] },
+            { className: "text-right", targets: [0] },
+            { className: "text-center", targets: [6,7] },
+            {
+                render:function( data, type, row ) {
+                    return `${row.name} <br>
+                            <small>${row.code}</small>`
+                },targets: [1]
+            },
             { render: function ( data, type, row ) {
                 if(row.authentication == 'ldap'){
                   return `${row.host}:${row.port}`
@@ -133,11 +138,11 @@
                 else{
                   return ``;
                 }
-            },targets: [4]
+            },targets: [3]
             },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [6]
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -146,7 +151,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [7]
+            },targets: [6]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -164,12 +169,11 @@
                             }
                         </ul>
                       </div>`
-            },targets: [8]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "code" },
             { data: "name" },
             { data: "authentication" },
             { data: "host" },

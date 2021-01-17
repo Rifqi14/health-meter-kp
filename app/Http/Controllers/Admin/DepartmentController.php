@@ -164,7 +164,13 @@ class DepartmentController extends Controller
      */
     public function show($id)
     {
-        //
+        $department = Department::find($id);
+        if($department){
+            return view('admin.department.detail',compact('department'));
+        }
+        else{
+            abort(404);
+        }
     }
 
     /**
