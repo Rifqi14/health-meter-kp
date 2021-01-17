@@ -29,12 +29,12 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Kode</th>
+              <th width="100">Kode</th>
               <th width="200">Name</th>
-              <th width="200">Authentikasi</th>
+              <th width="100">Authentikasi</th>
               <th width="200">Link</th>
-              <th width="100">Terakhir Dirubah</th>
-              <th width="100">Dirubah Oleh</th>
+              <th width="150">Terakhir Dirubah</th>
+              <th width="150">Dirubah Oleh</th>
               <th width="100">Status</th>
               <th width="10">#</th>
             </tr>
@@ -127,7 +127,12 @@
             { className: "text-right", targets: [0,5] },
             { className: "text-center", targets: [6,7,8] },
             { render: function ( data, type, row ) {
-                  return `<a href="${row.link}" target="_blank">${row.link}</a>`
+                if(row.authentication == 'ldap'){
+                  return `${row.host}:${row.port}`
+                }
+                else{
+                  return ``;
+                }
             },targets: [4]
             },
             { render: function ( data, type, row ) {
@@ -167,7 +172,7 @@
             { data: "code" },
             { data: "name" },
             { data: "authentication" },
-            { data: "link" },
+            { data: "host" },
             { data: "updated_at" },
             { data: "updated_by" },
             { data: "deleted_at" },

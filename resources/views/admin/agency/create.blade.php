@@ -40,14 +40,24 @@
               <label for="authentication" class="col-sm-2 control-label">Autentikasi <b
                   class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="authentication" name="authentication"
-                  placeholder="Autentikasi" required>
+                <select id="type" name="authentication" class="form-control select2" placeholder="Pilih Autentikasi" required>
+                  <option value="local">Local</option>
+                  <option value="ldap">LDAP</option>
+                </select>
               </div>
             </div>
-            <div class="form-group">
-              <label for="link" class="col-sm-2 control-label">Link</label>
+            <div class="form-group" style="display: none">
+              <label for="host" class="col-sm-2 control-label">Host <b
+                class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="link" name="link" placeholder="Link">
+                <input type="text" class="form-control" id="host" name="host" placeholder="Host" required>
+              </div>
+            </div>
+            <div class="form-group" style="display: none">
+              <label for="port" class="col-sm-2 control-label">Port <b
+                class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="port" name="port" placeholder="Port" value="389" required>
               </div>
             </div>
           </div>
@@ -65,6 +75,19 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+      $("input[name=port]").inputmask("Regex", { regex: "[0-9]*" });
+      $('.select2').select2({
+        allowClear:true
+      });
+      $("select[name=authentication]").on('change',function(){
+         $('input[name=host]').closest('.form-group').hide();
+         $('input[name=port]').closest('.form-group').hide();
+         if(this.value == 'ldap'){
+          $('input[name=host]').closest('.form-group').show();
+          $('input[name=port]').closest('.form-group').show();
+         }
+      });
+      $("select[name=authentication]").trigger('change');
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',

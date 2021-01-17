@@ -36,7 +36,10 @@
             <b>Autentikasi</b> <span class="pull-right">{{$agency->authentication}}</span>
           </li>
           <li class="list-group-item">
-            <b>Link</b> <span class="pull-right">{{$agency->link}}</span>
+            <b>Host</b> <span class="pull-right">{{$agency->host}}</span>
+          </li>
+          <li class="list-group-item">
+            <b>Port</b> <span class="pull-right">{{$agency->port}}</span>
           </li>
         </ul>
       </div>

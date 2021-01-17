@@ -114,7 +114,7 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'code'          => 'required|unique:agencies',
             'name'          => 'required',
-            'authentication'=> 'required',
+            'authentication'=> 'required'
         ]);
 
         if ($validator->fails()) {
@@ -129,7 +129,8 @@ class AgencyController extends Controller
                 'code'          => $request->code,
                 'name'          => $request->name,
                 'authentication'=> $request->authentication,
-                'link'          => $request->link,
+                'host'          => $request->authentication == 'ldap'?$request->host:null,
+                'port'          => $request->authentication == 'ldap'?$request->port:null,
                 'updated_by'    => Auth::id()
             ]);
         } catch (QueryException $ex) {
@@ -188,7 +189,7 @@ class AgencyController extends Controller
         $validator = Validator::make($request->all(), [
             'code'              => 'required|unique:agencies,code,'.$id,
             'name' 	            => 'required',
-            'authentication'    => 'required',
+            'authentication'    => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -202,7 +203,8 @@ class AgencyController extends Controller
         $agency->code           = $request->code;
         $agency->name           = $request->name;
         $agency->authentication = $request->authentication;
-        $agency->link           = $request->link;
+        $agency->host           = $request->authentication == 'ldap'?$request->host:null;
+        $agency->port           = $request->authentication == 'ldap'?$request->port:null;
         $agency->updated_by      = Auth::id();
         $agency->save();
 
