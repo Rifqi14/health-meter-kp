@@ -229,7 +229,12 @@ class WorkforceController extends Controller
      */
     public function show($id)
     {
-        //
+        $workforce = Workforce::find($id);
+        if ($workforce) {
+            return view('admin.workforce.detail', compact('workforce'));
+        } else {
+            abort(404);
+        }
     }
 
     /**

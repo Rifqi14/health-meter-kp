@@ -36,27 +36,35 @@ class PatientController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $status = strtoupper($request->status);
+        $workforce_id = $request->workforce_id;
         $site_id = $request->site_id;
         $arsip = $request->category;
 
         //Count Data
-        $query = Patient::with(['updatedby', 'site', 'workforce'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
+        $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
         if ($site_id) {
             $query->where('site_id', $site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($workforce_id) {
+            $query->where('workforce_id', $workforce_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Patient::with(['updatedby', 'site', 'workforce'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
+        $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
         if ($site_id) {
             $query->where('site_id', $site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
         }
+        if ($workforce_id) {
+            $query->where('workforce_id', $workforce_id);
+        }
+        $query->orderBy('updated_at', 'asc');
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);

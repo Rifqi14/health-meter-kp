@@ -296,6 +296,7 @@
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
