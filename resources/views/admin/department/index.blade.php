@@ -18,9 +18,6 @@
                     <a href="{{route('department.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
-                    <a href="{{route('department.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
-                        <i class="fa fa-upload"></i>
-                    </a>
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
