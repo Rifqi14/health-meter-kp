@@ -468,6 +468,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/workforce/preview', 'Admin\WorkforceController@preview')->name('workforce.preview');
         Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
         Route::resource('/workforce', 'Admin\WorkforceController');
+        
+        // Workforce
+        Route::get('/patient/read', 'Admin\PatientController@read')->name('patient.read');
+        Route::get('/patient/select', 'Admin\PatientController@select')->name('patient.select');
+        Route::get('/patient/restore/{id}', 'Admin\PatientController@restore')->name('patient.restore');
+        Route::get('/patient/delete/{id}', 'Admin\PatientController@delete')->name('patient.delete');
+        Route::resource('/patient', 'Admin\PatientController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {

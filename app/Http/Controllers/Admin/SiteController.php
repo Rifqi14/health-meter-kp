@@ -84,23 +84,18 @@ class SiteController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Site::select('sites.*');
-        if ($name) {
-            $query->where('name', 'like', "%$name%");
-        }
+        $query = Site::whereRaw("upper(name) like '%$name%'");
         if($data_manager){
             $query->where('id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Site::select('sites.*');
-        if ($name) {
-            $query->where('name', 'like', "%$name%");
-        }
+        $query = Site::whereRaw("upper(name) like '%$name%'");
         if($data_manager){
             $query->where('id',$site_id);
         }
+        $query->orderBy('name', 'asc');
         $query->offset($start);
         $query->limit($length);
         $sites = $query->get();

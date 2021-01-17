@@ -107,6 +107,7 @@ class WorkforceController extends Controller
 
         //Select Pagination
         $query = Workforce::whereRaw("upper(name) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query->orderBy('name', 'asc');
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();
