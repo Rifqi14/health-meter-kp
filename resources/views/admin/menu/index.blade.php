@@ -32,14 +32,14 @@
 </style>
 @endsection
 @push('breadcrump')
-    <li class="active">Menu</li>
+    <li class="active">Modul</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="box box-primary" id="box-menu">
             <div class="box-header">
-              <h3 class="box-title">Data Menu</h3>
+              <h3 class="box-title">Data Modul</h3>
               <div class="pull-right box-tools">
                 <button class="btn btn-sm btn-primary create" title="Tambah"><i class="fa fa-plus"></i></button>
                 <button class="btn btn-sm btn-warning updateorder" title="Tambah"><i class="fa fa-save"></i></button>
@@ -63,7 +63,7 @@
 			    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-				<h4 class="modal-title">Tambah Menu</h4>
+				<h4 class="modal-title">Tambah Modul</h4>
 			</div>
 			<div class="modal-body">
                 <form id="form" method="post" autocomplete="off"/>

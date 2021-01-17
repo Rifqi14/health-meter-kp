@@ -2,7 +2,7 @@
 
 @section('title', 'Ubah Role')
 @push('breadcrump')
-    <li><a href="{{route('role.index')}}">Role</a></li>
+    <li><a href="{{route('role.index')}}">Group Modul</a></li>
     <li class="active">Ubah</li>
 @endpush
 @section('content')
@@ -10,7 +10,7 @@
     <div class="col-lg-12">
     <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Ubah Role</h3>
+          <h3 class="box-title">Ubah Group Modul</h3>
           <!-- tools box -->
           <div class="pull-right box-tools">
             <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>

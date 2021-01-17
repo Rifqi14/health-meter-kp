@@ -5,14 +5,14 @@
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-    <li class="active">Role</li>
+    <li class="active">Group Modul</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
     <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Data Role</h3>
+          <h3 class="box-title">Data Group Modul</h3>
           <!-- tools box -->
           <div class="pull-right box-tools">
             <a href="{{route('role.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">

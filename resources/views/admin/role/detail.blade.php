@@ -9,7 +9,7 @@
 </style>
 @endsection
 @push('breadcrump')
-    <li><a href="{{route('role.index')}}">Role</a></li>
+    <li><a href="{{route('role.index')}}">Group Modul</a></li>
     <li class="active">Detail</li>
 @endpush
 @section('content')
@@ -17,7 +17,7 @@
     <div class="col-lg-12">
     <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Detail Role</h3>
+          <h3 class="box-title">Detail Group Modul</h3>
           <!-- tools box -->
           <div class="pull-right box-tools">
               <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
@@ -59,7 +59,7 @@
     <!-- Custom Tabs -->
     <div class="nav-tabs-custom  tab-primary">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#menuweb" data-toggle="tab">Menu Web</a></li>
+        <li class="active"><a href="#menuweb" data-toggle="tab">Modul</a></li>
         <li><a href="#dashboard" data-toggle="tab">Dashboard</a></li>
       </ul>
       <div class="tab-content">
@@ -69,7 +69,7 @@
               <thead>
                   <tr>
                       <th style="text-align:center" width="10">#</th>
-                      <th width="250" >Nama Menu</th>
+                      <th width="250" >Nama Modul</th>
                       <th width="50"  style="text-align:center">#</th>
                   </tr>
               </thead>
