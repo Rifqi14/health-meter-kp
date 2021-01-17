@@ -43,10 +43,10 @@
             </span>
           </li>
           <li class="list-group-item">
-            <b>NID</b> <span class="pull-right">{{$user->employee->nid}}</span>
+            <b>NID</b> <span class="pull-right">{{$user->workforce->nid}}</span>
           </li>
           <li class="list-group-item">
-            <b>Pegawai</b> <span class="pull-right">{{$user->employee->name}}</span>
+            <b>Pegawai</b> <span class="pull-right">{{$user->workforce->name}}</span>
           </li>
           <li class="list-group-item">
             <b>Dibuat</b> <span class="pull-right">{{$user->created_at}}</span>

@@ -31,7 +31,6 @@
             <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
             <div class="col-sm-6">
               <input type="text" class="form-control" id="code" name="code" placeholder="Kode" required value="{{ $site->code }}">
-              <p class="help-block">Ex. upgresik (Only letters lowercase input).</p>
             </div>
           </div>
           <div class="form-group">
@@ -64,7 +63,7 @@
 <script>
   $(document).ready(function(){
     //Input Mask Component 
-      $("input[name=code]").inputmask("Regex", { regex: "[a-z]*" });
+      //$("input[name=code]").inputmask("Regex", { regex: "[A-Z]*" });
       //Bootstrap fileinput component
       $("#logo").fileinput({
           browseClass: "btn btn-default",
