@@ -37,7 +37,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Name <b class="text-danger">*</b></label>
+              <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
               </div>
