@@ -27,6 +27,12 @@
           <div class="box-body">
             <div class="well well-sm">
               <div class="form-group">
+                <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
+                </div>
+              </div>
+              <div class="form-group">
                 <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" required>
@@ -68,12 +74,6 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
-                <div class="col-sm-6">
-                  <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Unit" required>
-                </div>
-              </div>
-              <div class="form-group">
                 <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Bidang" required>
@@ -93,12 +93,6 @@
               </div>
             </div>
             <div class="well well-sm">
-              <div class="form-group">
-                <label for="role_id" class="col-sm-2 control-label">Role <b class="text-danger">*</b></label>
-                <div class="col-sm-6">
-                  <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role" required>
-                </div>
-              </div>
               <div class="form-group">
                 <label for="email" class="col-sm-2 control-label">Email <b class="text-danger">*</b></label>
                 <div class="col-sm-6">
@@ -248,7 +242,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              data_manager:{{$accesssite}},
           };
           },
           results: function (data,page) {
@@ -281,7 +276,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -367,6 +363,7 @@
       allowClear: true,
     });
     $(document).on("change", "#department_id", function () {
+      $('#sub_department_id').select2('val','');
       if (!$.isEmptyObject($('#form').validate().submitted)) {
         $('#form').validate().form();
       }
@@ -380,7 +377,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              department_id:$('#department_id').val()==''?-1:$('#department_id').val()
           };
           },
           results: function (data,page) {
@@ -413,7 +411,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -422,7 +421,7 @@
           $.each(data.rows,function(index,item){
               option.push({
               id:item.id,  
-              text: `${item.nid}`
+              text: `${item.name} - ${item.code}`
               });
           });
           return {

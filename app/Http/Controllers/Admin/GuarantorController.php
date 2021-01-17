@@ -71,13 +71,22 @@ class GuarantorController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $site_id = $request->site_id;
 
         //Count Data
-        $query = Guarantor::whereRaw("upper(nid) like '%$name%'");
+        $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
+        $query->leftJoin('titles','titles.id','=','guarantors.title_id');
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Guarantor::whereRaw("upper(nid) like '%$name%'");
+        $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
+        $query->leftJoin('titles','titles.id','=','guarantors.title_id');
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();

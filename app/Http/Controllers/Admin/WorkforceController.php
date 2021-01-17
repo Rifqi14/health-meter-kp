@@ -149,7 +149,6 @@ class WorkforceController extends Controller
             'site_id'           => 'required',
             'department_id'     => 'required',
             'sub_department_id' => 'required',
-            'role_id'           => 'required',
             'email'             => 'required',
             'password'          => 'required'
         ]);
@@ -191,20 +190,6 @@ class WorkforceController extends Controller
                     return response()->json([
                         'status'    => false,
                         'message'   => $user,
-                    ], 400);
-                }
-                $role = Role::find($request->role_id);
-                $user->attachRole($role);
-
-                $siteuser = SiteUser::create([
-                    'user_id'   => $user->id,
-                    'site_id'   => $request->site_id,
-                ]);
-                if (!$siteuser) {
-                    DB::rollback();
-                    return response()->json([
-                        'status' => false,
-                        'message'     => $siteuser
                     ], 400);
                 }
             }

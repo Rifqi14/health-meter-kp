@@ -72,13 +72,20 @@ class WorkforceGroupController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $data_manager = $request->data_manager;
 
         //Count Data
         $query = WorkforceGroup::whereRaw("upper(name) like '%$name%'");
+        if($data_manager){
+            $query->where('data_manager',$data_manager);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = WorkforceGroup::whereRaw("upper(name) like '%$name%'");
+        if($data_manager){
+            $query->where('data_manager',$data_manager);
+        }
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();

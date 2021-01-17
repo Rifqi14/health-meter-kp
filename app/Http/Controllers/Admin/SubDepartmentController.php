@@ -89,13 +89,20 @@ class SubDepartmentController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $department_id = $request->department_id;
 
         //Count Data
         $query = SubDepartment::whereRaw("upper(name) like '%$name%'");
+        if($department_id){
+            $query->where('department_id',$department_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = SubDepartment::whereRaw("upper(name) like '%$name%'");
+        if($department_id){
+            $query->where('department_id',$department_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();
