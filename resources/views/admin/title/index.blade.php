@@ -18,10 +18,6 @@
                     <a href="{{route('title.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
-
-                    <a href="{{route('title.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
-                        <i class="fa fa-upload"></i>
-                    </a>
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -35,7 +31,7 @@
                             <th width="10">#</th>
                             <th width="50">Kode</th>
                             <th width="200">Nama</th>
-                            <th width="50">Terakhir Dirubah</th>
+                            <th width="100">Terakhir Dirubah</th>
                             <th width="50">Dirubah Oleh</th>
                             <th width="50">Status</th>
                             <th width="10">#</th>
@@ -134,7 +130,7 @@ $(function(){
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,3] },
+            { className: "text-right", targets: [0] },
             { className: "text-center", targets: [5,6] },
             { render:function( data, type, row ) {
                 return `${row.name} <br>

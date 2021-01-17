@@ -52,20 +52,20 @@
     <div class="col-lg-8">
         <div class="nav-tabs-custom tab-primary">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#detail" data-toggle="tab">Data Pegawai</a></li>
-                <li><a href="#role" data-toggle="tab">Assign Role</a></li>
+                <li><a href="#detail" data-toggle="tab">Data Pegawai</a></li>
+                <li  class="active"><a href="#role" data-toggle="tab">Assign Role</a></li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="detail">
+                <div class="tab-pane" id="detail">
                     <div class="overlay-wrapper">
                         <table class="table table-bordered table-striped" id="table-detail">
                             <thead>
                                 <tr>
                                     <th style="text-align:center" width="10">#</th>
                                     <th width="200">Nama</th>
-                                    <th width="100">NID</th>
-                                    <th width="100">Type</th>
-                                    <th width="100">Dibuat</th>
+                                    <th width="200">Kelompok Workforce</th>
+                                    <th width="200">Instansi</th>
+                                    <th width="100">Status</th>
                             </thead>
                         </table>
                         <div class="overlay hidden">
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="role">
+                <div class="tab-pane  active" id="role">
                     <div class="overlay-wrapper">
                         <form id="form-role" class="form-horizontal" action="{{url('admin/title/assignrole')}}" method="post" autocomplete="off">
                             {{ csrf_field() }}
@@ -143,14 +143,36 @@
                 {
                     className: "text-right",
                     targets: [0]
-                }
+                },
+                {
+                    className: "text-center",
+                    targets: [4]
+                },
+                { render: function ( data, type, row) {
+                return `${row.name}<br><small>${row.nid}</small>`
+                },targets: [1] },
+                { render: function ( data, type, row) {
+                return `${row.workforce_group_id ? row.workforcegroup.name : ''}`
+                },targets: [2] },
+                { render: function ( data, type, row) {
+                return `${row.agency_id ? row.agency.name : ''}`
+                },targets: [3] },
+                { render: function ( data, type, row ) {
+                    if (row.deleted_at) {
+                        bg = 'bg-red', teks = 'Non-Aktif';
+                    } else {
+                        bg = 'bg-green', teks = 'Aktif';
+                    }
+                    return `<span class="label ${bg}">${teks}</span>`
+                    },targets: [4]
+                    },
             ],
             columns: [
                 {data: "no"},
                 { data: "name" },
-                { data: "nid" },
-                { data: "type" },
-                { data: "created_at" },
+                { data: "workforce_group_id" },
+                { data: "agency_id" },
+                { data: "deleted_at" },
             ]
         });
         datatableRole = $('#table-role').DataTable({

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Title;
 use App\Role;
+use App\Models\Workforce;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -242,30 +243,22 @@ class TitleController extends Controller
         $title_id = $request->title_id;
 
         //Count Data
-        $query = DB::table('employees');
-        $query->select('employees.*');
-        $query->leftJoin('employee_movements','employees.id','=','employee_movements.employee_id');
-        $query->leftJoin('titles','titles.id','=','employee_movements.title_id');
-        $query->where('employee_movements.title_id', $title_id);
-        $query->whereNull('employee_movements.finish');
+        $query = Workforce::select('workforces.*');
+        $query->where('workforces.title_id', $title_id);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('employees');
-        $query->select('employees.*');
-        $query->leftJoin('employee_movements','employees.id','=','employee_movements.employee_id');
-        $query->leftJoin('titles','titles.id','=','employee_movements.title_id');
-        $query->where('employee_movements.title_id', $title_id);
-        $query->whereNull('employee_movements.finish');
+        $query = Workforce::with(['workforcegroup', 'agency'])->select('workforces.*');
+        $query->where('workforces.title_id', $title_id);
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
-        $employeemovements = $query->get();
+        $workforces = $query->get();
 
         $data = [];
-        foreach($employeemovements as $employeemovement){
-            $employeemovement->no = ++$start;
-			$data[] = $employeemovement;
+        foreach($workforces as $workforce){
+            $workforce->no = ++$start;
+			$data[] = $workforce;
 		}
         return response()->json([
             'draw'=>$request->draw,
