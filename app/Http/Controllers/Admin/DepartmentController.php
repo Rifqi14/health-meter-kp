@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Site;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -35,18 +36,32 @@ class DepartmentController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $category = $request->category;
-
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
         //Count Data
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -112,8 +127,10 @@ class DepartmentController extends Controller
         $validator = Validator::make($request->all(), [
             'code'      => 'required|unique:departments',
             'name'      => 'required',
+            'site_id'      => 'required',
         ]);
-
+        
+        $site = Site::find($request->site_id);
         if ($validator->fails()) {
         	return response()->json([
         		'status' 	=> false,
@@ -122,8 +139,9 @@ class DepartmentController extends Controller
         }
 
         $department = Department::create([
-            'code' 	    => $request->code,
+            'code' 	    => $site->code.$request->code,
             'name' 	    => $request->name,
+            'site_id' 	=> $request->site_id,
             'updated_by'=> Auth::id()
         ]);
         if (!$department) {
@@ -177,7 +195,8 @@ class DepartmentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code'      => 'required|unique:departments,code,'.$id,
-            'name' 	    => 'required'
+            'name' 	    => 'required',
+            'site_id' 	    => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -188,7 +207,7 @@ class DepartmentController extends Controller
         }
 
         $department = Department::find($id);
-        $department->code = $request->code;
+        //$department->code = $request->code;
         $department->name = $request->name;
         $department->updated_by = Auth::id();
         $department->save();

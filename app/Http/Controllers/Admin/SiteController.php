@@ -36,7 +36,7 @@ class SiteController extends Controller
         $category = $request->category;
 
         //Count Data
-        $query = DB::table('sites');
+        $query = Site::select('sites.*');
         $query->select('sites.*');
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
@@ -48,8 +48,7 @@ class SiteController extends Controller
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('sites');
-        $query->select('sites.*');
+        $query = Site::with('user')->select('sites.*');
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
         if ($category) {
@@ -95,7 +94,7 @@ class SiteController extends Controller
         if($data_manager){
             $query->where('id',$site_id);
         }
-        $query->orderBy('name', 'asc');
+        $query->orderBy('id', 'asc');
         $query->offset($start);
         $query->limit($length);
         $sites = $query->get();
@@ -208,7 +207,7 @@ class SiteController extends Controller
         }
 
         $site = Site::find($id);
-        $site->code = $request->code;
+        //$site->code = $request->code;
         $site->name = $request->name;
         $site->updated_by = Auth::id();
         $site->save();

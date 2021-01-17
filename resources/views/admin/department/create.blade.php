@@ -23,6 +23,12 @@
           {{ csrf_field() }}
           <div class="box-body">
             <div class="form-group">
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
+              </div>
+            </div>
+            <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="code" name="code" placeholder="Kode" required>
@@ -49,7 +55,37 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $(document).on("change", "#parent_id", function () {
+      $("#site_id").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#site_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }

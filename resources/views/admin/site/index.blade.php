@@ -31,8 +31,9 @@
                             <th width="10">#</th>
                             <th width="100">Kode</th>
                             <th width="120">Nama</th>
-                            <th width="100">Status</th>
-                            <th width="100">Dibuat</th>
+                            <th width="100">Terakhir Dirubah</th>
+                            <th width="100">Diubah Oleh</th>
+                            <th width="50">Status</th>
                             <th width="10">#</th>
                         </tr>
                     </thead>
@@ -104,7 +105,7 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 5, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('site.read')}}",
             type: "GET",
@@ -122,10 +123,13 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [3,5] },
+            { className: "text-center", targets: [5,6] },
+            { render:function( data, type, row ) {
+                    return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+            },targets: [4] },
             { render: function (data, type, row) {
                 return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
-            },targets: [3] },
+            },targets: [5] },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                             <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -141,15 +145,16 @@ $(function(){
                                 }
                             </ul>
                         </div>`
-            },targets: [5]
+            },targets: [6]
             }
         ],
         columns: [
             { data: "no" },
             { data: "code" },
             { data: "name" },
+            { data: "updated_at" },
+            { data: "updated_by" },
             { data: "deleted_at" },
-            { data: "created_at" },
             { data: "id" },
         ]
     });

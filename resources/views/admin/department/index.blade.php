@@ -32,10 +32,11 @@
                     <thead>
                         <tr>
                             <th width="10">#</th>
+                            <th width="100">Distrik</th>
                             <th width="200">Nama</th>
-                            <th width="100">Dibuat</th>
-                            <th width="100">Terakhir Diubah Oleh</th>
-                            <th width="100">Status</th>
+                            <th width="100">Terakhir Dirubah</th>
+                            <th width="100">Diubah Oleh</th>
+                            <th width="50">Status</th>
                             <th width="10">#</th>
                         </tr>
                     </thead>
@@ -67,6 +68,12 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label for="site" class="control-label">Distrik</label>
+                                <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label for="name" class="control-label">Arsip Kelompok</label>
                                 <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
                                     <option value="">Non-Arsip</option>
@@ -93,6 +100,36 @@
     $('#add-filter').modal('show');
 }
 $(function(){
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+    });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -101,15 +138,19 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 5, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('department.read')}}",
             type: "GET",
             data:function(data){
                 var name = $('#form-search').find('input[name=name]').val();
                 var category = $('#form-search').find('select[name=category]').val();
+                var site = $('#form-search').find('input[name=site]').val();
                 data.category = category;
                 data.name = name;
+                data.site = site;
+                data.data_manager = {{$accesssite}};
+                data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
@@ -117,19 +158,22 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [5] },
+            { className: "text-center", targets: [5,6] },
+            { render:function( data, type, row ) {
+                    return `${row.site.name}`
+            },targets: [1] },
             {
                 render:function( data, type, row ) {
                     return `${row.name} <br>
                             <small>${row.code}</small>`
-                },targets: [1]
+                },targets: [2]
             },
             { render:function( data, type, row ) {
                     return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [3] },
+            },targets: [4] },
             { render:function( data, type, row ) {
                     return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
-            },targets: [4] },
+            },targets: [5] },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                         <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -145,13 +189,14 @@ $(function(){
                             }
                         </ul>
                       </div>`
-            },targets: [5]
+            },targets: [6]
             }
         ],
         columns: [
             { data: "no" },
+            { data: "site_id" },
             { data: "name" },
-            { data: "created_at" },
+            { data: "updated_at" },
             { data: "updated_by" },
             { data: "deleted_at" },
             { data: "id" },

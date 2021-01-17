@@ -19,4 +19,8 @@ class Department extends Model
     {
         return $this->hasMany(SubDepartment::class, 'department_id');
     }
+    public function site()
+    {
+        return $this->hasOne('App\Models\Site', 'id', 'site_id');
+    }
 }
