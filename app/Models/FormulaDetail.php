@@ -23,4 +23,8 @@ class FormulaDetail extends Model
     {
         return $this->belongsTo(AssessmentAnswer::class, 'assessment_answer_id');
     }
+    public function formula()
+    {
+        return $this->belongsTo(Formula::class, 'formula_id');
+    }
 }

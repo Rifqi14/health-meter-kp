@@ -15,4 +15,8 @@ class Formula extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function detail()
+    {
+        return $this->hasMany(FormulaDetail::class, 'formula_id');
+    }
 }

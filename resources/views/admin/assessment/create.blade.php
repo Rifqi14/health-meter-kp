@@ -25,10 +25,8 @@
         <h3 class="box-title">Tambah Assessment (Individu)</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-              class="fa fa-reply"></i></a>
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
@@ -263,8 +261,9 @@
     var choice = {
       question: $(params).data('question'),
       question_id: $(params).data('question_id'),
+      answer_type: $(params).data('answer_type'),
       answer_id: answerValue($(params).data('answer_type')),
-      label: answerDesc($(params).data('answer_type'))
+      label: answerDesc($(params).data('answer_type')),
     };
     answer_choice.push(choice);
     if (child(choice)) {

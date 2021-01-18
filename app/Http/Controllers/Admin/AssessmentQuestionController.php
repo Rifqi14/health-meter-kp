@@ -83,6 +83,7 @@ class AssessmentQuestionController extends Controller
 
         //Select Pagination
         $query = AssessmentQuestion::whereRaw("upper(type) like '%$name%'");
+        $query->orderBy('order', 'asc');
         $query->offset($start);
         $query->limit($length);
         $results = $query->get();

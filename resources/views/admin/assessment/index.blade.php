@@ -70,6 +70,7 @@ $(function(){
             url: "{{route('assessment.read')}}",
             type: "GET",
             data:function(data){
+              data.workforce_id = {{ Auth::id() }}
             }
         },
         columnDefs:[
@@ -78,12 +79,15 @@ $(function(){
             },
             { className: "text-right", targets: [0] },
             { className: "text-center", targets: [2,3] },
+            { render: function( data, type, row ) {
+              return row.question.description
+            },targets: [1] },
         ],
         columns: [
             { data: "no" },
-            { data: "category_name" },
-            { data: "value" },
-            { data: "report_date" },
+            { data: "assessment_question_id" },
+            { data: "rating" },
+            { data: "assessment_date" },
             { data: "created_at" }
         ]
     });
