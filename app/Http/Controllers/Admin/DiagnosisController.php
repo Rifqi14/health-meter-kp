@@ -36,16 +36,20 @@ class DiagnosisController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
-
+        $category = $request->category;
         //Count Data
         $query = Diagnosis::select('diagnoses.*');
-        $query->withTrashed();
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $query->whereRaw("upper(diagnoses.name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = Diagnosis::select('diagnoses.*');
-        $query->withTrashed();
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $query->whereRaw("upper(diagnoses.name) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
@@ -154,7 +158,13 @@ class DiagnosisController extends Controller
      */
     public function show($id)
     {
-        //
+        $diagnosis = Diagnosis::find($id);
+        if($diagnosis){
+            return view('admin.diagnosis.detail',compact('diagnosis'));
+        }
+        else{
+            abort(404);
+        }
     }
 
     /**
@@ -229,23 +239,23 @@ class DiagnosisController extends Controller
         try {
             $diagnosis = Diagnosis::find($id);
             $diagnosis->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
         ], 200);
     }
 
     public function restore($id)
     {
         try {
-            $evaluation = Diagnosis::onlyTrashed()->find($id);
-            $evaluation->restore();
+            $diagnosis = Diagnosis::onlyTrashed()->find($id);
+            $diagnosis->restore();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -255,6 +265,23 @@ class DiagnosisController extends Controller
         return response()->json([
             'status'    => true,
             'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $diagnosis = Diagnosis::onlyTrashed()->find($id);
+            $diagnosis->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 

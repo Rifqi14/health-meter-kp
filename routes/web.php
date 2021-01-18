@@ -204,6 +204,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/diagnosis/select', 'Admin\DiagnosisController@select')->name('diagnosis.select');
         Route::get('/diagnosis/import', 'Admin\DiagnosisController@import')->name('diagnosis.import');
         Route::get('/diagnosis/restore/{id}', 'Admin\DiagnosisController@restore')->name('diagnosis.restore');
+        Route::get('/diagnosis/delete/{id}', 'Admin\DiagnosisController@delete')->name('diagnosis.delete');
         Route::post('/diagnosis/preview', 'Admin\DiagnosisController@preview')->name('diagnosis.preview');
         Route::post('/diagnosis/storemass', 'Admin\DiagnosisController@storemass')->name('diagnosis.storemass');
         Route::resource('/diagnosis', 'Admin\DiagnosisController');

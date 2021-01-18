@@ -19,10 +19,6 @@
                         title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
-                    <a href="{{route('diagnosis.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip"
-                        title="Import">
-                        <i class="fa fa-upload"></i>
-                    </a>
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -68,6 +64,16 @@
                                 <input type="text" name="name" class="form-control" placeholder="Nama">
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="name" class="control-label">Arsip Kelompok</label>
+                                <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
+                                    <option value="">Non-Arsip</option>
+                                    <option value="1">Arsip</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -102,7 +108,9 @@ $(function(){
             type: "GET",
             data:function(data){
                 var name = $('#form-search').find('input[name=name]').val();
+                var category = $('#form-search').find('select[name=category]').val();
                 data.name = name;
+                data.category = category;
             }
         },
         columnDefs:[
@@ -120,18 +128,22 @@ $(function(){
             },targets: [4]
             },
             { render: function ( data, type, row ) {
-                html = `<div class="dropdown">
-                    <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">`;
-                if (row.deleted_at) {
-                    html += `<li><a class="dropdown-item" href="{{url('admin/diagnosis')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li><li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
-                } else {
-                    html += `<li><a class="dropdown-item" href="{{url('admin/diagnosis')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li><li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`
-                }
-                html += `</ul></div>`
-                return html
+               return `<div class="dropdown">
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item" href="{{url('admin/diagnosis')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/diagnosis')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/diagnosis')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`;
             },targets: [5]
             }
         ],
@@ -150,127 +162,186 @@ $(function(){
         dataTable.draw();
         $('#add-filter').modal('hide');
     })
-    $(document).on('click','.delete',function(){
+    $(document).on('click','.archive',function(){
         var id = $(this).data('id');
         bootbox.confirm({
-			buttons: {
-				confirm: {
-					label: '<i class="fa fa-check"></i>',
-					className: 'btn-primary btn-sm'
-				},
-				cancel: {
-					label: '<i class="fa fa-undo"></i>',
-					className: 'btn-default btn-sm'
-				},
-			},
-			title:'Menghapus bidang?',
-			message:'Data yang telah dihapus tidak dapat dikembalikan',
-			callback: function(result) {
-					if(result) {
-						var data = {
-                            _token: "{{ csrf_token() }}"
-                        };
-						$.ajax({
-							url: `{{url('admin/diagnosis')}}/${id}`,
-							dataType: 'json', 
-							data:data,
-							type:'DELETE',
-                            beforeSend:function(){
-                                $('.overlay').removeClass('hidden');
-                            }
-                        }).done(function(response){
-                            if(response.status){
-                                $('.overlay').addClass('hidden');
-                                $.gritter.add({
-                                    title: 'Success!',
-                                    text: response.message,
-                                    class_name: 'gritter-success',
-                                    time: 1000,
-                                });
-                                dataTable.ajax.reload( null, false );
-                            }
-                            else{
-                                $.gritter.add({
-                                    title: 'Warning!',
-                                    text: response.message,
-                                    class_name: 'gritter-warning',
-                                    time: 1000,
-                                });
-                            }
-                        }).fail(function(response){
-                            var response = response.responseJSON;
-                            $('.overlay').addClass('hidden');
-                            $.gritter.add({
-                                title: 'Error!',
-                                text: response.message,
-                                class_name: 'gritter-error',
-                                time: 1000,
-                            });
-                        })		
-					}
-			}
-		});
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengarsipkan Diagnosa?',
+          message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = { _token: "{{ csrf_token() }}" };
+              $.ajax({
+                url: `{{url('admin/diagnosis')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'DELETE',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });
+            }
+          }
+        });
     })
     $(document).on('click','.restore',function(){
         var id = $(this).data('id');
         bootbox.confirm({
-			buttons: {
-				confirm: {
-					label: '<i class="fa fa-check"></i>',
-					className: 'btn-primary btn-sm'
-				},
-				cancel: {
-					label: '<i class="fa fa-undo"></i>',
-					className: 'btn-default btn-sm'
-				},
-			},
-			title:'Mengembalikan diagnosa?',
-			message:'Data yang telah dikembalikan dapat dihapus',
-			callback: function(result) {
-					if(result) {
-						var data = {
-                            _token: "{{ csrf_token() }}"
-                        };
-						$.ajax({
-							url: `{{url('admin/diagnosis/restore')}}/${id}`,
-							dataType: 'json', 
-							data:data,
-							type:'GET',
-                            beforeSend:function(){
-                                $('.overlay').removeClass('hidden');
-                            }
-                        }).done(function(response){
-                            if(response.status){
-                                $('.overlay').addClass('hidden');
-                                $.gritter.add({
-                                    title: 'Success!',
-                                    text: response.message,
-                                    class_name: 'gritter-success',
-                                    time: 1000,
-                                });
-                                dataTable.ajax.reload( null, false );
-                            }
-                            else{
-                                $.gritter.add({
-                                    title: 'Warning!',
-                                    text: response.message,
-                                    class_name: 'gritter-warning',
-                                    time: 1000,
-                                });
-                            }
-                        }).fail(function(response){
-                            var response = response.responseJSON;
-                            $('.overlay').addClass('hidden');
-                            $.gritter.add({
-                                title: 'Error!',
-                                text: response.message,
-                                class_name: 'gritter-error',
-                                time: 1000,
-                            });
-                        })		
-					}
-			}
-		});
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengembalikan Diagnosa?',
+          message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = {
+                              _token: "{{ csrf_token() }}"
+                          };
+              $.ajax({
+                url: `{{url('admin/diagnosis/restore')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'GET',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });		
+            }
+          }
+        });
+    })
+    $(document).on('click','.delete',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Menghapus Diagnosa?',
+          message:'Data yang telah dihapus tidak dapat dikembalikan',
+          callback: function(result) {
+            if(result) {
+              var data = {
+                              _token: "{{ csrf_token() }}"
+                          };
+              $.ajax({
+                url: `{{url('admin/diagnosis/delete')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'GET',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });		
+            }
+          }
+        });
     })
 })
 </script>

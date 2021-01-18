@@ -26,11 +26,27 @@
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
           <div class="box-body">
+
+            <div class="form-group">
+              <label for="category" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="category" name="category" placeholder="Kategori Diagnosis"
+                  value="{{ $diagnosis->diagnoses_category_id }}" required>
+              </div>
+            </div>
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="code" name="code" placeholder="Kode"
                   value="{{$diagnosis->code}}" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="sub_category" class="col-sm-2 control-label">Sub Kategori</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="sub_category" name="sub_category" placeholder="Sub Kategori"
+                  value="{{ $diagnosis->sub_category }}">
               </div>
             </div>
             <div class="form-group">
@@ -45,20 +61,6 @@
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="english_name" name="english_name" placeholder="English Name"
                   value="{{$diagnosis->english_name}}" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="category" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="category" name="category" placeholder="Kategori Diagnosis"
-                  value="{{ $diagnosis->diagnoses_category_id }}" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="sub_category" class="col-sm-2 control-label">Sub Kategori</label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="sub_category" name="sub_category" placeholder="Sub Kategori"
-                  value="{{ $diagnosis->sub_category }}">
               </div>
             </div>
           </div>
