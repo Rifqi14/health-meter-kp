@@ -1,9 +1,9 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tarif')
+@section('title', 'Detail Tarif')
 @push('breadcrump')
     <li><a href="{{route('inpatient.index')}}">Tarif</a></li>
-    <li class="active">Tambah</li>
+    <li class="active">Detail</li>
 @endpush
 @section('stylesheets')
 @endsection
@@ -12,33 +12,33 @@
     <div class="col-lg-12">
     <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Tambah Tarif</h3>
+          <h3 class="box-title">Detail Tarif</h3>
           <!-- tools box -->
           <div class="pull-right box-tools">
-            <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
             <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
           </div>
           <!-- /. tools -->
         </div>
         <div class="box-body">
-            <form id="form" action="{{route('inpatient.store')}}" class="form-horizontal" method="post" autocomplete="off">
+            <form id="form" action="{{route('inpatient.update',['id'=>$inpatient->id])}}" class="form-horizontal" method="post" autocomplete="off">
                {{ csrf_field() }}
-                <div class="form-group">
-                  <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
-                  <div class="col-sm-6">
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
-                  </div>
-                </div>
+               <input type="hidden" name="_method" value="put">
                   <div class="form-group">
-                    <label for="price" class="col-sm-2 control-label">Harga <b class="text-danger">*</b></label>
+                    <label for="name" class="col-sm-2 control-label">Nama</label>
                     <div class="col-sm-6">
-                      <input type="text" class="form-control numberfield" id="price" name="price" placeholder="Harga" required>
+                    <p class="form-control-static">{{$inpatient->name}}</p>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="price" class="col-sm-2 control-label">Harga</label>
+                    <div class="col-sm-6">
+                      <p class="form-control-static">{{number_format($inpatient->price,0,',','.')}}</p>
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="price" class="col-sm-2 control-label">Catatan</label>
                     <div class="col-sm-6">
-                       <textarea name="note" id="note" class="form-control" placeholder="Catatan"></textarea>
+                      <p class="form-control-static">{{$inpatient->note}}</p>
                     </div>
                   </div>
               </form>

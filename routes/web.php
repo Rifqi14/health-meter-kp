@@ -216,9 +216,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/medicaldetail/read', 'Admin\MedicalDetailController@read')->name('medicaldetail.read');
         Route::resource('/medicaldetail', 'Admin\MedicalDetailController');
         //Route Inpatient
-        Route::get('/inpatient/restore/{id}', 'Admin\InpatientController@restore')->name('inpatient.restore');
         Route::get('/inpatient/read', 'Admin\InpatientController@read')->name('inpatient.read');
         Route::get('/inpatient/select', 'Admin\InpatientController@select')->name('inpatient.select');
+        Route::get('/inpatient/restore/{id}', 'Admin\InpatientController@restore')->name('inpatient.restore');
+        Route::get('/inpatient/delete/{id}', 'Admin\InpatientController@delete')->name('inpatient.delete');
         Route::resource('/inpatient', 'Admin\InpatientController');
 
         //Route Medical Checkup

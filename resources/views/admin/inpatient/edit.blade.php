@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Hak Rawat Inap')
+@section('title', 'Ubah Tarif')
 @push('breadcrump')
-    <li><a href="{{route('inpatient.index')}}">Hak Rawat Inap</a></li>
+    <li><a href="{{route('inpatient.index')}}">Tarif</a></li>
     <li class="active">Ubah</li>
 @endpush
 @section('stylesheets')
@@ -12,7 +12,7 @@
     <div class="col-lg-12">
     <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Ubah Hak Rawat Inap</h3>
+          <h3 class="box-title">Ubah Tarif</h3>
           <!-- tools box -->
           <div class="pull-right box-tools">
             <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
@@ -37,7 +37,7 @@
                     </div>
                   </div>
                   <div class="form-group">
-                    <label for="price" class="col-sm-2 control-label">Catatan <b class="text-danger">*</b></label>
+                    <label for="price" class="col-sm-2 control-label">Catatan</label>
                     <div class="col-sm-6">
                        <textarea name="note" id="note" class="form-control" placeholder="Catatan">{{$inpatient->note}}</textarea>
                     </div>

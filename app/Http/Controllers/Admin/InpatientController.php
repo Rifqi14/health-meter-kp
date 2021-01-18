@@ -34,12 +34,12 @@ class InpatientController extends Controller
         $dir = $request->order[0]['dir'];
 
         //Count Data
-        $query = Inpatient::select('inpatients.*');
+        $query = Inpatient::with('user')->select('inpatients.*');
         $query->withTrashed();
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Inpatient::select('inpatients.*');
+        $query = Inpatient::with('user')->select('inpatients.*');
         $query->withTrashed();
         $query->offset($start);
         $query->limit($length);
@@ -144,7 +144,13 @@ class InpatientController extends Controller
      */
     public function show($id)
     {
-        //
+        $inpatient = Inpatient::find($id);
+        if($inpatient){
+            return view('admin.inpatient.detail',compact('inpatient'));
+        }
+        else{
+            abort(404);
+        }
     }
 
     /**
@@ -215,32 +221,49 @@ class InpatientController extends Controller
         try {
             $inpatient = Inpatient::find($id);
             $inpatient->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
         ], 200);
     }
 
     public function restore($id)
     {
         try {
-            $inpatient = Inpatient::withTrashed()->find($id);
+            $inpatient = Inpatient::onlyTrashed()->find($id);
             $inpatient->restore();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error restore data'
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success restore data'
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $inpatient = Inpatient::onlyTrashed()->find($id);
+            $inpatient->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }
