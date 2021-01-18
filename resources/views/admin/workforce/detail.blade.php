@@ -21,7 +21,7 @@
 @endpush
 @section('content')
 <div class="row">
-  <div class="col-lg-4">
+  <div class="col-lg-5">
     <div class="box box-primary">
       <div class="box-header">
         <h3 class="box-title">Detail Workforce</h3>
@@ -32,9 +32,8 @@
       <div class="box-body box-profile">
         <table class="table">
           <tr>
-            <td width="25%"><strong>Jabatan</strong></td>
-            <td width="25%" class="text-right">
-              {{$workforce->title->name?$workforce->title->name:'Tidak Ada'}}</td>
+            <td><strong>Distrik</strong></td>
+            <td class="text-right" id="unit">{{@$workforce->site->name}}</td>
           </tr>
           <tr>
             <td><strong>NID</strong></td>
@@ -49,18 +48,51 @@
             <td class="text-right">{{@$workforce->workforcegroup->name}}</td>
           </tr>
           <tr>
-            <td><strong>Unit</strong></td>
-            <td class="text-right" id="unit">{{@$workforce->site->name}}</td>
+            <td><strong>Instansi</strong></td>
+            <td class="text-right">{{@$workforce->agency->name}}</td>
+          </tr>
+          <tr>
+            <td><strong>Tanggal Mulai</strong></td>
+            <td class="text-right">{{\Carbon\Carbon::parse($workforce->start_date)->format('d F Y')}}</td>
+          </tr>
+          <tr>
+            <td><strong>Tanggal Akhir</strong></td>
+            <td class="text-right">{{\Carbon\Carbon::parse($workforce->finish_date)->format('d F Y')}}</td>
+          </tr>
+          <tr>
+            <td width="25%"><strong>Jabatan</strong></td>
+            <td width="25%" class="text-right">
+              {{$workforce->title?$workforce->title->name:'Tidak Ada'}}</td>
+          </tr>
+          <tr>
+            <td width="25%"><strong>Bidang</strong></td>
+            <td width="25%" class="text-right">
+              {{@$workforce->department->name}}</td>
+          </tr>
+          <tr>
+            <td width="25%"><strong>Sub Bidang</strong></td>
+            <td width="25%" class="text-right">
+              {{@$workforce->subdepartment->name}}</td>
+          </tr>
+          <tr>
+            <td width="25%"><strong>Jabatan Penanggung Jawab</strong></td>
+            <td width="25%" class="text-right">
+              {{$workforce->guarantor?$workforce->guarantor->title->name:'Tidak Ada'}}</td>
+          </tr>
+          <tr>
+            <td width="25%"><strong>Email</strong></td>
+            <td width="25%" class="text-right">
+              {{@$workforce->user->email}}</td>
           </tr>
         </table>
 
       </div>
     </div>
   </div>
-  <div class="col-lg-8">
+  <div class="col-lg-7">
     <div class="nav-tabs-custom tab-primary">
       <ul class="nav nav-tabs">
-        <li class="active"><a href="#employeefamily" data-toggle="tab">Tanggungan</a></li>
+        <li class="active"><a href="#employeefamily" data-toggle="tab">Pasien</a></li>
       </ul>
       <div class="tab-content">
         <div class="tab-pane active" id="employeefamily">
