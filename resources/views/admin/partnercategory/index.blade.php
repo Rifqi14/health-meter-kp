@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kategori Partner')
+@section('title', 'Kategori Faskes')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Kategori Partner</li>
+<li class="active">Kategori Faskes</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Kategori Partner</h3>
+        <h3 class="box-title">Data Kategori Faskes</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <a href="{{route('partnercategory.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
@@ -30,7 +30,7 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Kategori Partner</th>
+              <th width="100">Kategori</th>
               <th width="50">Terakhir Dirubah</th>
               <th width="50">Dirubah Oleh</th>
               <th width="50">Status</th>
@@ -118,13 +118,9 @@
         { render: function (data, type, row) {
           return `<span class="label bg-blue">${row.user.name}</span>`
         }, targets: [3]},
-        { render: function (data, type, row) {
-          if (row.status == 1) {
-            return `<span class="label bg-green">Aktif</span>`
-          } else {
-            return `<span class="label bg-red">Non-Aktif</span>`
-          }
-        }, targets: [4]},
+        { render:function( data, type, row ) {
+                    return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
+            },targets: [4] },
         { render: function ( data, type, row ) {
           html = `<div class="dropdown">
                       <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -136,7 +132,8 @@
               html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
             } else {
               html += `<li><a class="dropdown-item" href="{{url('admin/partnercategory')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
-              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
+              html += `<li><a class="dropdown-item" href="{{url('admin/partnercategory')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`;
+              html += `<li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`;
             }
             html += `</ul>
                     </div>`;
@@ -147,7 +144,7 @@
         { data: "name" },
         { data: "updated_at" },
         { data: "updated_by" },
-        { data: "status" },
+        { data: "deleted_at" },
         { data: "id" },
       ]
     });
@@ -157,67 +154,65 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
-    $(document).on('click','.delete',function(){
-      var id = $(this).data('id');
-      bootbox.confirm({
-        buttons: {
-          confirm: {
-            label: '<i class="fa fa-check"></i>',
-            className: 'btn-primary btn-sm'
+    $(document).on('click','.archive',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
           },
-          cancel: {
-            label: '<i class="fa fa-undo"></i>',
-            className: 'btn-default btn-sm'
-          },
-        },
-        title:'Menghapus kategori partner?',
-        message:'Data yang telah dihapus dapat dikembalikan',
-        callback: function(result) {
-          if(result) {
-            var data = {
-              _token: "{{ csrf_token() }}"
-            };
-            $.ajax({
-              url: `{{url('admin/partnercategory')}}/${id}`,
-              dataType: 'json', 
-              data:data,
-              type:'DELETE',
-              beforeSend:function(){
-                $('.overlay').removeClass('hidden');
-              }
-            }).done(function(response){
-              if(response.status){
-                $('.overlay').addClass('hidden');
-                $.gritter.add({
-                  title: 'Success!',
-                  text: response.message,
-                  class_name: 'gritter-success',
-                  time: 1000,
-                });
-                dataTable.ajax.reload( null, false );
-              }
-              else{
-                $.gritter.add({
-                  title: 'Warning!',
-                  text: response.message,
-                  class_name: 'gritter-warning',
-                  time: 1000,
-                });
-              }
-            }).fail(function(response){
-              var response = response.responseJSON;
-              $('.overlay').addClass('hidden');
-              $.gritter.add({
-                title: 'Error!',
-                text: response.message,
-                class_name: 'gritter-error',
-                time: 1000,
+          title:'Mengarsipkan Department?',
+          message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = { _token: "{{ csrf_token() }}" };
+              $.ajax({
+                url: `{{url('admin/partnercategory')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'DELETE',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
               });
-            });	
+            }
           }
-        }
-      });
-    });
+        });
+    })
     $(document).on('click','.restore',function(){
       var id = $(this).data('id');
       bootbox.confirm({

@@ -125,7 +125,6 @@ class PartnerCategoryController extends Controller
         try {
             $partner_category = PartnerCategory::create([
                 'name'          => $request->name,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -148,7 +147,12 @@ class PartnerCategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $category = PartnerCategory::find($id);
+        if ($category) {
+            return view('admin.partnercategory.detail', compact('category'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -189,7 +193,6 @@ class PartnerCategoryController extends Controller
 
         $category = PartnerCategory::find($id);
         $category->name         = $request->name;
-        $category->status       = $request->status ? 1 : 0;
         $category->updated_by   = Auth::id();
         $category->save();
 
@@ -219,7 +222,7 @@ class PartnerCategoryController extends Controller
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
-                'message'   => 'Error delete data ' . $th->errorInfo[2]
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([

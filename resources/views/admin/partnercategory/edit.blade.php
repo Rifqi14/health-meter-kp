@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Kategori Partner')
+@section('title', 'Ubah Kategori Faskes')
 @push('breadcrump')
-<li><a href="{{route('partnercategory.index')}}">Kategori Partner</a></li>
+<li><a href="{{route('partnercategory.index')}}">Kategori Faskes</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('content')
@@ -10,7 +10,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Kategori Partner</h3>
+        <h3 class="box-title">Ubah Kategori Faskes</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
@@ -27,18 +27,10 @@
           <input type="hidden" name="_method" value="put">
           <div class="box-body">
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Kategori Partner <b class="text-danger">*</b></label>
+              <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Kategori Partner"
+                <input type="text" class="form-control" id="name" name="name" placeholder="Kategori"
                   value="{{$category->name}}" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($category->status)
-                  checked
-                  @endif> <i></i></label>
               </div>
             </div>
           </div>

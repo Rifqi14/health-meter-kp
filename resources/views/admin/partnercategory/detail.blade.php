@@ -1,34 +1,33 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Kategori Faskes')
+@section('title', 'Detail Kategori Faskes')
 @push('breadcrump')
 <li><a href="{{route('partnercategory.index')}}">Kategori Faskes</a></li>
-<li class="active">Tambah</li>
+<li class="active">Detail</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Kategori Faskes</h3>
+        <h3 class="box-title">Detail Kategori Faskes</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
           <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
               class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('partnercategory.store')}}" class="form-horizontal" method="post"
-          autocomplete="off">
+        <form id="form" action="{{route('partnercategory.update',['id'=>$category->id])}}" class="form-horizontal"
+          method="post" autocomplete="off">
           {{ csrf_field() }}
+          <input type="hidden" name="_method" value="put">
           <div class="box-body">
             <div class="form-group">
               <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Kategori" required>
+                <p class="form-control-static">{{$category->name}}</p>
               </div>
             </div>
           </div>
