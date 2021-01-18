@@ -126,7 +126,6 @@ class SpecialityController extends Controller
         try {
             $speciality = Speciality::create([
                 'name'          => $request->name,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -149,7 +148,12 @@ class SpecialityController extends Controller
      */
     public function show($id)
     {
-        //
+        $speciality = Speciality::find($id);
+        if ($speciality) {
+            return view('admin.speciality.detail', compact('speciality'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -190,7 +194,6 @@ class SpecialityController extends Controller
 
         $speciality = Speciality::find($id);
         $speciality->name         = $request->name;
-        $speciality->status       = $request->status ? 1 : 0;
         $speciality->updated_by   = Auth::id();
         $speciality->save();
 

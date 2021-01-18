@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Spesialisasi')
+@section('title', 'Ubah Subspesialis')
 @push('breadcrump')
-<li><a href="{{route('speciality.index')}}">Spesialisasi</a></li>
+<li><a href="{{route('speciality.index')}}">Subspesialis</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('content')
@@ -10,7 +10,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Spesialisasi</h3>
+        <h3 class="box-title">Ubah Subspesialis</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
@@ -31,14 +31,6 @@
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="name" name="name" placeholder="Spesialisasi"
                   value="{{$speciality->name}}" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($speciality->status)
-                  checked
-                  @endif> <i></i></label>
               </div>
             </div>
           </div>

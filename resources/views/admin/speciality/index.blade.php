@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Spesialisasi')
+@section('title', 'Subspesialis')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Spesialisasi</li>
+<li class="active">Subspesialis</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Spesialisasi</h3>
+        <h3 class="box-title">Data Subspesialis</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <a href="{{route('speciality.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
@@ -117,36 +117,35 @@
         { render: function (data, type, row) {
           return `<span class="label bg-blue">${row.user.name}</span>`
         }, targets: [3]},
-        { render: function (data, type, row) {
-          if (row.status == 1) {
-            return `<span class="label bg-green">Aktif</span>`
-          } else {
-            return `<span class="label bg-red">Non-Aktif</span>`
-          }
-        }, targets: [4]},
-        { render: function ( data, type, row ) {
-          html = `<div class="dropdown">
-                      <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                          <i class="fa fa-bars"></i>
-                      </button>
-                      <ul class="dropdown-menu dropdown-menu-right">`;
-            if (row.deleted_at) {
-              html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete Permanent</a></li>`;
-              html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
-            } else {
-              html += `<li><a class="dropdown-item" href="{{url('admin/speciality')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
-              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
+        { render:function( data, type, row ) {
+                    return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
+            },targets: [4] },
+            { render: function ( data, type, row ) {
+                return `<div class="dropdown">
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item" href="{{url('admin/speciality')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/speciality')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/speciality')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`
+            },targets: [5]
             }
-            html += `</ul>
-                    </div>`;
-            return html },targets: [5] }
       ],
       columns: [
         { data: "no" },
         { data: "name" },
         { data: "updated_at" },
         { data: "updated_by" },
-        { data: "status" },
+        { data: "deleted_at" },
         { data: "id" },
       ]
     });
