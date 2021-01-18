@@ -25,17 +25,10 @@ class AccessMenu
     {
         if(Auth::guard('admin')->check()){
             if(Auth::guard('admin')->user()->workforce){
-                // $employee  = Employee::select('titles.*')
-                //                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
-                //                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
-                //                         ->whereNull('finish') 
-                //                         ->where('employees.id',Auth::guard('admin')->user()->employee->id)
-                //                         ->first();
                 $workforce = Workforce::with(['site', 'title'])->where('id', Auth::guard('admin')->user()->workforce->id)->first();
-                $title = Title::find($workforce->title->id);
                 $accessmenu = [];
                 $route = explode('.',Route::currentRouteName());
-                if($title){
+                if($workforce->title){
                     $role_id = [];
                     $roletitles = RoleTitle::where('title_id',$workforce->title->id)->get();
                     foreach($roletitles as $roletitle){

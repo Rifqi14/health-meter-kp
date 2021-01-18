@@ -26,16 +26,8 @@ class PageAdmin
     {
         if (Auth::guard('admin')->check()) {
             if(Auth::guard('admin')->user()->workforce){
-                // $employee  = Employee::with('site')->select('titles.*')
-                //                         ->leftJoin('employee_movements','employee_movements.employee_id','=','employees.id')
-                //                         ->leftJoin('titles','titles.id','=','employee_movements.title_id')
-                //                         ->whereNull('finish') 
-                //                         ->where('employees.id',Auth::guard('admin')->user()->employee->id)
-                //                         ->first();
                 $workforce = Workforce::with(['site', 'title'])->where('id', Auth::guard('admin')->user()->workforce->id)->first();
-                $title = Title::find($workforce->title->id);
-                if($title){
-
+                if($workforce->title){
                     $role_id = [];
                     $roletitles = RoleTitle::with('role')->where('title_id','=',$workforce->title->id)->get();
                     $data_manager = 0;
