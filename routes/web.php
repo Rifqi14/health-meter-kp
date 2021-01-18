@@ -157,6 +157,8 @@ Route::group(['prefix' => 'admin'], function () {
         //Route partner
         Route::get('/partner/read', 'Admin\PartnerController@read')->name('partner.read');
         Route::get('/partner/select', 'Admin\PartnerController@select')->name('partner.select');
+        Route::get('/partner/restore/{id}', 'Admin\PartnerController@restore')->name('partner.restore');
+        Route::get('/partner/delete/{id}', 'Admin\PartnerController@delete')->name('partner.delete');
         Route::resource('/partner', 'Admin\PartnerController');
 
         //Route Profile

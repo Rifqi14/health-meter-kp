@@ -4,9 +4,10 @@ namespace App\Models;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Partner extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
     public function site()
     {
@@ -14,7 +15,7 @@ class Partner extends Model
     }
     public function partnercategory()
     {
-        return $this->belongsTo(PartnerCategory::class, 'id_partner_category');
+        return $this->belongsTo(PartnerCategory::class, 'partner_category_id');
     }
     public function user()
     {

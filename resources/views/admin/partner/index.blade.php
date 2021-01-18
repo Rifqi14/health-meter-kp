@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Partner')
+@section('title', 'Faskes')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Partner</li>
+<li class="active">Faskes</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Data Partner</h3>
+                <h3 class="box-title">Data Faskes</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     <a href="{{route('partner.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
@@ -32,9 +32,9 @@
                             <th width="10">#</th>
                             <th width="200">Nama</th>
                             <th width="100">Kategori</th>
-                            <th width="100">Telepon</th>
-                            <th width="100">Email</th>
-                            <th width="100">Dibuat</th>
+                            <th width="50">Terakhir Dirubah</th>
+                            <th width="50">Dirubah Oleh</th>
+                            <th width="50">Status</th>
                             <th width="10">#</th>
                         </tr>
                     </thead>
@@ -67,9 +67,18 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label for="site" class="control-label">Unit</label>
-                                <input type="text" class="form-control" id="site" name="site" data-placeholder="Unit">
+                                <label for="site" class="control-label">Distrik</label>
+                                <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
                             </div>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="name" class="control-label">Arsip Jenis</label>
+                            <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
+                              <option value="">Non-Arsip</option>
+                              <option value="1">Arsip</option>
+                            </select>
+                          </div>
                         </div>
                     </div>
                 </form>
@@ -101,6 +110,8 @@
                     name:term,
                     page:page,
                     limit:30,
+                    data_manager:{{$accesssite}},
+                    site_id : {{$siteinfo->id}}
                 };
                 },
                 results: function (data,page) {
@@ -135,9 +146,13 @@
                 type: "GET",
                 data: function (data) {
                     var name = $('#form-search').find('input[name=name]').val();
+                    var category = $('#form-search').find('select[name=category]').val();
                     var site = $('#form-search').find('input[name=site]').val();
-                    data.site = site;
+                    data.category = category;
                     data.name = name;
+                    data.site = site;
+                    data.data_manager = {{$accesssite}};
+                    data.site_id = {{$siteinfo->id}};
                 }
             },
             columnDefs: [{
@@ -150,19 +165,35 @@
                 },
                 {
                     className: "text-center",
-                    targets: [6]
+                    targets: [5,6]
                 },
+                { render:function( data, type, row ) {
+                            return `${row.partnercategory.name}`
+                    },targets: [2] },
+                { render:function( data, type, row ) {
+                            return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+                    },targets: [4] },
+                { render:function( data, type, row ) {
+                return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
+        },targets: [5] },
                 {
                     render: function (data, type, row) {
                         return `<div class="dropdown">
-                    <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a class="dropdown-item" href="{{url('admin/partner')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                        <li><a class="dropdown-item" href="{{url('admin/partner')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                        <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                    </ul></div>`
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item" href="{{url('admin/partner')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/partner')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/partner')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`
                     },
                     targets: [6]
                 }
@@ -174,17 +205,11 @@
                     data: "name"
                 },
                 {
-                    data: "category"
+                    data: "partner_category_id"
                 },
-                {
-                    data: "phone"
-                },
-                {
-                    data: "email"
-                },
-                {
-                    data: "created_at"
-                },
+                { data: "updated_at" },
+                { data: "updated_by" },
+                { data: "deleted_at" },
                 {
                     data: "id"
                 },
@@ -195,66 +220,187 @@
             dataTable.draw();
             $('#add-filter').modal('hide');
         })
-        $(document).on('click', '.delete', function () {
-            var id = $(this).data('id');
-            bootbox.confirm({
-                buttons: {
-                    confirm: {
-                        label: '<i class="fa fa-check"></i>',
-                        className: 'btn-primary btn-sm'
-                    },
-                    cancel: {
-                        label: '<i class="fa fa-undo"></i>',
-                        className: 'btn-default btn-sm'
-                    },
-                },
-                title: 'Menghapus bidang?',
-                message: 'Data yang telah dihapus tidak dapat dikembalikan',
-                callback: function (result) {
-                    if (result) {
-                        var data = {
-                            _token: "{{ csrf_token() }}"
-                        };
-                        $.ajax({
-                            url: `{{url('admin/partner')}}/${id}`,
-                            dataType: 'json',
-                            data: data,
-                            type: 'DELETE',
-                            beforeSend: function () {
-                                $('.overlay').removeClass('hidden');
-                            }
-                        }).done(function (response) {
-                            if (response.status) {
-                                $('.overlay').addClass('hidden');
-                                $.gritter.add({
-                                    title: 'Success!',
-                                    text: response.message,
-                                    class_name: 'gritter-success',
-                                    time: 1000,
-                                });
-                                dataTable.ajax.reload(null, false);
-                            } else {
-                                $.gritter.add({
-                                    title: 'Warning!',
-                                    text: response.message,
-                                    class_name: 'gritter-warning',
-                                    time: 1000,
-                                });
-                            }
-                        }).fail(function (response) {
-                            var response = response.responseJSON;
-                            $('.overlay').addClass('hidden');
-                            $.gritter.add({
-                                title: 'Error!',
-                                text: response.message,
-                                class_name: 'gritter-error',
-                                time: 1000,
-                            });
-                        })
-                    }
+        $(document).on('click','.archive',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengarsipkan Faskes?',
+          message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = { _token: "{{ csrf_token() }}" };
+              $.ajax({
+                url: `{{url('admin/partner')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'DELETE',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
                 }
-            });
-        })
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });
+            }
+          }
+        });
+    })
+    $(document).on('click','.restore',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengembalikan Faskes?',
+          message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = {
+                              _token: "{{ csrf_token() }}"
+                          };
+              $.ajax({
+                url: `{{url('admin/partner/restore')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'GET',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });		
+            }
+          }
+        });
+    })
+    $(document).on('click','.delete',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Menghapus Faskes?',
+          message:'Data yang telah dihapus tidak dapat dikembalikan',
+          callback: function(result) {
+            if(result) {
+              var data = {
+                              _token: "{{ csrf_token() }}"
+                          };
+              $.ajax({
+                url: `{{url('admin/partner/delete')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'GET',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });		
+            }
+          }
+        });
+    })
     })
 
 </script>

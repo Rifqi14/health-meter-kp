@@ -29,36 +29,40 @@ class PartnerController extends Controller
 
     public function read(Request $request)
     {
-        $category = [
-            'drugstore'      => 'Apotek',
-            'hospital'    => 'Rumah Sakit',
-            'laboratorium'    => 'Laboratorium'
-        ];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
+        $category = $request->category;
         $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
 
         //Count Data
-        $query = DB::table('partners');
-        $query->select('partners.*', 'partner_categories.name as category');
-        $query->leftJoin('partner_categories', 'partner_categories.id', '=', 'partners.id_partner_category');
-        $query->whereRaw("upper(partners.name) like '%$name%'");
+        $query = Partner::with(['partnercategory','user'])->whereRaw("upper(partners.name) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         if ($site) {
             $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('partners');
-        $query->select('partners.*', 'partner_categories.name as category');
-        $query->leftJoin('partner_categories', 'partner_categories.id', '=', 'partners.id_partner_category');
-        $query->whereRaw("upper(partners.name) like '%$name%'");
+        $query = Partner::with(['partnercategory','user'])->whereRaw("upper(partners.name) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         if ($site) {
             $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -126,32 +130,26 @@ class PartnerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'   => 'required',
-            'category'   => 'required',
-            'phone'   => 'required',
-            'address'   => 'required',
-            'site'      => 'required'
+            'site_id'               => 'required',
+            'name'                  => 'required',
+            'partner_category_id'   => 'required',
+            'address'               => 'required'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'status'     => false,
-                'message'     => $validator->errors()->first()
+                'status'        => false,
+                'message'       => $validator->errors()->first()
             ], 400);
         }
 
         $partner = Partner::create([
-            'name' => $request->name,
-            'id_partner_category' => $request->category,
-            'phone' => $request->phone,
-            'email'  => $request->email,
-            'address' => $request->address,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'site_id'   => $request->site,
-            'collaboration_status' => $request->collaboration ? 1 : 0,
-            'status' => $request->status ? 1 : 0,
-            'updated_by' => Auth::id()
+            'site_id'               => $request->site_id,
+            'name'                  => $request->name,
+            'partner_category_id'   => $request->partner_category_id,
+            'address'               => $request->address,
+            'collaboration_status'  => $request->collaboration_status ? 1 : 0,
+            'updated_by'            => Auth::id()
         ]);
 
         return response()->json([
@@ -168,14 +166,8 @@ class PartnerController extends Controller
      */
     public function show($id)
     {
-        $category = [
-            'drugstore'      => 'Apotek',
-            'hospital'    => 'Rumah Sakit',
-            'laboratorium'    => 'Laboratorium'
-        ];
         $partner = Partner::find($id);
         if ($partner) {
-            $partner->category = $category[$partner->category];
             return view('admin.partner.detail', compact('partner'));
         } else {
             abort(404);
@@ -208,11 +200,10 @@ class PartnerController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name'   => 'required',
-            'category'   => 'required',
-            'phone'   => 'required',
-            'address'   => 'required',
-            'site'      => 'required'
+            'name'                  => 'required',
+            'partner_category_id'   => 'required',
+            'address'               => 'required',
+            'site_id'               => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -224,15 +215,10 @@ class PartnerController extends Controller
 
         $partner = Partner::find($id);
         $partner->name = $request->name;
-        $partner->id_partner_category = $request->category;
-        $partner->phone = $request->phone;
-        $partner->email = $request->email;
+        $partner->partner_category_id = $request->partner_category_id;
         $partner->address = $request->address;
-        $partner->latitude  = $request->latitude;
-        $partner->longitude  = $request->longitude;
-        $partner->site_id = $request->site;
-        $partner->collaboration_status = $request->collaboration ? 1 : 0;
-        $partner->status = $request->status ? 1 : 0;
+        $partner->site_id = $request->site_id;
+        $partner->collaboration_status = $request->collaboration_status ? 1 : 0;
         $partner->updated_by = Auth::id();
         $partner->save();
 
@@ -259,15 +245,49 @@ class PartnerController extends Controller
         try {
             $partner = Partner::find($id);
             $partner->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $partner = Partner::onlyTrashed()->find($id);
+            $partner->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $partner = Partner::onlyTrashed()->find($id);
+            $partner->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

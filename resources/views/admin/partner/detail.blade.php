@@ -1,134 +1,83 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Detail Partner')
+@section('title', 'Detail Faskes')
+@push('breadcrump')
+<li><a href="{{route('partner.index')}}">Faskes</a></li>
+<li class="active">Detail</li>
+@endpush
 @section('stylesheets')
-<link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
-<link href="{{asset('adminlte/component/summernote/css/summernote.min.css')}}" rel="stylesheet">
 <style type="text/css">
     #map {
-        height: 370px;
+        height: 300px;
         border: 1px solid #CCCCCC;
     }
 </style>
 @endsection
-@push('breadcrump')
-<li><a href="{{route('partner.index')}}">Partner</a></li>
-<li class="active">Detail</li>
-@endpush
 @section('content')
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-12">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Detail Partner</h3>
+                <h3 class="box-title">Detail Faskes</h3>
+                <!-- tools box -->
                 <div class="pull-right box-tools">
                     <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
                             class="fa fa-reply"></i></a>
                 </div>
+                <!-- /. tools -->
             </div>
-            <div class="box-body box-profile">
-                <table class="table">
-                    <tr>
-                        <td width="100"><strong>Nama</strong></td>
-                        <td width="150" class="text-right">{{$partner->name}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Kategori</strong></td>
-                        <td class="text-right">{{$partner->category}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Telepon</strong></td>
-                        <td class="text-right">{{$partner->phone}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Email</strong></td>
-                        <td class="text-right">{{$partner->email}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Alamat</strong></td>
-                        <td class="text-right" id="address">{{$partner->address}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Latitude</strong></td>
-                        <td class="text-right" id="lat">{{$partner->latitude}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Longitude</strong></td>
-                        <td class="text-right" id="long">{{$partner->longitude}}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Unit</strong></td>
-                        <td class="text-right" id="site">{{$partner->site->name}}</td>
-                    </tr>
-                </table>
+            <div class="box-body">
+                <form id="form" action="{{route('partner.update',['id'=>$partner->id])}}" class="form-horizontal"
+                    method="post" autocomplete="off">
+                    {{ csrf_field() }}
+                    <input type="hidden" name="_method" value="put">
+                    <div class="box-body">
+                        <div class="well well-sm">
+                            <div class="form-group">
+                                <label for="site_id" class="col-sm-2 control-label">Distrik</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{{$partner->site->name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="partner_category_id" class="col-sm-2 control-label">Kategori</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{{$partner->partnercategory->name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Nama</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{{$partner->name}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address" class="col-sm-2 control-label">Alamat</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static">{{$partner->address}}</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"
+                                    for="collaboration_status">Status
+                                    Kerjasama</label>
+                                <div class="col-sm-4">
+                                        @if ($partner->collaboration_status)
+                                        <p class="form-control-static"><span class="label bg-green">Aktif</span></p>
+                                        @else
+                                        <p class="form-control-static"><span class="label bg-danger">Non-Aktif</span></p>
+                                        @endif
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                </form>
+            </div>
+            <div class=" overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
             </div>
         </div>
     </div>
-    <div class="col-lg-6">
-        <div id="map"></div>
-    </div>
 </div>
 @endsection
-
-@push('scripts')
-<script type="text/javascript"
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
-<script>
-    var map, geocoder, marker, infowindow;
-    $(document).ready(function () {
-        var lat = $("#lat").html()||-7.217416,
-            long = $("#long").html()||112.72990470000002,
-            address = $("#address").html(),
-
-            options = {
-                zoom: 15,
-                center: new google.maps.LatLng(lat, long),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-
-        map = new google.maps.Map(document.getElementById('map'), options);
-
-        setCoordinates(address,lat,long);
-
-    });
-    function setCoordinates(address,latitude,longitude) {
-    // Mengecek apakah terdapat 'geocoded object'. Jika tidak maka buat satu.
-      
-          map.setCenter(new google.maps.LatLng(latitude, longitude));
-    
-        // Mengecek apakah terdapat objek marker
-        if (!marker) {
-          // Membuat objek marker dan menambahkan ke peta
-          marker = new google.maps.Marker({
-            map: map,
-      draggable:false,
-          });
-        }
-
-        // Menentukan posisi marker ke lokasi returned location
-    
-    marker.setPosition(new google.maps.LatLng(latitude, longitude));
-  
-        // Mengecek apakah terdapat InfoWindow object
-        if (!infowindow) {
-          // Membuat InfoWindow baru
-          infowindow = new google.maps.InfoWindow();
-        }
-        // membuat konten InfoWindow ke alamat
-        // dan posisi yang ditemukan
-        var content = '<strong>' + address + '</strong><br/>';
-        content += 'Lat: ' + latitude + '<br />';
-        content += 'Lng: ' + longitude;
-    
-        // Menambahkan konten ke InfoWindow
-        infowindow.setContent(content);
-
-        // Membuka InfoWindow
-        infowindow.open(map, marker);
-
-    // Membuat rekues Geocode
-    
-  }
-</script>
-@endpush
