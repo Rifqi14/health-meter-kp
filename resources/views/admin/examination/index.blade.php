@@ -30,7 +30,6 @@
             <tr>
               <th width="10">#</th>
               <th width="100">Nama</th>
-              <th width="100">Tipe</th>
               <th width="50">Terakhir Dirubah</th>
               <th width="50">Dirubah Oleh</th>
               <th width="50">Status</th>
@@ -100,7 +99,7 @@
       info:false,
       lengthChange:true,
       responsive: true,
-      order: [[ 6, "asc" ]],
+      order: [[ 5, "asc" ]],
       ajax: {
         url: "{{route('examination.read')}}",
         type: "GET",
@@ -114,17 +113,18 @@
       columnDefs:[
         { orderable: false,targets:[0] },
         { className: "text-right", targets: [0] },
-        { className: "text-center", targets: [5,6] },
+        { className: "text-center", targets: [4,5] },
         { render: function (data, type, row) {
           return `<span class="label bg-blue">${row.user.name}</span>`
-        }, targets: [4]},
-        { render: function (data, type, row) {
-          if (row.status == 1) {
-            return `<span class="label bg-green">Aktif</span>`
-          } else {
-            return `<span class="label bg-red">Non-Aktif</span>`
-          }
-        }, targets: [5]},
+        }, targets: [3]},
+        { render: function ( data, type, row ) {
+                if (row.deleted_at) {
+                    return `<span class="label bg-red">Non-Aktif</span>`
+                } else {
+                    return `<span class="label bg-green">Aktif</span>`
+                }
+            },targets: [4]
+            },
         { render: function ( data, type, row ) {
           html = `<div class="dropdown">
                       <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -141,15 +141,14 @@
             }
             html += `</ul>
                     </div>`;
-            return html },targets: [6] }
+            return html },targets: [5] }
       ],
       columns: [
         { data: "no" },
         { data: "name" },
-        { data: "type" },
         { data: "updated_at" },
         { data: "updated_by" },
-        { data: "status" },
+        { data: "deleted_at" },
         { data: "id" },
       ]
     });

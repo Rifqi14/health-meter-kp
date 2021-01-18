@@ -28,12 +28,6 @@ class ExaminationController extends Controller
 
     public function read(Request $request)
     {
-        $type = [
-            'history'     => 'Riwayat',
-            'physical'    => 'Fisik' ,
-            'laboratory'  => 'Laboraturium' ,
-            'nonlaboratury'    => 'Non Laboraturium' ,
-        ];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
@@ -62,7 +56,6 @@ class ExaminationController extends Controller
         $data = [];
         foreach ($examinations as $examination) {
             $examination->no = ++$start;
-            $examination->type = $type[$examination->type];
             $data[] = $examination;
         }
         return response()->json([
@@ -139,8 +132,6 @@ class ExaminationController extends Controller
         try {
             $medicine_group = Examination::create([
                 'name'          => $request->name,
-                'type'          => $request->type,
-                'status'        => $request->status ? 1 : 0,
                 'updated_by'    => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -163,12 +154,6 @@ class ExaminationController extends Controller
      */
     public function show($id)
     {
-        $type = [
-            'history'     => 'Riwayat',
-            'physical'    => 'Fisik' ,
-            'laboratory'  => 'Laboraturium' ,
-            'nonlaboratury'    => 'Non Laboraturium' ,
-        ];
         $examination = Examination::find($id);
         if($examination){
             return view('admin.examination.detail',compact('examination','type'));
@@ -215,9 +200,7 @@ class ExaminationController extends Controller
         }
 
         $examination = Examination::find($id);
-        $examination->type         = $request->type;
         $examination->name         = $request->name;
-        $examination->status       = $request->status ? 1 : 0;
         $examination->updated_by   = Auth::id();
         $examination->save();
 
@@ -243,8 +226,6 @@ class ExaminationController extends Controller
     {
         try {
             $examination = Examination::find($id);
-            $examination->status = 0;
-            $examination->save();
             $examination->delete();
         } catch (QueryException $th) {
             return response()->json([
@@ -262,8 +243,6 @@ class ExaminationController extends Controller
     {
         try {
             $examination = Examination::onlyTrashed()->find($id);
-            $examination->status = 1;
-            $examination->save();
             $examination->restore();
         } catch (QueryException $th) {
             return response()->json([

@@ -33,28 +33,6 @@
                   value="{{$examination->name}}" required>
               </div>
             </div>
-            <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe Kategori" required>
-                  <option value=""></option>
-                  <option value="history" @if($examination->type == 'history') selected @endif>Riwayat</option>
-                  <option value="physical" @if($examination->type == 'physical') selected @endif>Fisik</option>
-                  <option value="laboratory" @if($examination->type == 'laboratory') selected @endif>Laboraturium
-                  </option>
-                  <option value="nonlaboratury" @if($examination->type == 'nonlaboratury') selected @endif>Non
-                    Laboraturium
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($examination->status) checked
-                  @endif></label>
-              </div>
-            </div>
           </div>
         </form>
       </div>

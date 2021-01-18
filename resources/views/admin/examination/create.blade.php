@@ -31,25 +31,6 @@
                 <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
               </div>
             </div>
-            <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Tipe <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <select id="type" name="type" class="form-control select2" placeholder="Pilih Tipe Pemeriksaan"
-                  required>
-                  <option value=""></option>
-                  <option value="history">Riwayat</option>
-                  <option value="physical">Fisik</option>
-                  <option value="laboratory">Laboraturium</option>
-                  <option value="nonlaboratury">Non Laboraturium</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
-              </div>
-            </div>
           </div>
         </form>
       </div>
