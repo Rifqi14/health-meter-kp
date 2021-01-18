@@ -150,7 +150,12 @@ class MedicineUnitController extends Controller
      */
     public function show($id)
     {
-        //
+        $unit = MedicineUnit::withTrashed()->find($id);
+        if ($unit) {
+            return view('admin.medicineunit.detail', compact('unit'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
