@@ -230,7 +230,7 @@ class WorkforceController extends Controller
      */
     public function edit($id)
     {
-        $workforce = Workforce::with(['updatedby', 'workforcegroup', 'agency', 'title', 'site', 'department', 'subdepartment', 'guarantor'])->find($id);
+        $workforce = Workforce::with(['updatedby', 'workforcegroup', 'agency', 'title', 'site', 'department', 'subdepartment', 'guarantor','user'])->find($id);
         if ($workforce) {
             return view('admin.workforce.edit', compact('workforce'));
         } else {
@@ -255,6 +255,7 @@ class WorkforceController extends Controller
             'site_id'           => 'required',
             'department_id'     => 'required',
             'sub_department_id' => 'required',
+            'email'             => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -266,8 +267,30 @@ class WorkforceController extends Controller
 
         $workforce = Workforce::withTrashed()->find($id);
         if ($workforce->nid != strtoupper($request->nid)) {
-            $user = User::where('username', $workforce->nid)->first();
+            $user = User::where('workforce_id', $workforce->id)->first();
             $user->username = strtoupper($request->nid);
+            $user->save();
+            if (!$user) {
+                DB::rollback();
+                return response()->json([
+                    'status' => false,
+                    'message'     => $user
+                ], 400);
+            }
+        }
+        $user = User::where('workforce_id', $workforce->id)->first();
+        $user->email = $request->email;
+        $user->save();
+        if (!$user) {
+            DB::rollback();
+            return response()->json([
+                'status' => false,
+                'message'     => $user
+            ], 400);
+        }
+        if($request->password){
+            $user = User::where('workforce_id', $workforce->id)->first();
+            $user->password = Hash::make($request->password);
             $user->save();
             if (!$user) {
                 DB::rollback();

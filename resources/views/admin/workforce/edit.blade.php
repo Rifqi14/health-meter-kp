@@ -28,6 +28,12 @@
           <div class="box-body">
             <div class="well well-sm">
               <div class="form-group">
+                <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
+                </div>
+              </div>
+              <div class="form-group">
                 <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" value="{{ $workforce->nid }}" required>
@@ -69,12 +75,6 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
-                <div class="col-sm-6">
-                  <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Unit" required>
-                </div>
-              </div>
-              <div class="form-group">
                 <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Bidang" required>
@@ -90,6 +90,20 @@
                 <label for="guarantor_id" class="col-sm-2 control-label">Jabatan Penanggung Jawab</label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="guarantor_id" name="guarantor_id" data-placeholder="Jabatan Penanggung Jawab">
+                </div>
+              </div>
+            </div>
+            <div class="well well-sm">
+              <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">Email <b class="text-danger">*</b></label>
+                <div class="col-sm-6">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="{{ $workforce->user->email }}" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-6">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                 </div>
               </div>
             </div>
@@ -119,6 +133,7 @@
         $(this).closest("form").validate().form();
       }
     });
+    
     $("#form").validate({
       errorElement: 'span',
       errorClass: 'help-block',
@@ -229,7 +244,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              data_manager:{{$accesssite}},
           };
           },
           results: function (data,page) {
@@ -262,7 +278,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -361,7 +378,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              department_id:$('#department_id').val()==''?-1:$('#department_id').val()
           };
           },
           results: function (data,page) {
@@ -394,7 +412,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -403,7 +422,7 @@
           $.each(data.rows,function(index,item){
               option.push({
               id:item.id,  
-              text: `${item.nid}`
+              text: `${item.name} - ${item.code}`
               });
           });
           return {
@@ -438,7 +457,7 @@
       $('#sub_department_id').select2('data', {id: {{ $workforce->subdepartment->id }}, text: `{!! $workforce->subdepartment->name !!}`}).trigger('change');
     @endif
     @if ($workforce->guarantor_id)
-      $('#guarantor_id').select2('data', {id: {{ $workforce->guarantor->id }}, text: `{!! $workforce->guarantor->nid !!}`}).trigger('change');
+      $('#guarantor_id').select2('data', {id: {{ $workforce->guarantor->id }}, text: `{!! $workforce->guarantor->title->name.' - '.$workforce->guarantor->title->code !!}`}).trigger('change');
     @endif
   });
 </script>
