@@ -37,14 +37,14 @@ class AuthorizedOfficialController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = AuthorizedOfficial::with(['user', 'site'])->whereRaw("upper(authority) like '%$name%'");
+        $query = AuthorizedOfficial::with(['user', 'site','title']);
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = AuthorizedOfficial::with(['user', 'site'])->whereRaw("upper(authority) like '%$name%'");
+        $query = AuthorizedOfficial::with(['user', 'site','title']);
         if ($arsip) {
             $query->onlyTrashed();
         }
@@ -112,7 +112,7 @@ class AuthorizedOfficialController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'     => 'required|unique:authorized_officials',
+            'title_id' => 'required',
             'site_id'  => 'required',
             'level'    => 'required',
             'authority'=> 'required'
@@ -127,8 +127,8 @@ class AuthorizedOfficialController extends Controller
 
         try {
             $authority = AuthorizedOfficial::create([
-                'code'          => $request->code,
                 'site_id'       => $request->site_id,
+                'title_id'      => $request->title_id,
                 'authority_type'=> $request->authority_type ? 1 : 0,
                 'level'         => $request->level,
                 'authority'     => $request->authority,
@@ -154,7 +154,12 @@ class AuthorizedOfficialController extends Controller
      */
     public function show($id)
     {
-        //
+        $authority = AuthorizedOfficial::withTrashed()->find($id);
+        if ($authority) {
+            return view('admin.authorizedofficial.detail', compact('authority'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -183,7 +188,7 @@ class AuthorizedOfficialController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'     => 'required|unique:authorized_officials,code,' . $id,
+            'title_id' => 'required',
             'site_id'  => 'required',
             'level'    => 'required',
             'authority'=> 'required'
@@ -197,7 +202,7 @@ class AuthorizedOfficialController extends Controller
         }
 
         $authority = AuthorizedOfficial::withTrashed()->find($id);
-        $authority->code            = $request->code;
+        $authority->title_id        = $request->title_id;
         $authority->site_id         = $request->site_id;
         $authority->authority_type  = $request->authority_type ? 1 : 0;
         $authority->level           = $request->level;

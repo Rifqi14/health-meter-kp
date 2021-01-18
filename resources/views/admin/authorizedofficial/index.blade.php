@@ -29,8 +29,8 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Kode</th>
-              <th width="100">Unit</th>
+              <th width="100">Distrik</th>
+              <th width="100">Jabatan</th>
               <th width="100">Jenis Kewenangan</th>
               <th width="100">Kewenangan</th>
               <th width="100">Terakhir Dirubah</th>
@@ -59,21 +59,21 @@
       <div class="modal-body">
         <form id="form-search" autocomplete="off">
           <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="name">Kewenangan</label>
-                <input type="text" name="name" class="form-control" placeholder="Nama">
+              <div class="col-md-12">
+                <div class="form-group">
+                    <label for="site" class="control-label">Distrik</label>
+                    <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
+                </div>
               </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="name" class="control-label">Arsip Kelompok</label>
-                <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
-                  <option value="">Non-Arsip</option>
-                  <option value="1">Arsip</option>
-                </select>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="name" class="control-label">Arsip Kelompok</label>
+                  <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
+                    <option value="">Non-Arsip</option>
+                    <option value="1">Arsip</option>
+                  </select>
+                </div>
               </div>
-            </div>
           </div>
         </form>
       </div>
@@ -99,6 +99,36 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+    });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -112,20 +142,26 @@
             url: "{{route('authorizedofficial.read')}}",
             type: "GET",
             data:function(data){
-              var name = $('#form-search').find('input[name=name]').val();
+              var site = $('#form-search').find('input[name=site]').val();
               var category = $('#form-search').find('select[name=category]').val();
-              data.name = name;
               data.category = category;
+              data.site = site;
+              data.data_manager = {{$accesssite}};
+              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,5] },
+            { className: "text-right", targets: [0] },
             { className: "text-center", targets: [6,7,8] },
             { render: function ( data, type, row ) {
-              return `<span class="label bg-blue">${row.site ? row.site.name : ''}</span>`
+                  return `${row.site.name}`
+            },targets: [1]
+            },
+            { render: function ( data, type, row ) {
+                  return `${row.title.name} <br> <small>${row.title.code}</small>`
             },targets: [2]
             },
             { render: function ( data, type, row ) {
@@ -152,10 +188,12 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/authorizedofficial')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/authorizedofficial')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/authorizedofficial')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
@@ -165,8 +203,8 @@
         ],
         columns: [
             { data: "no" },
-            { data: "code" },
             { data: "site_id" },
+            { data: "title_id" },
             { data: "authority_type" },
             { data: "authority" },
             { data: "updated_at" },

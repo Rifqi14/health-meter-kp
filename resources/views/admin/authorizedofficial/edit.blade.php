@@ -24,15 +24,17 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $authority->code }}" required>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik"
+                  required>
               </div>
             </div>
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <label for="title_id" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" placeholder="Unit" value="{{ $authority->site_id }}" required>
+                <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan"
+                  required>
               </div>
             </div>
             <div class="form-group">
@@ -51,7 +53,12 @@
             <div class="form-group">
               <label for="authority" class="col-sm-2 control-label">Jenis Kewenangan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="authority" name="authority" placeholder="Jenis Kewenangan" value="{{ $authority->authority }}" required>
+                <select id="authority" name="authority" class="form-control select2" placeholder="Pilih Jenis Kewenangan" required>
+                  <option value=""></option>
+                  @foreach(config('enums.authority') as $key => $value)
+                    <option value="{{$value}}" @if($authority->authority == $value) selected @endif>{{$value}}</option>
+                  @endforeach
+                </select>
               </div>
             </div>
           </div>
@@ -73,9 +80,11 @@
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
       });
+      
+      $(".select2").select2();
       $( "#site_id" ).select2({
         ajax: {
-          url: "{{url('admin/site/select')}}",
+          url: "{{route('site.select')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
@@ -83,6 +92,8 @@
               name:term,
               page:page,
               limit:30,
+              data_manager:{{$accesssite}},
+              site_id : {{$siteinfo->id}}
             };
           },
           results: function (data,page) {
@@ -102,6 +113,39 @@
         allowClear: true,
       });
       $(document).on("change", "#site_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#title_id" ).select2({
+        ajax: {
+          url: "{{route('title.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name} - ${item.code}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#title_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -173,6 +217,9 @@
 
       @if ($authority->site_id)
       $('#site_id').select2('data', {id: {{ $authority->site->id }}, text: `{{ $authority->site->name }}`}).trigger('change');
+      @endif
+      @if ($authority->title_id)
+      $('#title_id').select2('data', {id: {{ $authority->title->id }}, text: `{{ $authority->title->name.' - '.$authority->title->code }}`}).trigger('change');
       @endif
   });
 </script>

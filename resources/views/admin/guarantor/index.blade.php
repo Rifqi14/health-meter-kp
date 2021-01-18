@@ -184,7 +184,8 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>

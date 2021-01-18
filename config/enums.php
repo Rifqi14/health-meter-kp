@@ -23,4 +23,9 @@ return [
         'izin'  => "Izin",
         'dinas' => "Dinas Luar",
     ],
+    'authority' => [
+        'Surat Jaminan'   => "Surat Jaminan",
+        'Resep'   => "Resep",
+        'Penjadwalan Pemeriksaan'  => "Penjadwalan Pemeriksaan"
+    ],
 ];
