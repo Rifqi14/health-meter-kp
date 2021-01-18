@@ -33,7 +33,9 @@ class AuthorizedOfficialController extends Controller
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $name = strtoupper($request->name);
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
         $arsip = $request->category;
 
         //Count Data
@@ -41,12 +43,24 @@ class AuthorizedOfficialController extends Controller
         if ($arsip) {
             $query->onlyTrashed();
         }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = AuthorizedOfficial::with(['user', 'site','title']);
         if ($arsip) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
