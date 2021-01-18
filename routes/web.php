@@ -303,6 +303,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/doctor/import', 'Admin\DoctorController@import')->name('doctor.import');
         Route::post('/doctor/preview', 'Admin\DoctorController@preview')->name('doctor.preview');
         Route::post('/doctor/storemass', 'Admin\DoctorController@storemass')->name('doctor.storemass');
+        Route::get('/doctor/restore/{id}', 'Admin\DoctorController@restore')->name('doctor.restore');
+        Route::get('/doctor/delete/{id}', 'Admin\DoctorController@delete')->name('doctor.delete');
         Route::resource('/doctor', 'Admin\DoctorController');
 
         // Medicine Category

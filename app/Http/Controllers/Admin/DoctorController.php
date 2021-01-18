@@ -38,24 +38,39 @@ class DoctorController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir            = $request->order[0]['dir'];
         $name           = strtoupper($request->name);
-        $site           = $request->site;
+        $category = $request->category;
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
 
         // Count Data
-        $doctors        = Doctor::whereRaw("upper(name) like '%$name%'");
-        if ($site) {
-            $doctors->where('site_id', $site);
+        $query        = Doctor::with('site')->whereRaw("upper(name) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
         }
-        $recordsTotal   = $doctors->count();
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
+        }
+        $recordsTotal   = $query->count();
 
         // Select Pagination
-        $doctor         = Doctor::whereRaw("upper(name) like '%$name%'");
-        if ($site) {
-            $doctor->where('site_id', $site);
+        $query         = Doctor::with('site')->whereRaw("upper(name) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
         }
-        $doctor->offset($start);
-        $doctor->limit($length);
-        $doctor->orderBy($sort, $dir);
-        $doctors = $doctor->get();
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
+        }
+        $query->offset($start);
+        $query->limit($length);
+        $query->orderBy($sort, $dir);
+        $doctors = $query->get();
 
         $data = [];
         foreach ($doctors as $doctor) {
@@ -89,13 +104,11 @@ class DoctorController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'phone'     => 'required',
-            'unit'      => 'required',
-            'email'     => 'required',
-            'password'  => 'required',
-            'speciality'=> 'required',
-            'group'     => 'required'
+            'doctor_group'      => 'required',
+            'site_id'           => 'required',
+            'name'              => 'required',
+            'phone'             => 'required',
+            'id_speciality'     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -106,15 +119,12 @@ class DoctorController extends Controller
         }
         DB::beginTransaction();
         $doctor = Doctor::create([
+            'doctor_group'  => $request->doctor_group,
+            'site_id'       => $request->site_id,
             'name'          => $request->name,
-            'id_doctor'     => $request->id_doctor,
             'phone'         => $request->phone,
-            'email'         => $request->email,
-            'site_id'       => $request->unit,
-            'id_partner'    => $request->partner,
-            'id_speciality' => $request->speciality,
-            'doctor_group'  => $request->group,
-            'status'        => $request->status ? 1 : 0,
+            'id_partner'    => $request->id_partner,
+            'id_speciality' => $request->id_speciality,
             'updated_by'    => Auth::id()
         ]);
         if (!$doctor) {
@@ -122,34 +132,6 @@ class DoctorController extends Controller
             return response()->json([
                 'status'    => false,
                 'message'   => $doctor
-            ], 400);
-        }
-        $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'username'  => $request->id_doctor,
-            'password'  => Hash::make($request->password),
-            'status'    => 1,
-        ]);
-        if (!$user) {
-            DB::rollback();
-            return response()->json([
-                'status'    => false,
-                'message'   => $user
-            ], 400);
-        }
-        $role = Role::find($request->role_id);
-        $user->attachRole($role);
-
-        $siteuser = SiteUser::create([
-            'user_id'       => $user->id,
-            'site_id'       => $request->unit
-        ]);
-        if (!$siteuser) {
-            DB::rollback();
-            return response()->json([
-                'status'    => false,
-                'message'   => $siteuser
             ], 400);
         }
         DB::commit();
@@ -167,7 +149,12 @@ class DoctorController extends Controller
      */
     public function show($id)
     {
-        //
+        $doctor = Doctor::find($id);
+        if ($doctor) {
+            return view('admin.doctor.detail', compact('doctor'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -196,12 +183,11 @@ class DoctorController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'id_doctor'     => 'required',
-            'name'          => 'required',
-            'phone'         => 'required',
-            'unit'          => 'required',
-            'speciality'    => 'required',
-            'group'         => 'required'
+            'doctor_group'      => 'required',
+            'site_id'           => 'required',
+            'name'              => 'required',
+            'phone'             => 'required',
+            'id_speciality'     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -212,26 +198,12 @@ class DoctorController extends Controller
         }
         DB::beginTransaction();
         $doctor = Doctor::find($id);
-        if ($doctor->id_doctor != $request->id_doctor) {
-            $user = User::where('username', $doctor->id_doctor)->first();
-            $user->username = $request->id_doctor;
-            $user->save();
-            if (!$user) {
-                DB::rollback();
-                return response()->json([
-                    'status'    => false,
-                    'message'   => $user
-                ], 400);
-            }
-        }
-        $doctor->id_doctor      = $request->id_doctor;
+        $doctor->doctor_group   = $request->doctor_group;
+        $doctor->site_id        = $request->site_id;
         $doctor->name           = $request->name;
         $doctor->phone          = $request->phone;
-        $doctor->site_id        = $request->unit;
-        $doctor->status         = $request->status ? 1 : 0;
-        $doctor->id_partner     = $request->partner;
-        $doctor->id_speciality  = $request->speciality;
-        $doctor->doctor_group   = $request->group;
+        $doctor->id_partner     = $request->id_partner;
+        $doctor->id_speciality  = $request->id_speciality;
         $doctor->updated_by     = Auth::id();
         $doctor->save();
         if (!$doctor) {
@@ -373,15 +345,45 @@ class DoctorController extends Controller
     {
         try {
             $doctor = Doctor::find($id);
-            $user = User::where('username', $doctor->id_doctor)->first();
-            if ($user) {
-                $user->delete();
-            }
             $doctor->delete();
-        } catch (\Throwable $th) {
+        } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
-                'message'   => 'Error delete data'
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $doctor = Doctor::onlyTrashed()->find($id);
+            $doctor->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $doctor = Doctor::onlyTrashed()->find($id);
+            $doctor->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([

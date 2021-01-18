@@ -28,10 +28,20 @@
           {{ csrf_field() }}
           <div class="well well-sm">
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">ID Dokter <b class="text-danger">*</b></label>
+              <label for="group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="id_doctor" name="id_doctor" placeholder="ID Dokter"
+                <select id="doctor_group" name="doctor_group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
                   required>
+                  <option value=""></option>
+                  <option value="0">Dokter Perusahaan</option>
+                  <option value="1">Dokter Eksternal</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
               </div>
             </div>
             <div class="form-group">
@@ -47,61 +57,16 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <label for="id_partner" class="col-sm-2 control-label">Faskes</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required>
+                <input type="text" class="form-control" id="id_partner" name="id_partner" data-placeholder="Pilih Faskes">
               </div>
             </div>
             <div class="form-group">
-              <label for="partner" class="col-sm-2 control-label">Partner</label>
+              <label for="id_speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="partner" name="partner" data-placeholder="Pilih Partner">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="speciality" name="speciality"
+                <input type="text" class="form-control" id="id_speciality" name="id_speciality"
                   data-placeholder="Pilih Spesialisasi" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <select id="group" name="group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
-                  required>
-                  <option value=""></option>
-                  <option value="0">Dokter Perusahaan</option>
-                  <option value="1">Dokter Eksternal</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
-              </div>
-            </div>
-          </div>
-          <div class="well well-sm">
-            <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Role <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="role_id" name="role_id" data-placeholder="Pilih Role"
-                  required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="email" class="col-sm-2 control-label">Email <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="password" class="col-sm-2 control-label">Password <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
-                  required>
               </div>
             </div>
           </div>
@@ -127,40 +92,7 @@
       $('.select2').select2({
         allowClear: true
       });
-      $( "#role_id" ).select2({
-        ajax: {
-          url: "{{route('role.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              display_name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.display_name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#role_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $( "#partner" ).select2({
+      $( "#id_partner" ).select2({
         ajax: {
           url: "{{route('partner.select')}}",
           type:'GET',
@@ -170,6 +102,7 @@
               display_name:term,
               page:page,
               limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
             };
           },
           results: function (data,page) {
@@ -188,12 +121,12 @@
         },
         allowClear: true,
       });
-      $(document).on("change", "#partner", function () {
+      $(document).on("change", "#id_partner", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
       });
-      $( "#speciality" ).select2({
+      $( "#id_speciality" ).select2({
         ajax: {
           url: "{{route('speciality.select')}}",
           type:'GET',
@@ -221,12 +154,12 @@
         },
         allowClear: true,
       });
-      $(document).on("change", "#speciality", function () {
+      $(document).on("change", "#id_speciality", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
       });
-      $("#unit").select2({
+      $("#site_id").select2({
         ajax: {
             url: "{{route('site.select')}}",
             type:'GET',
@@ -236,6 +169,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {

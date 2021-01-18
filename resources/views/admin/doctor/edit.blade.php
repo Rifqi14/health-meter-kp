@@ -30,10 +30,27 @@
           <input type="hidden" name="_method" value="put">
           <div class="well well-sm">
             <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">ID Dokter <b class="text-danger">*</b></label>
+              <label for="doctor_group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="id_doctor" name="id_doctor" placeholder="ID Dokter"
-                  value="{{ $doctor->id_doctor }}" required>
+                <select id="doctor_group" name="doctor_group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
+                  required>
+                  <option value="" @if (!$doctor->doctor_group)
+                    selected
+                    @endif></option>
+                  <option value="0" @if ($doctor->doctor_group === 0)
+                    selected
+                    @endif>Dokter Perusahaan</option>
+                  <option value="1" @if ($doctor->doctor_group == 1)
+                    selected
+                    @endif>Dokter Eksternal</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
               </div>
             </div>
             <div class="form-group">
@@ -51,49 +68,16 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="unit" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <label for="id_partner" class="col-sm-2 control-label">Faskes</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="unit" name="unit" data-placeholder="Pilih Unit" required
-                  value="{{ $doctor->site_id }}">
+                <input type="text" class="form-control" id="id_partner" name="id_partner" data-placeholder="Pilih Faskes">
               </div>
             </div>
             <div class="form-group">
-              <label for="partner" class="col-sm-2 control-label">Partner</label>
+              <label for="id_speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="partner" name="partner" data-placeholder="Pilih Partner"
-                  value="{{ $doctor->id_partner }}">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="speciality" class="col-sm-2 control-label">Spesialisasi <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="speciality" name="speciality"
-                  data-placeholder="Pilih Spesialisasi" required value="{{ $doctor->id_speciality }}">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="group" class="col-sm-2 control-label">Kelompok Dokter <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <select id="group" name="group" class="form-control select2" placeholder="Pilih Kelompok Dokter"
-                  required>
-                  <option value="" @if (!$doctor->doctor_group)
-                    selected
-                    @endif></option>
-                  <option value="0" @if ($doctor->doctor_group === 0)
-                    selected
-                    @endif>Dokter Perusahaan</option>
-                  <option value="1" @if ($doctor->doctor_group == 1)
-                    selected
-                    @endif>Dokter Eksternal</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($doctor->status == 1)
-                  checked
-                  @endif> <i></i></label>
+                <input type="text" class="form-control" id="id_speciality" name="id_speciality"
+                  data-placeholder="Pilih Spesialisasi" required>
               </div>
             </div>
           </div>
@@ -119,7 +103,7 @@
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
       });
-      $("#unit").select2({
+      $("#site_id").select2({
         ajax: {
             url: "{{route('site.select')}}",
             type:'GET',
@@ -129,6 +113,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {
@@ -148,50 +134,52 @@
         allowClear: true,
       });
       @if(isset($doctor->site_id))
-      $("#unit").select2('data',{id:{{$doctor->site->id}},text:'{{$doctor->site->name}}'}).trigger('change');
+      $("#site_id").select2('data',{id:{{$doctor->site->id}},text:'{{$doctor->site->name}}'}).trigger('change');
       @endif
-      $(document).on("change", "#unit", function () {
+      $(document).on("change", "#site_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
       });
-      $("#partner").select2({
+      $( "#id_partner" ).select2({
         ajax: {
-            url: "{{route('partner.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
+          url: "{{route('partner.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
             return {
-                name:term,
-                page:page,
-                limit:30,
+              display_name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
             };
-            },
-            results: function (data,page) {
+          },
+          results: function (data,page) {
             var more = (page * 30) < data.total;
             var option = [];
             $.each(data.rows,function(index,item){
-                option.push({
+              option.push({
                 id:item.id,  
                 text: `${item.name}`
-                });
+              });
             });
             return {
-                results: option, more: more,
+              results: option, more: more,
             };
-            },
+          },
         },
         allowClear: true,
       });
+      
       @if(isset($doctor->id_partner))
-      $("#partner").select2('data',{id:{{$doctor->partner->id}},text:'{{$doctor->partner->name}}'}).trigger('change');
+      $("#id_partner").select2('data',{id:{{$doctor->partner->id}},text:'{{$doctor->partner->name}}'}).trigger('change');
       @endif
-      $(document).on("change", "#partner", function () {
+      $(document).on("change", "#id_partner", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
       });
-      $("#speciality").select2({
+      $("#id_speciality").select2({
         ajax: {
             url: "{{route('speciality.select')}}",
             type:'GET',
@@ -219,10 +207,10 @@
         },
         allowClear: true,
       });
-      @if(isset($doctor->id_partner))
-      $("#speciality").select2('data',{id:{{$doctor->speciality->id}},text:'{{$doctor->speciality->name}}'}).trigger('change');
+      @if(isset($doctor->id_speciality))
+      $("#id_speciality").select2('data',{id:{{$doctor->speciality->id}},text:'{{$doctor->speciality->name}}'}).trigger('change');
       @endif
-      $(document).on("change", "#speciality", function () {
+      $(document).on("change", "#id_speciality", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
