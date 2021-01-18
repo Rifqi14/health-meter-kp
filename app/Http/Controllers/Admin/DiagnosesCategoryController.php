@@ -150,7 +150,12 @@ class DiagnosesCategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $category = DiagnosesCategory::withTrashed()->find($id);
+        if ($category) {
+            return view('admin.diagnosescategory.detail', compact('category'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -216,8 +221,8 @@ class DiagnosesCategoryController extends Controller
     public function destroy($id)
     {
         try {
-            $category = DiagnosesCategory::find($id);
-            $category->delete();
+            $diagnosescategory = DiagnosesCategory::find($id);
+            $diagnosescategory->delete();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -233,8 +238,8 @@ class DiagnosesCategoryController extends Controller
     public function restore($id)
     {
         try {
-            $category = DiagnosesCategory::onlyTrashed()->find($id);
-            $category->restore();
+            $diagnosescategory = DiagnosesCategory::onlyTrashed()->find($id);
+            $diagnosescategory->restore();
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,
@@ -244,6 +249,23 @@ class DiagnosesCategoryController extends Controller
         return response()->json([
             'status'    => true,
             'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $diagnosescategory = DiagnosesCategory::onlyTrashed()->find($id);
+            $diagnosescategory->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

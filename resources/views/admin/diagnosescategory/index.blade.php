@@ -138,18 +138,22 @@
             },targets: [5]
             },
             { render: function ( data, type, row ) {
-                html = `<div class="dropdown">
-                    <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">`;
-                if (row.deleted_at) {
-                    html += `<li><a class="dropdown-item" href="{{url('admin/diagnosescategory')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li><li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
-                } else {
-                    html += `<li><a class="dropdown-item" href="{{url('admin/diagnosescategory')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li><li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`
-                }
-                html += `</ul></div>`
-                return html
+              return `<div class="dropdown">
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item" href="{{url('admin/diagnosescategory')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/diagnosescategory')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/diagnosescategory')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`
             },targets: [6]
             }
         ],
@@ -163,64 +167,64 @@
             { data: "id" },
         ]
     });
-    $(document).on('click','.delete',function(){
+    $(document).on('click','.archive',function(){
         var id = $(this).data('id');
         bootbox.confirm({
-			buttons: {
-				confirm: {
-					label: '<i class="fa fa-check"></i>',
-					className: 'btn-primary btn-sm'
-				},
-				cancel: {
-					label: '<i class="fa fa-undo"></i>',
-					className: 'btn-default btn-sm'
-				},
-			},
-			title:'Menghapus Kategori Diagnosa?',
-			message:'Data yang telah dihapus dapat dikembalikan',
-			callback: function(result) {
-        if(result) {
-          var data = { _token: "{{ csrf_token() }}" };
-          $.ajax({
-            url: `{{url('admin/diagnosescategory')}}/${id}`,
-            dataType: 'json', 
-            data:data,
-            type:'DELETE',
-            beforeSend:function(){
-                $('.overlay').removeClass('hidden');
-            }
-          }).done(function(response){
-              if(response.status){
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Mengarsipkan Kategori Diagnosa?',
+          message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+          callback: function(result) {
+            if(result) {
+              var data = { _token: "{{ csrf_token() }}" };
+              $.ajax({
+                url: `{{url('admin/diagnosescategory')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'DELETE',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
                   $('.overlay').addClass('hidden');
                   $.gritter.add({
-                      title: 'Success!',
+                      title: 'Error!',
                       text: response.message,
-                      class_name: 'gritter-success',
+                      class_name: 'gritter-error',
                       time: 1000,
                   });
-                  dataTable.ajax.reload( null, false );
-              }
-              else{
-                  $.gritter.add({
-                      title: 'Warning!',
-                      text: response.message,
-                      class_name: 'gritter-warning',
-                      time: 1000,
-                  });
-              }
-          }).fail(function(response){
-              var response = response.responseJSON;
-              $('.overlay').addClass('hidden');
-              $.gritter.add({
-                  title: 'Error!',
-                  text: response.message,
-                  class_name: 'gritter-error',
-                  time: 1000,
               });
-          });
-        }
-			}
-		});
+            }
+          }
+        });
     })
     $(document).on('click','.restore',function(){
         var id = $(this).data('id');
@@ -236,7 +240,7 @@
             },
           },
           title:'Mengembalikan Kategori Diagnosa?',
-          message:'Data yang telah dikembalikan dapat dihapus',
+          message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
           callback: function(result) {
             if(result) {
               var data = {
@@ -244,6 +248,67 @@
                           };
               $.ajax({
                 url: `{{url('admin/diagnosescategory/restore')}}/${id}`,
+                dataType: 'json', 
+                data:data,
+                type:'GET',
+                beforeSend:function(){
+                    $('.overlay').removeClass('hidden');
+                }
+              }).done(function(response){
+                  if(response.status){
+                      $('.overlay').addClass('hidden');
+                      $.gritter.add({
+                          title: 'Success!',
+                          text: response.message,
+                          class_name: 'gritter-success',
+                          time: 1000,
+                      });
+                      dataTable.ajax.reload( null, false );
+                  }
+                  else{
+                      $.gritter.add({
+                          title: 'Warning!',
+                          text: response.message,
+                          class_name: 'gritter-warning',
+                          time: 1000,
+                      });
+                  }
+              }).fail(function(response){
+                  var response = response.responseJSON;
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Error!',
+                      text: response.message,
+                      class_name: 'gritter-error',
+                      time: 1000,
+                  });
+              });		
+            }
+          }
+        });
+    })
+    $(document).on('click','.delete',function(){
+        var id = $(this).data('id');
+        bootbox.confirm({
+          buttons: {
+            confirm: {
+              label: '<i class="fa fa-check"></i>',
+              className: 'btn-primary btn-sm'
+            },
+            cancel: {
+              label: '<i class="fa fa-undo"></i>',
+              className: 'btn-default btn-sm'
+            },
+          },
+          title:'Menghapus Kategori Diagnosa?',
+          message:'Data yang telah dihapus tidak dapat dikembalikan',
+          callback: function(result) {
+            if(result) {
+              var data = {
+                              _token: "{{ csrf_token() }}"
+                          };
+              $.ajax({
+                url: `{{url('admin/diagnosescategory/delete')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'GET',
