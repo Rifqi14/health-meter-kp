@@ -149,7 +149,12 @@ class AttendanceDescriptionController extends Controller
      */
     public function show($id)
     {
-        //
+        $attendance = AttendanceDescription::withTrashed()->find($id);
+        if ($attendance) {
+            return view('admin.attendance.detail', compact('attendance'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
