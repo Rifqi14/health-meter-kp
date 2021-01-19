@@ -130,14 +130,11 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'              => 'required|unique:patients',
-            'nid'               => 'required|unique:patients',
+            'site_id'           => 'required',
+            'workforce_id'      => 'required',
             'name'              => 'required',
             'status'            => 'required',
             'birth_date'        => 'required',
-            'site_id'           => 'required',
-            'department_id'     => 'required',
-            'sub_department_id' => 'required',
             'inpatient_id'      => 'required'
         ]);
 
@@ -150,15 +147,11 @@ class PatientController extends Controller
 
         try {
             $patient = Patient::create([
+                'site_id'           => $request->site_id,
                 'workforce_id'      => $request->workforce_id,
-                'code'              => strtoupper($request->code),
                 'name'              => $request->name,
-                'nid'               => strtoupper($request->nid),
                 'status'            => $request->status,
                 'birth_date'        => $request->birth_date,
-                'site_id'           => $request->site_id,
-                'department_id'     => $request->department_id,
-                'sub_department_id' => $request->sub_department_id,
                 'inpatient_id'      => $request->inpatient_id,
                 'updated_by'        => Auth::id()
             ]);

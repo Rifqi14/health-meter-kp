@@ -26,15 +26,15 @@
           {{ csrf_field() }}
           <div class="box-body">
             <div class="form-group">
-              <label for="workforce_id" class="col-sm-2 control-label">Keluarga Workforce <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="workforce_id" name="workforce_id" placeholder="Keluarga Workforce" required>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Unit" required>
               </div>
             </div>
             <div class="form-group">
-              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="workforce_id" class="col-sm-2 control-label">Workforce <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" required>
+                <input type="text" class="form-control" id="workforce_id" name="workforce_id" placeholder="Keluarga Workforce" required>
               </div>
             </div>
             <div class="form-group">
@@ -44,39 +44,20 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="nid" name="nid" placeholder="NID" required>
-              </div>
-            </div>
-            <div class="form-group">
               <label for="status" class="col-sm-2 control-label">Status <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="status" name="status" placeholder="Status" required>
+                <select id="status" name="status" class="form-control select2" placeholder="Pilih Status" required>
+                  <option value=""></option>
+                  <option value="Pegawai">Pegawai</option>
+                  <option value="Pasangan">Pasangan</option>
+                  <option value="Anak">Anak</option>
+                </select>
               </div>
             </div>
             <div class="form-group">
               <label for="birth_date" class="col-sm-2 control-label">Tanggal Lahir <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="birth_date" name="birth_date" placeholder="Tanggal Lahir" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Unit" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Divisi Bidang <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Pilih Divisi Bidang" required>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="sub_department_id" class="col-sm-2 control-label">Sub Divisi Bidang <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="sub_department_id" name="sub_department_id" data-placeholder="Pilih Sub Divisi Bidang" required>
               </div>
             </div>
             <div class="form-group">
@@ -105,6 +86,9 @@
         autoclose: true,
         format: 'yyyy-mm-dd'
       })
+      $('.select2').select2({
+        allowClear:true
+      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',
@@ -179,6 +163,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {
@@ -198,72 +184,8 @@
         allowClear: true,
       });
       $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $("#department_id").select2({
-        ajax: {
-            url: "{{route('department.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#department_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $("#sub_department_id").select2({
-        ajax: {
-            url: "{{route('subdepartment.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#sub_department_id", function () {
+        $('#workforce_id').select2('val','');
+        $('#name').attr('value','');
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -311,6 +233,7 @@
                 name:term,
                 page:page,
                 limit:30,
+                site_id:$('#site_id').val() == ''?-1:$('#site_id').val()
             };
             },
             results: function (data,page) {
@@ -330,6 +253,8 @@
         allowClear: true,
       });
       $(document).on("change", "#workforce_id", function () {
+        $('#name').attr('value',$('#workforce_id').select2('data').text);
+        $('#status').select2('val','Pegawai');
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
