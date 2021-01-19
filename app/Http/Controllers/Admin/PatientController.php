@@ -175,7 +175,12 @@ class PatientController extends Controller
      */
     public function show($id)
     {
-        //
+        $patient = Patient::withTrashed()->find($id);
+        if ($patient) {
+            return view('admin.patient.detail', compact('patient'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -190,7 +195,7 @@ class PatientController extends Controller
         if ($patient) {
             return view('admin.patient.edit', compact('patient'));
         } else {
-            # code...
+            abort(404);
         }
         
     }
@@ -205,14 +210,11 @@ class PatientController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'              => 'required|unique:patients,code,'.$id,
-            'nid'               => 'required|unique:patients,nid,'.$id,
+            'site_id'           => 'required',
+            'workforce_id'      => 'required',
             'name'              => 'required',
             'status'            => 'required',
             'birth_date'        => 'required',
-            'site_id'           => 'required',
-            'department_id'     => 'required',
-            'sub_department_id' => 'required',
             'inpatient_id'      => 'required'
         ]);
 
@@ -231,15 +233,11 @@ class PatientController extends Controller
         }
 
         $patient = Patient::withTrashed()->find($id);
+        $patient->site_id           = $request->site_id;
         $patient->workforce_id      = $request->workforce_id;
-        $patient->code              = strtoupper($request->code);
         $patient->name              = $request->name;
-        $patient->nid               = strtoupper($request->nid);
         $patient->status            = $request->status;
         $patient->birth_date        = $request->birth_date;
-        $patient->site_id           = $request->site_id;
-        $patient->department_id     = $request->department_id;
-        $patient->sub_department_id = $request->sub_department_id;
         $patient->inpatient_id      = $request->inpatient_id;
         $patient->updated_by        = Auth::id();
         $patient->save();

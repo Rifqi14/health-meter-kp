@@ -29,9 +29,8 @@
           <thead>
             <tr>
               <th width="10">#</th>
+              <th width="100">Distrik</th>
               <th width="200">Nama</th>
-              <th width="200">Status</th>
-              <th width="200">Unit</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
               <th width="100">Status</th>
@@ -66,14 +65,8 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="status">Status</label>
-                <input type="text" name="status" class="form-control" placeholder="Status">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="site_id">Unit</label>
-                <input type="text" name="site_id" id="site_id" class="form-control" placeholder="Unit">
+                <label class="control-label" for="site">Distrik</label>
+                <input type="text" name="site" id="site" class="form-control" placeholder="Distrik">
               </div>
             </div>
             <div class="col-md-12">
@@ -105,7 +98,7 @@
   }
   $(function(){
     $(".select2").select2();
-      $("#site_id").select2({
+      $("#site").select2({
         ajax: {
             url: "{{route('site.select')}}",
             type:'GET',
@@ -115,6 +108,8 @@
                 name:term,
                 page:page,
                 limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
             };
             },
             results: function (data,page) {
@@ -133,11 +128,6 @@
         },
         allowClear: true,
       });
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
     $('#form-search').submit(function(e){
       e.preventDefault();
       dataTable.draw();
@@ -151,42 +141,38 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 7, "asc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
             url: "{{route('patient.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
-              var status = $('#form-search').find('input[name=status]').val();
-              var site_id = $('#form-search').find('input[name=site_id]').val();
               var category = $('#form-search').find('select[name=category]').val();
-              data.name = name;
-              data.status = status;
-              data.site_id = site_id;
+              var site = $('#form-search').find('input[name=site]').val();
               data.category = category;
+              data.name = name;
+              data.site = site;
+              data.data_manager = {{$accesssite}};
+              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,4] },
-            { className: "text-center", targets: [5,6,7] },
+            { className: "text-right", targets: [0,3] },
+            { className: "text-center", targets: [4,5,6] },
             { render: function ( data, type, row ) {
-              return `${row.name}<br><small>${row.nid}</small>`
+              return `${row.site.name}`
             },targets: [1]
             },
             { render: function ( data, type, row ) {
-              return row.status ? `${row.status}<br><small>dari <b>${row.workforce_id ? row.workforce.name : ''}</b></small>` : ``
+              return `${row.name}<br><small>${row.status}</small>`
             },targets: [2]
             },
             { render: function ( data, type, row ) {
-              return `<span class="label bg-blue">${row.site_id ? row.site.name : ''}</span>`
-            },targets: [3]
-            },
-            { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.updated_by ? row.updatedby.name : ''}</span>`
-            },targets: [5]
+            },targets: [4]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -195,7 +181,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [6]
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -204,22 +190,23 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/patient')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/patient')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/patient')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                             <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                             }
                         </ul>
                       </div>`
-            },targets: [7]
+            },targets: [6]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "name" },
-            { data: "status" },
             { data: "site_id" },
+            { data: "name" },
             { data: "updated_at" },
             { data: "updated_by" },
             { data: "deleted_at" },
