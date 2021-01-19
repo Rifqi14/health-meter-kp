@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SiteUser;
 use App\Models\Workforce;
+use App\Models\Patient;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
@@ -201,6 +202,21 @@ class WorkforceController extends Controller
                     'workforce_id'  => $workforce->id
                 ]);
                 if (!$user) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status'    => false,
+                        'message'   => $user,
+                    ], 400);
+                }
+                $patient = Patient::create([
+                    'name'          => $request->name,
+                    'status'        => 'Pegawai',
+                    'birth_date'    => date('Y-m-d'),
+                    'site_id'       => $request->site_id,
+                    'updated_by'    => Auth::id(),
+                    'workforce_id'  => $workforce->id
+                ]);
+                if (!$patient) {
                     DB::rollBack();
                     return response()->json([
                         'status'    => false,

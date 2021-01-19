@@ -87,6 +87,9 @@
         autoclose: true,
         format: 'yyyy-mm-dd'
       })
+      $('.select2').select2({
+        allowClear:true
+      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',
