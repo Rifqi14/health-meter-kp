@@ -106,8 +106,8 @@ class AssessmentQuestionController extends Controller
      */
     public function create()
     {
-        $workforcegroups = WorkforceGroup::whereNull('deleted_at')->get();
-        $sites = Site::get();
+        $workforcegroups = WorkforceGroup::whereNull('deleted_at')->orderBy('workforce_groups.id','asc')->get();
+        $sites = Site::orderBy('sites.id','asc')->get();
         return view('admin.assessmentquestion.create',compact('workforcegroups','sites'));
     }
 
@@ -234,13 +234,13 @@ class AssessmentQuestionController extends Controller
             $join->on('assessment_question_workforce_groups.workforce_group_id','=','workforce_groups.id')
                  ->where('assessment_question_id', '=',$id);
         })
-        ->get();
+        ->orderBy('workforce_groups.id','asc')->get();
         $sites = Site::select('sites.*','assessment_question_sites.id as assessment_question_site_id')
         ->leftJoin('assessment_question_sites',function ($join) use($id) {
             $join->on('assessment_question_sites.site_id','=','sites.id')
                  ->where('assessment_question_id', '=',$id);
         })
-        ->get();
+        ->orderBy('sites.id','asc')->get();
         if ($question) {
             return view('admin.assessmentquestion.edit', compact('question','workforcegroups','sites'));
         } else {
@@ -260,10 +260,7 @@ class AssessmentQuestionController extends Controller
         $validator = Validator::make($request->all(), [
             'order'             => 'required|unique:assessment_questions,order,'.$id,
             'type'              => 'required',
-            'description'       => 'required',
-            'frequency'         => 'required',
-            'workforce_group_id'=> 'required',
-            'site_id'           => 'required'
+            'frequency'         => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -280,11 +277,10 @@ class AssessmentQuestionController extends Controller
         $question->answer_parent_code       = $request->answer_parent_code;
         $question->type                     = $request->type;
         $question->description              = $request->description;
+        $question->description_information  = $request->description_information;
         $question->frequency                = $request->frequency;
         $question->start_date               = $request->start_date;
         $question->finish_date              = $request->finish_date;
-        $question->workforce_group_id       = $request->workforce_group_id;
-        $question->site_id                  = $request->site_id;
         $question->updated_by               = Auth::id();
         $question->save();
 
@@ -293,6 +289,54 @@ class AssessmentQuestionController extends Controller
                 'status'    => false,
                 'message'   => $question
             ], 400);
+        }
+        if($request->workforcegroup){
+            $exception = [];
+            foreach($request->workforcegroup as $key => $value){
+                if(isset($request->workforcegroup_status[$value])){
+                    array_push($exception,$value);
+                    $check = AssessmentQuestionWorkforceGroup::where('assessment_question_id',$question->id)->where('workforce_group_id',$value)->first();
+                    if(!$check){
+                        $assessmentquestionworkforcegroup = AssessmentQuestionWorkforceGroup::create([
+                            'assessment_question_id' => $question->id,
+                            'workforce_group_id' => $value
+                        ]);
+                        if (!$assessmentquestionworkforcegroup) {
+                            DB::rollback();
+                            return response()->json([
+                                'status' => false,
+                                'message' 	=> $assessmentquestionworkforcegroup
+                            ], 400);
+                        }
+                    }
+                   
+                }
+                
+            }
+            $assessmentquestionworkforcegroup = AssessmentQuestionWorkforceGroup::whereNotIn('workforce_group_id',$exception)->where('assessment_question_id',$question->id)->delete();
+        }
+        if($request->site){
+            $exception = [];
+            foreach($request->site as $key => $value){
+                if(isset($request->site_status[$value])){
+                    array_push($exception,$value);
+                    $check = AssessmentQuestionSite::where('assessment_question_id',$question->id)->where('site_id',$value)->first();
+                    if(!$check){
+                        $assessmentquestionsite = AssessmentQuestionSite::create([
+                            'assessment_question_id' => $question->id,
+                            'site_id' => $value
+                        ]);
+                        if (!$assessmentquestionsite) {
+                            DB::rollback();
+                            return response()->json([
+                                'status' => false,
+                                'message' 	=> $assessmentquestionsite
+                            ], 400);
+                        }
+                    }
+                }
+                $assessmentquestionsite = AssessmentQuestionSite::whereNotIn('site_id',$exception)->where('assessment_question_id',$question->id)->delete();
+            }
         }
         return response()->json([
             'status'    => true,

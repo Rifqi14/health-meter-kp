@@ -260,6 +260,7 @@
         allowClear: true,
       });
       $(document).on("change", "#question_parent_code", function () {
+        $('#answer_parent_code').select2('val','');
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
