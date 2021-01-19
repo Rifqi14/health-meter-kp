@@ -1,21 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Pemeriksaan')
+@section('title', 'Jenis Pemeriksaan')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Pemeriksaan</li>
+<li class="active">Jenis Pemeriksaan</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Pemeriksaan</h3>
+        <h3 class="box-title">Data Jenis Pemeriksaan</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('examination.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
+          <a href="{{route('examinationtype.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -29,6 +29,7 @@
           <thead>
             <tr>
               <th width="10">#</th>
+              <th width="100">Pemeriksaan</th>
               <th width="100">Nama</th>
               <th width="50">Terakhir Dirubah</th>
               <th width="50">Dirubah Oleh</th>
@@ -99,9 +100,9 @@
       info:false,
       lengthChange:true,
       responsive: true,
-      order: [[ 5, "asc" ]],
+      order: [[ 6, "asc" ]],
       ajax: {
-        url: "{{route('examination.read')}}",
+        url: "{{route('examinationtype.read')}}",
         type: "GET",
         data:function(data){
           var name = $('#form-search').find('input[name=name]').val();
@@ -111,19 +112,22 @@
         }
       },
       columnDefs:[
-        { orderable: false,targets:[0] },
+        { orderable: false,targets:[0,1,4] },
         { className: "text-right", targets: [0] },
-        { className: "text-center", targets: [4,5] },
+        { className: "text-center", targets: [5,6] },
+        { render: function (data, type, row) {
+          return `${row.examination.name}`
+        }, targets: [1]},
         { render: function (data, type, row) {
           return `<span class="label bg-blue">${row.user.name}</span>`
-        }, targets: [3]},
+        }, targets: [4]},
         { render: function ( data, type, row ) {
                 if (row.deleted_at) {
                     return `<span class="label bg-red">Non-Aktif</span>`
                 } else {
                     return `<span class="label bg-green">Aktif</span>`
                 }
-            },targets: [4]
+            },targets: [5]
             },
         { render: function ( data, type, row ) {
           html = `<div class="dropdown">
@@ -132,20 +136,21 @@
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right">`;
             if (row.deleted_at) {
-              html += `<li><a class="dropdown-item" href="{{url('admin/examination')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
               html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
               html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
             } else {
-              html += `<li><a class="dropdown-item" href="{{url('admin/examination')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
-              html += `<li><a class="dropdown-item" href="{{url('admin/examination')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
               html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Arsip</a></li>`;
             }
             html += `</ul>
                     </div>`;
-            return html },targets: [5] }
+            return html },targets: [6] }
       ],
       columns: [
         { data: "no" },
+        { data: "examination_id" },
         { data: "name" },
         { data: "updated_at" },
         { data: "updated_by" },
@@ -172,7 +177,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Mengarsipkan pemeriksaan?',
+        title:'Mengarsipkan jenis pemeriksaan?',
         message:'Data yang telah diarsipkan dapat dikembalikan',
         callback: function(result) {
           if(result) {
@@ -180,7 +185,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/examination')}}/${id}`,
+              url: `{{url('admin/examinationtype')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'DELETE',
@@ -233,7 +238,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Mengembalikan pemeriksaan?',
+        title:'Mengembalikan jenis pemeriksaan?',
         message:'Data yang telah dikembalikan dapat diarsipkan kembali',
         callback: function(result) {
           if(result) {
@@ -241,7 +246,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/examination/restore')}}/${id}`,
+              url: `{{url('admin/examinationtype/restore')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',
@@ -294,7 +299,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Menghapus permanen pemeriksaan?',
+        title:'Menghapus permanen jenis pemeriksaan?',
         message:'Data yang telah dihapus tidak dapat dikembalikan',
         callback: function(result) {
           if(result) {
@@ -302,7 +307,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/examination/delete')}}/${id}`,
+              url: `{{url('admin/examinationtype/delete')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',
