@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Formula')
+@section('title', 'Formula Assessment')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Formula</li>
+<li class="active">Formula Assessment</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Formula</h3>
+        <h3 class="box-title">Data Formula Assessment</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <a href="{{route('formula.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">

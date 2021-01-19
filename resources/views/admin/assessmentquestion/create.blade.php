@@ -42,6 +42,13 @@
               </div>
             </div>
             <div class="form-group">
+              <label for="answer_parent_code" class="col-sm-2 control-label">Parent Opsi Jawaban</label>
+              <div class="col-sm-6" style="padding-top: 5px">
+                <input type="text" class="form-control" id="answer_parent_code" placeholder="Parent Opsi Jawaban"
+                  name="answer_parent_code">
+              </div>
+            </div>
+            <div class="form-group">
               <label for="type" class="col-sm-2 control-label">Jenis Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <select id="type" name="type" class="form-control select2" placeholder="Pilih Type"
@@ -49,14 +56,22 @@
                   <option value=""></option>
                   <option value="Informasi">Informasi</option>
                   <option value="Pertanyaan">Pertanyaan</option>
+                  <option value="Informasi Dan Pertanyaan">Informasi Dan Pertanyaan</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
-              <label for="description" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
+              <label for="description" class="col-sm-2 control-label">Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <textarea class="form-control" style="resize: vertical" id="description" placeholder="Deskripsi"
                   name="description" required></textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description_information" class="col-sm-2 control-label">Informasi <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Deskripsi"
+                  name="description_information" required></textarea>
               </div>
             </div>
             <div class="form-group">
@@ -69,6 +84,20 @@
                   <option value="bulanan">Bulanan</option>
                   <option value="tahunan">Tahunan</option>
                   <option value="perkejadian">Perkejadian</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="answer_type">Tipe Jawaban <b class="text-danger">*</b></label>
+              <div class="col-sm-6">  
+              <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban"
+                    required>
+                    <option value=""></option>
+                    <option value="checkbox">Checkbox</option>
+                    <option value="radio">Radio Button</option>
+                    <option value="text">Teks</option>
+                    <option value="number">Angka</option>
+                    <option value="select">List Dropdown</option>
                 </select>
               </div>
             </div>
