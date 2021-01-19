@@ -11,7 +11,7 @@
 </style>
 @endsection
 @push('breadcrump')
-<li><a href="{{route('category.index')}}">Pertanyaan Assessment</a></li>
+<li><a href="{{route('assessmentquestion.index')}}">Pertanyaan Assessment</a></li>
 <li class="active">Detail</li>
 @endpush
 @section('content')
@@ -61,7 +61,6 @@
                                 <tr>
                                     <th style="text-align:center" width="10">#</th>
                                     <th width="300">Deskripsi</th>
-                                    <th width="50">Tipe</th>
                                     <th width="50">Bobot</th>
                                     <th width="10">#</th>
                                 </tr>
@@ -79,7 +78,6 @@
                                 <tr>
                                     <th style="text-align:center" width="10">#</th>
                                     <th width="300">Deskripsi</th>
-                                    <th width="50">Tipe</th>
                                     <th width="50">Bobot</th>
                                     <th width="10">#</th>
                                 </tr>
@@ -112,22 +110,6 @@
                                 <label class="control-label" for="description">Deskripsi</label>
                                 <input type="text" name="description" class="form-control" placeholder="Deskripsi"
                                     required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="control-label" for="answer_type">Tipe</label>
-                                <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe"
-                                    required>
-                                    <option value=""></option>
-                                    <option value="checkbox">Checkbox</option>
-                                    <option value="radio">Radio Button</option>
-                                    <option value="text">Teks</option>
-                                    <option value="number">Angka</option>
-                                    <option value="select">List Dropdown</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -214,7 +196,7 @@
             lengthChange: false,
             responsive: true,
             order: [
-                [4, "asc"]
+                [3, "asc"]
             ],
             ajax: {
                 url: "{{url('admin/assessmentanswer/read')}}",
@@ -229,11 +211,11 @@
                 },
                 {
                     className: "text-right",
-                    targets: [0, 3]
+                    targets: [0, 2]
                 },
                 {
                     className: "text-center",
-                    targets: [4]
+                    targets: [3]
                 },
                 {
                     render: function (data, type, row) {
@@ -246,7 +228,7 @@
                         <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>
                       </ul></div>`
                     },
-                    targets: [4]
+                    targets: [3]
                 }
             ],
             columns: [{
@@ -254,9 +236,6 @@
                 },
                 {
                     data: "description"
-                },
-                {
-                    data: "type"
                 },
                 {
                     data: "rating"
@@ -275,7 +254,7 @@
             lengthChange: false,
             responsive: true,
             order: [
-                [4, "asc"]
+                [3, "asc"]
             ],
             ajax: {
                 url: "{{url('admin/assessmentanswer/read')}}",
@@ -291,11 +270,11 @@
                 },
                 {
                     className: "text-right",
-                    targets: [0, 3]
+                    targets: [0, 2]
                 },
                 {
                     className: "text-center",
-                    targets: [4]
+                    targets: [3]
                 },
                 {
                     render: function (data, type, row) {
@@ -308,7 +287,7 @@
                         <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>
                       </ul></div>`
                     },
-                    targets: [4]
+                    targets: [3]
                 }
             ],
             columns: [{
@@ -316,9 +295,6 @@
                 },
                 {
                     data: "description"
-                },
-                {
-                    data: "type"
                 },
                 {
                     data: "rating"

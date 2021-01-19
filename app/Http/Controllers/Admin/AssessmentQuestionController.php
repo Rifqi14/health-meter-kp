@@ -120,10 +120,9 @@ class AssessmentQuestionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'order'                 => 'required|unique:assessment_questions',
-            'type'                  => 'required',
-            'description'           => 'required',
-            'frequency'             => 'required'
+            'order'                     => 'required|unique:assessment_questions',
+            'type'                      => 'required',
+            'frequency'                 => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -134,16 +133,18 @@ class AssessmentQuestionController extends Controller
         }
         DB::beginTransaction();
             $question = AssessmentQuestion::create([
-                'order'                 => $request->order,
-                'is_parent'             => $request->question_parent_code ? 1 : 0,
-                'question_parent_code'  => $request->question_parent_code,
-                'answer_parent_code'    => $request->answer_parent_code,
-                'type'                  => $request->type,
-                'description'           => $request->description,
-                'frequency'             => $request->frequency,
-                'start_date'            => $request->start_date,
-                'finish_date'           => $request->finish_date,
-                'updated_by'            => Auth::id()
+                'order'                     => $request->order,
+                'is_parent'                 => $request->question_parent_code ? 1 : 0,
+                'question_parent_code'      => $request->question_parent_code,
+                'answer_parent_code'        => $request->answer_parent_code,
+                'type'                      => $request->type,
+                'answer_type'               => $request->answer_type,
+                'description'               => $request->description,
+                'description_information'   => $request->description_information,
+                'frequency'                 => $request->frequency,
+                'start_date'                => $request->start_date,
+                'finish_date'               => $request->finish_date,
+                'updated_by'                => Auth::id()
             ]);
             if (!$question) {
                 DB::rollback();
@@ -228,8 +229,20 @@ class AssessmentQuestionController extends Controller
     public function edit($id)
     {
         $question = AssessmentQuestion::withTrashed()->find($id);
+        $workforcegroups = WorkforceGroup::select('workforce_groups.*','assessment_question_workforce_groups.id as assessment_question_workforce_group_id')
+        ->leftJoin('assessment_question_workforce_groups',function ($join) use($id) {
+            $join->on('assessment_question_workforce_groups.workforce_group_id','=','workforce_groups.id')
+                 ->where('assessment_question_id', '=',$id);
+        })
+        ->get();
+        $sites = Site::select('sites.*','assessment_question_sites.id as assessment_question_site_id')
+        ->leftJoin('assessment_question_sites',function ($join) use($id) {
+            $join->on('assessment_question_sites.site_id','=','sites.id')
+                 ->where('assessment_question_id', '=',$id);
+        })
+        ->get();
         if ($question) {
-            return view('admin.assessmentquestion.edit', compact('question'));
+            return view('admin.assessmentquestion.edit', compact('question','workforcegroups','sites'));
         } else {
             abort(404);
         }

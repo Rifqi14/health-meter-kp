@@ -63,14 +63,14 @@
             <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Deskripsi"
+                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Pertanyaan"
                   name="description" required></textarea>
               </div>
             </div>
             <div class="form-group">
               <label for="description_information" class="col-sm-2 control-label">Informasi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Deskripsi"
+                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Informasi"
                   name="description_information" required></textarea>
               </div>
             </div>
@@ -90,8 +90,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label" for="answer_type">Tipe Jawaban <b class="text-danger">*</b></label>
               <div class="col-sm-6">  
-              <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban"
-                    required>
+              <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban">
                     <option value=""></option>
                     <option value="checkbox">Checkbox</option>
                     <option value="radio">Radio Button</option>
@@ -102,8 +101,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="date" class="col-sm-2 control-label">Tanggal Mulai - Sampai <b
-                  class="text-danger">*</b></label>
+              <label for="date" class="col-sm-2 control-label">Tanggal Mulai - Sampai</label>
               <div class="col-sm-3">
                 <input type="text" class="form-control date" id="start_date" placeholder="Tanggal Mulai"
                   name="start_date">
@@ -181,8 +179,23 @@
           checkboxClass: 'icheckbox_square-green',
           radioClass: 'iradio_square-green',
       });
-      $('.select2').select2();
-      
+      $('.select2').select2({
+        allowClear:true
+      });
+      $('#type').on('change',function(){
+         $('#description').closest('.form-group').hide();
+         $('#description_information').closest('.form-group').hide();
+         if(this.value == 'Pertanyaan'){
+          $('#description').closest('.form-group').show();
+         }
+         if(this.value == 'Informasi'){
+          $('#description_information').closest('.form-group').show();
+         }
+         if(this.value == 'Informasi Dan Pertanyaan'){
+          $('#description').closest('.form-group').show();
+          $('#description_information').closest('.form-group').show();
+         }
+      }).trigger('change');
       $("#site_id").select2({
         ajax: {
           url: "{{route('site.select')}}",
@@ -235,7 +248,7 @@
               if (item.is_parent == 0) {
                 option.push({
                   id:item.id,  
-                  text: `${item.type} - ${item.description}`
+                  text: `${item.description?item.description:item.description_information}`
                 });
               }
             });
@@ -247,6 +260,40 @@
         allowClear: true,
       });
       $(document).on("change", "#question_parent_code", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#answer_parent_code").select2({
+        ajax: {
+          url: "{{route('assessmentanswer.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+              question_id:$('#question_parent_code').val()==''?-1:$('#question_parent_code').val()
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                  id:item.id,  
+                  text: `${item.description}`
+                });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#answer_parent_code", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
