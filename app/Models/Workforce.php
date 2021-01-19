@@ -47,4 +47,8 @@ class Workforce extends Model
     {
         return $this->hasOne(User::class);
     }
+    public function assessmentresult()
+    {
+        return $this->hasMany(AssessmentResult::class, 'workforce_id');
+    }
 }
