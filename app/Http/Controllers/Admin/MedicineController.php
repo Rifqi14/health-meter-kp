@@ -113,14 +113,14 @@ class MedicineController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'              => 'required|unique:medicines|regex:/^.*(?=.*[A-Z]).*$/',
+            //'code'              => 'required|unique:medicines|regex:/^.*(?=.*[A-Z]).*$/',
+            'code'              => 'required|unique:medicines',
             'name'              => 'required',
             'medicine_category' => 'required',
             'medicine_group'    => 'required',
             'medicine_unit'     => 'required',
             'medicine_type'     => 'required',
-            'level'             => 'required',
-            'price'             => 'required'
+            'level'             => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -161,9 +161,14 @@ class MedicineController extends Controller
      * @param  \App\Models\Medicine  $medicine
      * @return \Illuminate\Http\Response
      */
-    public function show(Medicine $medicine)
+    public function show($id)
     {
-        //
+        $medicine = Medicine::withTrashed()->find($id);
+        if ($medicine) {
+            return view('admin.medicine.detail', compact('medicine'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -192,8 +197,13 @@ class MedicineController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:medicines,code,' . $id,
-            'name'      => 'required'
+            'code'              => 'required|unique:medicines,code,' . $id,
+            'name'              => 'required',
+            'medicine_category' => 'required',
+            'medicine_group'    => 'required',
+            'medicine_unit'     => 'required',
+            'medicine_type'     => 'required',
+            'level'             => 'required'
         ]);
 
         if ($validator->fails()) {

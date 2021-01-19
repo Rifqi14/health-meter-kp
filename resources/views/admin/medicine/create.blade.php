@@ -53,13 +53,6 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="medicine_unit" class="col-sm-2 control-label">Satuan Obat <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="medicine_unit" name="medicine_unit"
-                  placeholder="Satuan Obat" required>
-              </div>
-            </div>
-            <div class="form-group">
               <label for="medicine_type" class="col-sm-2 control-label">Jenis Obat <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="medicine_type" name="medicine_type" placeholder="Jenis Obat"
@@ -73,9 +66,16 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="price" class="col-sm-2 control-label">Harga <b class="text-danger">*</b></label>
+              <label for="medicine_unit" class="col-sm-2 control-label">Satuan Obat <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="price" name="price" placeholder="Harga" required>
+                <input type="text" class="form-control" id="medicine_unit" name="medicine_unit"
+                  placeholder="Satuan Obat" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="price" class="col-sm-2 control-label">Harga</label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="price" name="price" placeholder="Harga">
               </div>
             </div>
             <div class="form-group">
