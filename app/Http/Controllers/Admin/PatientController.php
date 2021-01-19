@@ -37,13 +37,18 @@ class PatientController extends Controller
         $name = strtoupper($request->name);
         $status = strtoupper($request->status);
         $workforce_id = $request->workforce_id;
+        $site = $request->site;
+        $data_manager = $request->data_manager;
         $site_id = $request->site_id;
         $arsip = $request->category;
 
         //Count Data
         $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
@@ -55,8 +60,11 @@ class PatientController extends Controller
 
         //Select Pagination
         $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
