@@ -129,7 +129,6 @@ class ExaminationEvaluationController extends Controller
             $evaluation = ExaminationEvaluation::create([
                 'examination_type_id'   => $request->examination_type,
                 'result_categories'     => $request->result,
-                'status'                => $request->status ? 1 : 0,
                 'updated_by'            => Auth::id(),
             ]);
         } catch (QueryException $ex) {
@@ -152,7 +151,12 @@ class ExaminationEvaluationController extends Controller
      */
     public function show($id)
     {
-        //
+        $evaluation = ExaminationEvaluation::find($id);
+        if ($evaluation) {
+            return view('admin.examinationevaluation.detail', compact('evaluation'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -195,14 +199,8 @@ class ExaminationEvaluationController extends Controller
         $evaluation = ExaminationEvaluation::withTrashed()->find($id);
         $evaluation->examination_type_id = $request->examination_type;
         $evaluation->result_categories = $request->result;
-        $evaluation->status = $request->status ? 1 : 0;
         $evaluation->updated_by = Auth::id();
         $evaluation->save();
-        if ($evaluation->status == 0) {
-            $evaluation->delete();
-        } else {
-            $evaluation->restore();
-        }
         if (!$evaluation) {
             return response()->json([
                 'status' => false,
@@ -225,8 +223,6 @@ class ExaminationEvaluationController extends Controller
     {
         try {
             $evaluation = ExaminationEvaluation::find($id);
-            $evaluation->status = 0;
-            $evaluation->save();
             $evaluation->delete();
         } catch (QueryException $th) {
             return response()->json([
@@ -244,8 +240,6 @@ class ExaminationEvaluationController extends Controller
     {
         try {
             $evaluation = ExaminationEvaluation::onlyTrashed()->find($id);
-            $evaluation->status = 1;
-            $evaluation->save();
             $evaluation->restore();
         } catch (QueryException $th) {
             return response()->json([

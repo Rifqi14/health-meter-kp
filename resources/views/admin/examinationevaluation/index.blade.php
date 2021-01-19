@@ -120,11 +120,11 @@
           return `<span class="label bg-blue">${row.user.name}</span>`
         }, targets: [4]},
         { render: function (data, type, row) {
-          if (row.status == 1) {
-            return `<span class="label bg-green">Aktif</span>`
-          } else {
-            return `<span class="label bg-red">Non-Aktif</span>`
-          }
+          if (row.deleted_at) {
+                    return `<span class="label bg-red">Non-Aktif</span>`
+                } else {
+                    return `<span class="label bg-green">Aktif</span>`
+                }
         }, targets: [5]},
         { render: function ( data, type, row ) {
           html = `<div class="dropdown">
@@ -133,10 +133,12 @@
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right">`;
             if (row.deleted_at) {
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationevaluation')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
               html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
               html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
             } else {
               html += `<li><a class="dropdown-item" href="{{url('admin/examinationevaluation')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationevaluation')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
               html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Arsip</a></li>`;
             }
             html += `</ul>
@@ -149,7 +151,7 @@
         { data: "result_categories" },
         { data: "updated_at" },
         { data: "updated_by" },
-        { data: "status" },
+        { data: "deleted_at" },
         { data: "id" },
       ]
     });

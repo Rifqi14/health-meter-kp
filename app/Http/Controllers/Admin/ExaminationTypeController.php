@@ -62,11 +62,11 @@ class ExaminationTypeController extends Controller
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::whereRaw("upper(name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::whereRaw("upper(name) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
         $medicines = $query->get();

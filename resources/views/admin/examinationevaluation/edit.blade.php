@@ -41,14 +41,6 @@
                   value="{{ $evaluation->result_categories }}" required>
               </div>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status" @if ($evaluation->status)
-                  checked
-                  @endif> <i></i></label>
-              </div>
-            </div>
           </div>
         </form>
       </div>
