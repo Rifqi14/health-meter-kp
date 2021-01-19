@@ -134,10 +134,12 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
                         ${row.deleted_at ?
-                        `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                        ` <li><a class="dropdown-item" href="{{url('admin/medicinetype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                        <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                         <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                         : 
                         `<li><a class="dropdown-item" href="{{url('admin/medicinetype')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                        <li><a class="dropdown-item" href="{{url('admin/medicinetype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
                         <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
                         }
                     </ul>

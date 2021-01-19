@@ -150,7 +150,12 @@ class MedicineTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        $type = MedicineType::withTrashed()->find($id);
+        if ($type) {
+            return view('admin.medicinetype.detail', compact('type'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
