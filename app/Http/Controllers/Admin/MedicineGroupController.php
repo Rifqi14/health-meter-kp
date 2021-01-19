@@ -150,7 +150,12 @@ class MedicineGroupController extends Controller
      */
     public function show($id)
     {
-        //
+        $group = MedicineGroup::withTrashed()->find($id);
+        if ($group) {
+            return view('admin.medicinegroup.detail', compact('group'));
+        } else {
+            abort(404);
+        }
     }
 
     /**

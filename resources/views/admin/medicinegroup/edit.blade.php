@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Kategori Obat')
+@section('title', 'Ubah Kelompok Obat')
 @push('breadcrump')
-<li><a href="{{route('medicinegroup.index')}}">Kategori Obat</a></li>
+<li><a href="{{route('medicinegroup.index')}}">Kelompok Obat</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('content')
@@ -10,7 +10,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Kategori Obat</h3>
+        <h3 class="box-title">Ubah Kelompok Obat</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i

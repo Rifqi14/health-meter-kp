@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Detail Satuan Obat')
+@section('title', 'Detail Kelompok Obat')
 @push('breadcrump')
-<li><a href="{{route('medicineunit.index')}}">Satuan Obat</a></li>
+<li><a href="{{route('medicinegroup.index')}}">Kelompok Obat</a></li>
 <li class="active">Detail</li>
 @endpush
 @section('content')
@@ -10,16 +10,18 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Detail Satuan Obat</h3>
+        <h3 class="box-title">Detail Kelompok Obat</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
+              class="fa fa-save"></i></button>
           <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
               class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('medicineunit.update',['id'=>$unit->id])}}" class="form-horizontal"
+        <form id="form" action="{{route('medicinegroup.update',['id'=>$group->id])}}" class="form-horizontal"
           method="post" autocomplete="off">
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
@@ -27,13 +29,13 @@
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode</label>
               <div class="col-sm-6">
-                <p class="form-control-static">{{$unit->code}}</p>
+                <p class="form-control-static">{{$group->code}}</p>
               </div>
             </div>
             <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Deskripsi</label>
               <div class="col-sm-6">
-                <p class="form-control-static">{{$unit->description}}</p>
+                <p class="form-control-static">{{$group->description}}</p>
               </div>
             </div>
           </div>
