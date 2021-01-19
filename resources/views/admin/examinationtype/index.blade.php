@@ -1,21 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Aturan Pakai')
+@section('title', 'Jenis Pemeriksaan')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Aturan Pakai</li>
+<li class="active">Jenis Pemeriksaan</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Aturan Pakai</h3>
+        <h3 class="box-title">Data Jenis Pemeriksaan</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('usingrule.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
+          <a href="{{route('examinationtype.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -29,8 +29,8 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Kode</th>
-              <th width="100">Deskripsi</th>
+              <th width="100">Pemeriksaan</th>
+              <th width="100">Nama</th>
               <th width="50">Terakhir Dirubah</th>
               <th width="50">Dirubah Oleh</th>
               <th width="50">Status</th>
@@ -102,7 +102,7 @@
       responsive: true,
       order: [[ 6, "asc" ]],
       ajax: {
-        url: "{{route('usingrule.read')}}",
+        url: "{{route('examinationtype.read')}}",
         type: "GET",
         data:function(data){
           var name = $('#form-search').find('input[name=name]').val();
@@ -112,43 +112,46 @@
         }
       },
       columnDefs:[
-        { orderable: false,targets:[0] },
-        { className: "text-right", targets: [0,3] },
-        { className: "text-center", targets: [4,5,6] },
+        { orderable: false,targets:[0,1,4] },
+        { className: "text-right", targets: [0] },
+        { className: "text-center", targets: [5,6] },
         { render: function (data, type, row) {
-            return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-        }, targets: [4] },
+          return `${row.examination.name}`
+        }, targets: [1]},
         { render: function (data, type, row) {
-          if (row.deleted_at) {
-            bg = 'bg-red', teks = 'Non-Aktif';
-          } else {
-            bg = 'bg-green', teks = 'Aktif';
-          }
-          return `<span class="label ${bg}">${teks}</span>`
-        }, targets: [5] },
+          return `<span class="label bg-blue">${row.user.name}</span>`
+        }, targets: [4]},
         { render: function ( data, type, row ) {
-          return `<div class="dropdown">
-                    <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right">
-                        ${row.deleted_at ?
-                        `<li><a class="dropdown-item" href="{{url('admin/usingrule')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                        <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                        <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
-                        : 
-                        `<li><a class="dropdown-item" href="{{url('admin/usingrule')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                        <li><a class="dropdown-item" href="{{url('admin/usingrule')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                        <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
-                        }
-                    </ul>
-                  </div>`
-        },targets: [6] }
+                if (row.deleted_at) {
+                    return `<span class="label bg-red">Non-Aktif</span>`
+                } else {
+                    return `<span class="label bg-green">Aktif</span>`
+                }
+            },targets: [5]
+            },
+        { render: function ( data, type, row ) {
+          html = `<div class="dropdown">
+                      <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                          <i class="fa fa-bars"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-right">`;
+            if (row.deleted_at) {
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
+              html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
+              html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
+            } else {
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
+              html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
+              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Arsip</a></li>`;
+            }
+            html += `</ul>
+                    </div>`;
+            return html },targets: [6] }
       ],
       columns: [
         { data: "no" },
-        { data: "code" },
-        { data: "description" },
+        { data: "examination_id" },
+        { data: "name" },
         { data: "updated_at" },
         { data: "updated_by" },
         { data: "deleted_at" },
@@ -161,7 +164,7 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
-    $(document).on('click','.archive',function(){
+    $(document).on('click','.delete',function(){
       var id = $(this).data('id');
       bootbox.confirm({
         buttons: {
@@ -174,15 +177,15 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Mengarsipkan aturan pakai?',
-        message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
+        title:'Mengarsipkan jenis pemeriksaan?',
+        message:'Data yang telah diarsipkan dapat dikembalikan',
         callback: function(result) {
           if(result) {
             var data = {
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/usingrule')}}/${id}`,
+              url: `{{url('admin/examinationtype')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'DELETE',
@@ -235,15 +238,15 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Mengembalikan aturan pakai?',
-        message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
+        title:'Mengembalikan jenis pemeriksaan?',
+        message:'Data yang telah dikembalikan dapat diarsipkan kembali',
         callback: function(result) {
           if(result) {
             var data = {
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/usingrule/restore')}}/${id}`,
+              url: `{{url('admin/examinationtype/restore')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',
@@ -283,7 +286,7 @@
         }
       });
     });
-    $(document).on('click','.delete',function(){
+    $(document).on('click','.delete-permanent',function(){
       var id = $(this).data('id');
       bootbox.confirm({
         buttons: {
@@ -296,7 +299,7 @@
             className: 'btn-default btn-sm'
           },
         },
-        title:'Menghapus aturan pakai?',
+        title:'Menghapus permanen jenis pemeriksaan?',
         message:'Data yang telah dihapus tidak dapat dikembalikan',
         callback: function(result) {
           if(result) {
@@ -304,7 +307,7 @@
               _token: "{{ csrf_token() }}"
             };
             $.ajax({
-              url: `{{url('admin/usingrule/delete')}}/${id}`,
+              url: `{{url('admin/examinationtype/delete')}}/${id}`,
               dataType: 'json', 
               data:data,
               type:'GET',

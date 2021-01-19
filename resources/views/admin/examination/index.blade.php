@@ -132,6 +132,7 @@
                       </button>
                       <ul class="dropdown-menu dropdown-menu-right">`;
             if (row.deleted_at) {
+              html += `<li><a class="dropdown-item" href="{{url('admin/examination')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
               html += `<li><a class="dropdown-item delete-permanent" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>`;
               html += `<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`;
             } else {

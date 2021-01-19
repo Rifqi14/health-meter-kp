@@ -7,27 +7,36 @@ use App\Http\Controllers\Controller;
 use App\Models\ExaminationType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 
 class ExaminationTypeController extends Controller
 {
+    function __construct() {
+        View::share('menu_active', url('admin/examinationtype'));
+        $this->middleware('accessmenu', ['excep' => 'select']);
+    }
     public function read(Request $request)
     {
-        $input = ['numeric'=>'Angka','string'=>'Text'];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $examination_id = $request->examination_id;
+        $name = strtoupper($request->name);
+        $arsip = $request->category;
 
         //Count Data
-        $query = ExaminationType::where('examination_id',$examination_id);
-        $query->withTrashed();
+        $query = ExaminationType::with('user','examination')->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = ExaminationType::where('examination_id',$examination_id);
-        $query->withTrashed();
+        $query = ExaminationType::with('user','examination')->whereRaw("upper(name) like '%$name%'");
+        if ($arsip) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -36,7 +45,6 @@ class ExaminationTypeController extends Controller
         $data = [];
         foreach($examination_types as $examination_type){
             $examination_type->no = ++$start;
-            $examination_type->input = @$input[$examination_type->input];
 			$data[] = $examination_type;
 		}
         return response()->json([
@@ -54,11 +62,11 @@ class ExaminationTypeController extends Controller
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::whereRaw("upper(name) like '%$name%'");
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = ExaminationType::Where('status', 1)->whereRaw("upper(name) like '%$name%'");
+        $query = ExaminationType::whereRaw("upper(name) like '%$name%'");
         $query->offset($start);
         $query->limit($length);
         $medicines = $query->get();
@@ -80,7 +88,7 @@ class ExaminationTypeController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.examinationtype.index');
     }
 
     /**
@@ -90,7 +98,7 @@ class ExaminationTypeController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.examinationtype.create');
     }
 
     /**
@@ -102,9 +110,8 @@ class ExaminationTypeController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'          => 'required',
-            'input'         => 'required',
-            'status'        => 'required'
+            'examination_id'    => 'required',
+            'name'              => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -116,9 +123,7 @@ class ExaminationTypeController extends Controller
 
         $examination = ExaminationType::create([
             'examination_id'    => $request->examination_id,
-			'name'              => $request->name,
-            'input'             => $request->input,
-            'status'            => $request->status,
+            'name'              => $request->name,
             'updated_by'        => Auth::id()
         ]);
         if (!$examination) {
@@ -129,7 +134,7 @@ class ExaminationTypeController extends Controller
         }
         return response()->json([
             'status' 	=> true,
-            'message' 	=> 'Success Create Data'
+            'results' 	=> route('examinationtype.index'),
         ], 200);
     }
 
@@ -141,7 +146,12 @@ class ExaminationTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        $examinationtype = ExaminationType::find($id);
+        if ($examinationtype) {
+            return view('admin.examinationtype.detail', compact('examinationtype'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -152,11 +162,12 @@ class ExaminationTypeController extends Controller
      */
     public function edit($id)
     {
-        $examination = ExaminationType::withTrashed()->find($id);
-        return response()->json([
-            'status'    => true,
-            'data'      => $examination
-        ], 200);
+        $examinationtype = ExaminationType::find($id);
+        if ($examinationtype) {
+            return view('admin.examinationtype.edit', compact('examinationtype'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -169,8 +180,8 @@ class ExaminationTypeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name'          => 'required',
-            'input'         => 'required'
+            'examination_id'    => 'required',
+            'name'              => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -181,16 +192,10 @@ class ExaminationTypeController extends Controller
         }
 
         $examinationtype = ExaminationType::withTrashed()->find($id);
+        $examinationtype->examination_id  = $request->examination_id;
         $examinationtype->name  = $request->name;
-        $examinationtype->input  = $request->input;
-        $examinationtype->status = $request->status;
         $examinationtype->updated_by = Auth::id();
         $examinationtype->save();
-        if ($examinationtype->status == 0) {
-            $examinationtype->delete();
-        } else {
-            $examinationtype->restore();
-        }
         if (!$examinationtype) {
             return response()->json([
                 'status' => false,
@@ -199,7 +204,7 @@ class ExaminationTypeController extends Controller
         }
         return response()->json([
             'status' 	=> true,
-            'message' 	=> 'Success Update Data'
+            'results' 	=> route('examinationtype.index'),
         ], 200);
     }
 
@@ -213,18 +218,50 @@ class ExaminationTypeController extends Controller
     {
         try {
             $examinationtype = ExaminationType::find($id);
-            $examinationtype->status = 0;
-            $examinationtype->save();
             $examinationtype->delete();
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $th) {
             return response()->json([
-                'status'     => false,
-                'message'     => 'Error delete data'
+                'status'    => false,
+                'message'   => 'Error archive data ' . $th->errorInfo[2]
             ], 400);
         }
         return response()->json([
-            'status'     => true,
-            'message' => 'Success delete data'
+            'status'    => true,
+            'message'   => 'Success archive data'
+        ], 200);
+    }
+
+    public function restore($id)
+    {
+        try {
+            $examinationtype = ExaminationType::onlyTrashed()->find($id);
+            $examinationtype->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+    
+    public function delete($id)
+    {
+        try {
+            $examinationtype = ExaminationType::onlyTrashed()->find($id);
+            $examinationtype->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

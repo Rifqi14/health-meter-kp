@@ -6,6 +6,7 @@ use App\Models\Template;
 use App\Models\MedicalAction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -34,16 +35,21 @@ class MedicalActionController extends Controller
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
-
+        $category = $request->category;
         //Count Data
-        $query = MedicalAction::with('examination')->select('medical_actions.*');
-        $query->whereRaw("upper(name) like '%$name%'");
+        $query = MedicalAction::with(['examination','user']);
+        $query->whereRaw("upper(description) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = MedicalAction::with('examination')->select('medical_actions.*','templates.name as template_name');
-        $query->leftJoin('templates','templates.id','=','medical_actions.template_id');
-        $query->whereRaw("upper(medical_actions.name) like '%$name%'");
+        $query = MedicalAction::with(['examination','user']);
+        $query->whereRaw("upper(description) like '%$name%'");
+        if ($category) {
+            $query->onlyTrashed();
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -52,7 +58,6 @@ class MedicalActionController extends Controller
         $data = [];
         foreach($medicalactions as $medicalaction){
             $medicalaction->no = ++$start;
-            $medicalaction->examination_type = $medicalaction->examination_type_id ? $medicalaction->examination->name : '-';
 			$data[] = $medicalaction;
 		}
         return response()->json([
@@ -83,11 +88,8 @@ class MedicalActionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:medical_actions',
-            'name' 	        => 'required|unique:medical_actions',
-            'template_id' 	=> 'required',
-            'description'   => 'required',
-            'examination'   => 'required'
+            'examination_type_id'   => 'required',
+            'description'           => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -98,11 +100,9 @@ class MedicalActionController extends Controller
         }
 
         $medicalaction = MedicalAction::create([
-            'code'                  => $request->code,
-            'name'                  => $request->name,
-            'template_id'           => $request->template_id,
+            'examination_type_id'   => $request->examination_type_id,
             'description'           => $request->description,
-            'examination_type_id'   => $request->examination
+            'updated_by'=> Auth::id()
         ]);
         if (!$medicalaction) {
             return response()->json([
@@ -126,7 +126,7 @@ class MedicalActionController extends Controller
     {
         $medicalaction = MedicalAction::find($id);
         if($medicalaction){
-            return view('admin.medicalaction.show',compact('medicalaction'));
+            return view('admin.medicalaction.detail',compact('medicalaction'));
         }
         else{
             abort(404);
@@ -141,10 +141,9 @@ class MedicalActionController extends Controller
      */
     public function edit($id)
     {
-        $templates = Template::all();
         $medicalaction = MedicalAction::find($id);
         if($medicalaction){
-            return view('admin.medicalaction.edit',compact('medicalaction','templates'));
+            return view('admin.medicalaction.edit',compact('medicalaction'));
         }
         else{
             abort(404);
@@ -161,11 +160,8 @@ class MedicalActionController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'  	    => 'required|unique:medical_actions,code,'.$id,
-            'name' 	        => 'required|unique:medical_actions,name,'.$id,
-            'template_id'   => 'required',
-            'description'   => 'required',
-            'examination'   => 'required'
+            'examination_type_id'   => 'required',
+            'description'           => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -176,12 +172,9 @@ class MedicalActionController extends Controller
         }
 
         $medicalaction = MedicalAction::find($id);
-        $code = $medicalaction->code;
-        $medicalaction->code = $request->code;
-        $medicalaction->name = $request->name;
-        $medicalaction->template_id = $request->template_id;
+        $medicalaction->examination_type_id = $request->examination_type_id;
         $medicalaction->description = $request->description;
-        $medicalaction->examination_type_id = $request->examination;
+        $medicalaction->updated_by = Auth::id();
         $medicalaction->save();
         if (!$medicalaction) {
             return response()->json([
@@ -215,6 +208,39 @@ class MedicalActionController extends Controller
         return response()->json([
             'status'     => true,
             'message' => 'Success delete data'
+        ], 200);
+    }
+    public function restore($id)
+    {
+        try {
+            $medicalaction = MedicalAction::onlyTrashed()->find($id);
+            $medicalaction->restore();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error restore data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success restore data'
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        try {
+            $medicalaction = MedicalAction::onlyTrashed()->find($id);
+            $medicalaction->forceDelete();
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Error delete data ' . $th->errorInfo[2]
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => 'Success delete data'
         ], 200);
     }
 }

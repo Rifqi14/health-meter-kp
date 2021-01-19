@@ -85,7 +85,7 @@ class UsingRuleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:medicine_groups',
+            'code'          => 'required|unique:using_rules',
             'description'   => 'required'
         ]);
 
@@ -122,7 +122,12 @@ class UsingRuleController extends Controller
      */
     public function show($id)
     {
-        //
+        $rule = UsingRule::withTrashed()->find($id);
+        if ($rule) {
+            return view('admin.usingrule.detail', compact('rule'));
+        } else {
+            abort(404);
+        }
     }
 
     /**

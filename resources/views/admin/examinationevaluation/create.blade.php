@@ -39,12 +39,6 @@
                 <input type="text" class="form-control" id="result" name="result" placeholder="Kategori Hasil" required>
               </div>
             </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" style="padding-top: 1px" for="status">Status Aktif</label>
-              <div class="col-sm-4">
-                <label><input class="form-control" type="checkbox" name="status"> <i></i></label>
-              </div>
-            </div>
           </div>
         </form>
       </div>

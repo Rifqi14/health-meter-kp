@@ -1,16 +1,16 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Kelompok Obat')
+@section('title', 'Tambah Jenis Pemeriksaan')
 @push('breadcrump')
-<li><a href="{{route('medicinegroup.index')}}">Kelompok Obat</a></li>
-<li class="active">Ubah</li>
+<li><a href="{{route('examinationtype.index')}}">Jenis Pemeriksaan</a></li>
+<li class="active">Tambah</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Kelompok Obat</h3>
+        <h3 class="box-title">Tambah Jenis Pemeriksaan</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
@@ -21,23 +21,20 @@
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('medicinegroup.update',['id'=>$group->id])}}" class="form-horizontal"
-          method="post" autocomplete="off">
+        <form id="form" action="{{route('examinationtype.store')}}" class="form-horizontal" method="post"
+          autocomplete="off">
           {{ csrf_field() }}
-          <input type="hidden" name="_method" value="put">
           <div class="box-body">
             <div class="form-group">
-              <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="examination_id" class="col-sm-2 control-label">Pemeriksaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode"
-                  value="{{$group->code}}" required>
+                <input type="text" class="form-control" id="examination_id" name="examination_id" placeholder="Pilih Pemeriksaan" aria-placeholder="Pilih Pemeriksaan" required>
               </div>
             </div>
             <div class="form-group">
-              <label for="description" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
+              <label for="name" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="description" name="description" placeholder="Deskripsi"
-                  value="{{$group->description}}" required>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
               </div>
             </div>
           </div>
@@ -55,6 +52,51 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+      $('input[name=status]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
+      $('.select2').select2({
+        allowClear:true
+      });
+      $(document).on("change", ".select2", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#examination_id" ).select2({
+        ajax: {
+          url: "{{url('admin/examination/select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30 
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#examination_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',

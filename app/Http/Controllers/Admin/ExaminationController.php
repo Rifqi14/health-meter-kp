@@ -74,14 +74,14 @@ class ExaminationController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = Examination::Where('status', 1)->whereRaw("upper(description) like '%$name%'");
+        $query = Examination::whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Examination::Where('status', 1)->whereRaw("upper(description) like '%$name%'");
+        $query = Examination::whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }

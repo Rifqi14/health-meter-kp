@@ -149,7 +149,12 @@ class MedicineCategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $category = MedicineCategory::withTrashed()->find($id);
+        if ($category) {
+            return view('admin.medicinecategory.detail', compact('category'));
+        } else {
+            abort(404);
+        }
     }
 
     /**

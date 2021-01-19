@@ -1,9 +1,9 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Tindakan')
+@section('title', 'Detail Tindakan Medis')
 @push('breadcrump')
 <li><a href="{{route('medicalaction.index')}}">Tindakan Medis</a></li>
-<li class="active">Tambah</li>
+<li class="active">Detail</li>
 @endpush
 @section('stylesheets')
 @endsection
@@ -12,32 +12,29 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Tindakan Medis</h3>
+        <h3 class="box-title">Detail Tindakan Medis</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
           <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
               class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('medicalaction.store')}}" class="form-horizontal" method="post"
-          autocomplete="off">
+        <form id="form" action="{{route('medicalaction.update',['id'=>$medicalaction->id])}}" class="form-horizontal"
+          method="post" autocomplete="off">
           {{ csrf_field() }}
+          <input type="hidden" name="_method" value="put">
           <div class="form-group">
-            <label for="examination_type_id" class="col-sm-2 control-label">Jenis Pemeriksaan <b
-                class="text-danger">*</b></label>
+            <label for="examination_type_id" class="col-sm-2 control-label">Jenis Pemeriksaan</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="examination_type_id" name="examination_type_id"
-                placeholder="Jenis Pemeriksaan" required>
+              <p class="form-control-static">{{$medicalaction->examination->name}}</p>
             </div>
           </div>
           <div class="form-group">
-            <label for="price" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
+            <label for="name" class="col-sm-2 control-label">Deskripsi</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="description" name="description" placeholder="Deskripsi" required>
+              <p class="form-control-static">{{$medicalaction->description}}</p>
             </div>
           </div>
         </form>
@@ -155,6 +152,9 @@
         $('#form').validate().form();
       }
     });
+    @if ($medicalaction->examination_type_id)
+      $("#examination_type_id").select2('data',{id:{{$medicalaction->examination->id}},text:'{{$medicalaction->examination->name}}'}).trigger('change');
+    @endif
   });
 </script>
 @endpush
