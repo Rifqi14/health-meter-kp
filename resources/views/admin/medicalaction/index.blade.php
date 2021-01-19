@@ -1,18 +1,18 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tindakan')
+@section('title', 'Tindakan Medis')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Tindakan</li>
+<li class="active">Tindakan Medis</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Data Tindakan</h3>
+                <h3 class="box-title">Data Tindakan Medis</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     <a href="{{route('medicalaction.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
