@@ -9,113 +9,122 @@
     .m-t-xs {
         margin-top: 5px;
     }
+
     .m-b-xs {
         margin-bottom: 5px;
     }
+
     .m-t-xl {
         margin-top: 40px;
     }
+
     .m-b-xs {
         margin-bottom: 5px;
     }
+
     .animate {
-		background-image: linear-gradient(to right, #ebebeb calc(50% - 100px), #c5c5c5 50%, #ebebeb calc(50% + 100px));
-		background-size:0;
-		position:relative;
-		overflow:hidden;
-	}
-	.animate:after {
-		content:"";
-		position:absolute;
-		top:0;
-		left:0;
-		width:calc(200% + 200px);
-		bottom:0;
-		background: linear-gradient(to right, #eff1f3 4%, #e2e2e2 25%, #eff1f3 36%);
-		animation : shimmer 4s infinite;
-	}
-	.animate.no-after:after{
-		display: none;
-	}
+        background-image: linear-gradient(to right, #ebebeb calc(50% - 100px), #c5c5c5 50%, #ebebeb calc(50% + 100px));
+        background-size: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .animate:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(200% + 200px);
+        bottom: 0;
+        background: linear-gradient(to right, #eff1f3 4%, #e2e2e2 25%, #eff1f3 36%);
+        animation: shimmer 4s infinite;
+    }
+
+    .animate.no-after:after {
+        display: none;
+    }
+
     .progress {
-        background: rgba(0,0,0,0.2);
+        background: rgba(0, 0, 0, 0.2);
         margin: 5px 0 5px 0;
         height: 2px;
     }
-	@keyframes shimmer {
-		0% {
-			background-position: -1000px 0;
-		}
-		100% {
-			background-position: 1000px 0;
-		}
-	}
+
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+
+        100% {
+            background-position: 1000px 0;
+        }
+    }
 </style>
 @endsection
 @push('breadcrump')
-    <li class="active">Laporan Harian</li>
+<li class="active">Laporan Harian</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="nav-tabs-custom tab-primary">
             <ul class="nav nav-tabs">
-              <li class="active"><a href="#personnel" data-toggle="tab">Personil</a></li>
-              <li><a href="#supervisor" data-toggle="tab">Atasan (Fungsi/Bidang)</a></li>
+                <li class="active"><a href="#personnel" data-toggle="tab">Personil</a></li>
+                <li><a href="#supervisor" data-toggle="tab">Atasan (Fungsi/Bidang)</a></li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="personnel">
                     <div class="row">
                         <div class="col-md-12">
-                          <div class="box box-primary">
-                            <div class="box-header">
-                              <h3 class="box-title">Ikhtisar</h3>
-                              <div class="pull-right box-tools">
-                                <a href="#" onclick="exportfile()" class="btn btn-info btn-sm" data-toggle="tooltip" title="Export">
-                                    <i class="fa fa-download"></i>
-                                </a>
-                                <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
-                                    <i class="fa fa-search"></i>
-                                </a>
-                              </div>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                              <div class="row">
-                                <div class="col-md-3">
-                                    <div>
-                                        <h2 class="m-b-xs animate total-personnel">0</h2>
-                                        <span class="no-margins">
-                                            Total Personil
-                                        </span>
-                                        <div class="progress">
-                                            <div class="progress-bar" style="width: 100%;"></div>
-                                          </div>
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <small>Sudah Lapor</small>
-                                                <h4 class="animate last-week-personnel">0</h4>
-                                            </div>
-
-                                            <div class="col-xs-6">
-                                                <small>Belum Lapor</small>
-                                                <h4 class="animate today-personnel">0</h4>
-                                            </div>
-                                        </div>
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">Ikhtisar</h3>
+                                    <div class="pull-right box-tools">
+                                        <a href="#" onclick="exportfile()" class="btn btn-info btn-sm" data-toggle="tooltip" title="Export">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
+                                            <i class="fa fa-search"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
-                                    <div id="chart-personnel" class=" animate" style="height: 160px"></div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div>
+                                                <h2 class="m-b-xs animate total-personnel">0</h2>
+                                                <span class="no-margins">
+                                                    Total Personil
+                                                </span>
+                                                <div class="progress">
+                                                    <div class="progress-bar" style="width: 100%;"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <small>Sudah Lapor</small>
+                                                        <h4 class="animate last-week-personnel">0</h4>
+                                                    </div>
+
+                                                    <div class="col-xs-6">
+                                                        <small>Belum Lapor</small>
+                                                        <h4 class="animate today-personnel">0</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div id="chart-personnel" class=" animate" style="height: 160px"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /.row -->
                                 </div>
-                              </div>
-                              <!-- /.row -->
+                                <!-- ./box-body -->
                             </div>
-                            <!-- ./box-body -->
-                          </div>
-                          <!-- /.box -->
+                            <!-- /.box -->
                         </div>
                         <!-- /.col -->
-                      </div>
+                    </div>
                     <table class="table table-striped table-bordered datatable" style="width:100%" id="table-personnel">
                         <thead>
                             <tr>
@@ -133,56 +142,56 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                          <div class="box box-primary">
-                            <div class="box-header">
-                              <h3 class="box-title">Ikhtisar</h3>
-                              <div class="pull-right box-tools">
-                                <a href="#" onclick="exportfile2()" class="btn btn-info btn-sm" data-toggle="tooltip" title="Export">
-                                    <i class="fa fa-download"></i>
-                                </a>
-                                <a href="#" onclick="filter2()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
-                                    <i class="fa fa-search"></i>
-                                  </a>
-                              </div>
-                            </div>
-                            <!-- /.box-header -->
-                            <div class="box-body">
-                              <div class="row">
-                                <div class="col-md-3">
-                                    <div>
-                                        <h2 class="m-b-xs animate total-supervisor">0</h2>
-                                        <span class="no-margins">
-                                            Total Supervisor
-                                        </span>
-                                        <div class="progress">
-                                            <div class="progress-bar" style="width: 100%;"></div>
-                                          </div>
-                                        <div class="row">
-                                            <div class="col-xs-6">
-                                                <small>Sudah Lapor</small>
-                                                <h4 class="animate last-week-supervisor">0</h4>
-                                            </div>
-
-                                            <div class="col-xs-6">
-                                                <small>Belum Lapor</small>
-                                                <h4 class="animate today-supervisor">0</h4>
-                                            </div>
-                                        </div>
+                            <div class="box box-primary">
+                                <div class="box-header">
+                                    <h3 class="box-title">Ikhtisar</h3>
+                                    <div class="pull-right box-tools">
+                                        <a href="#" onclick="exportfile2()" class="btn btn-info btn-sm" data-toggle="tooltip" title="Export">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        <a href="#" onclick="filter2()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
+                                            <i class="fa fa-search"></i>
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
-                                    <div id="chart-supervisor" class=" animate" style="height: 160px"></div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div>
+                                                <h2 class="m-b-xs animate total-supervisor">0</h2>
+                                                <span class="no-margins">
+                                                    Total Supervisor
+                                                </span>
+                                                <div class="progress">
+                                                    <div class="progress-bar" style="width: 100%;"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-6">
+                                                        <small>Sudah Lapor</small>
+                                                        <h4 class="animate last-week-supervisor">0</h4>
+                                                    </div>
+
+                                                    <div class="col-xs-6">
+                                                        <small>Belum Lapor</small>
+                                                        <h4 class="animate today-supervisor">0</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div id="chart-supervisor" class=" animate" style="height: 160px"></div>
+                                        </div>
+                                    </div>
+                                    <!-- /.row -->
                                 </div>
-                              </div>
-                              <!-- /.row -->
+                                <!-- ./box-body -->
                             </div>
-                            <!-- ./box-body -->
-                          </div>
-                          <!-- /.box -->
+                            <!-- /.box -->
                         </div>
                         <!-- /.col -->
-                      </div>
-                     <table class="table table-striped table-bordered datatable" style="width:100%" id="table-supervisor">
+                    </div>
+                    <table class="table table-striped table-bordered datatable" style="width:100%" id="table-supervisor">
                         <thead>
                             <tr>
                                 <th width="10">#</th>
@@ -200,7 +209,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -208,7 +217,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title">Pencarian</h4>
-			</div>
+            </div>
             <div class="modal-body">
                 <form id="form-search" autocomplete="off">
                     <div class="row">
@@ -218,9 +227,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="input-group">
-                                            <input type="text" class="form-control date-picker"
-                                                name="date" placeholder="Tanggal"
-                                                value="{{ date('Y-m-d')}}">
+                                            <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </span>
@@ -249,7 +256,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="add-filter2" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter2" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -257,7 +264,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title">Pencarian</h4>
-			</div>
+            </div>
             <div class="modal-body">
                 <form id="form-search2" autocomplete="off">
                     <div class="row">
@@ -267,9 +274,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="input-group">
-                                            <input type="text" class="form-control date-picker"
-                                                name="date" placeholder="Tanggal"
-                                                value="{{ date('Y-m-d')}}">
+                                            <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </span>
@@ -298,7 +303,7 @@
     </div>
 </div>
 {{-- Modal Export --}}
-<div class="modal fade" id="export-file" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="export-file" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -306,7 +311,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title">Export</h4>
-			</div>
+            </div>
             <div class="modal-body">
                 <form id="form-export" action="{{ route('reportdaily.export') }}" autocomplete="off">
                     @csrf
@@ -317,9 +322,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="input-group">
-                                            <input type="text" class="form-control date-picker" 
-                                                name="date" placeholder="Tanggal"
-                                                value="{{ date('Y-m-d')}}">
+                                            <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </span>
@@ -349,7 +352,7 @@
 </div>
 
 {{-- Modal Export 2 --}}
-<div class="modal fade" id="export-file2" tabindex="-1" role="dialog"  aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="export-file2" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -357,7 +360,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title">Export</h4>
-			</div>
+            </div>
             <div class="modal-body">
                 <form id="form-export2" action="{{ route('reportdailysuper.export') }}" autocomplete="off">
                     @csrf
@@ -368,9 +371,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="input-group">
-                                            <input type="text" class="form-control date-picker"
-                                                name="date" placeholder="Tanggal"
-                                                value="{{ date('Y-m-d',mktime(0,0,0,date('m'),date('d')-6,date('Y')))}}">
+                                            <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d',mktime(0,0,0,date('m'),date('d')-6,date('Y')))}}">
                                             <span class="input-group-addon">
                                                 <i class="fa fa-calendar"></i>
                                             </span>
@@ -407,7 +408,7 @@
 <script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script type="text/javascript">
-function filter(){
+    function filter(){
     $('#add-filter').modal('show');
 }
 function filter2(){

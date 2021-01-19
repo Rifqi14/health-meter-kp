@@ -475,12 +475,25 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
         Route::resource('/workforce', 'Admin\WorkforceController');
         
-        // Workforce
+        // Pasien
         Route::get('/patient/read', 'Admin\PatientController@read')->name('patient.read');
         Route::get('/patient/select', 'Admin\PatientController@select')->name('patient.select');
         Route::get('/patient/restore/{id}', 'Admin\PatientController@restore')->name('patient.restore');
         Route::get('/patient/delete/{id}', 'Admin\PatientController@delete')->name('patient.delete');
         Route::resource('/patient', 'Admin\PatientController');
+
+        // Pasien
+        Route::get('/reportweekly/read', 'Admin\ReportWeeklyController@read')->name('reportweekly.read');
+        Route::get('/reportweekly/select', 'Admin\ReportWeeklyController@select')->name('reportweekly.select');
+        Route::get('/reportweekly/totalpersonnel', 'Admin\ReportWeeklyController@totalpersonnel')->name('reportweekly.totalpersonnel');
+        Route::get('/reportweekly/lastweekpersonnel', 'Admin\ReportWeeklyController@lastweekpersonnel')->name('reportweekly.lastweekpersonnel');
+        Route::get('/reportweekly/todaypersonnel', 'Admin\ReportWeeklyController@todaypersonnel')->name('reportweekly.todaypersonnel');
+        Route::get('/reportweekly/chartpersonnel', 'Admin\ReportWeeklyController@chartpersonnel')->name('reportweekly.chartpersonnel');
+        Route::get('/reportweekly/personnel', 'Admin\ReportWeeklyController@personnel')->name('reportweekly.personnel');
+        Route::post('/reportweekly/export', 'Admin\ReportWeeklyController@export')->name('reportweekly.export');
+        Route::get('/reportweekly/restore/{id}', 'Admin\ReportWeeklyController@restore')->name('reportweekly.restore');
+        Route::get('/reportweekly/delete/{id}', 'Admin\ReportWeeklyController@delete')->name('reportweekly.delete');
+        Route::resource('/reportweekly', 'Admin\ReportWeeklyController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
