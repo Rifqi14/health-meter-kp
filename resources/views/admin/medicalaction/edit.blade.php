@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Tindakan')
+@section('title', 'Ubah Tindakan Medis')
 @push('breadcrump')
-<li><a href="{{route('medicalaction.index')}}">Tindakan</a></li>
+<li><a href="{{route('medicalaction.index')}}">Tindakan Medis</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('stylesheets')
@@ -12,7 +12,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Tindakan</h3>
+        <h3 class="box-title">Ubah Tindakan Medis</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
@@ -28,45 +28,18 @@
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
           <div class="form-group">
-            <label for="examination" class="col-sm-2 control-label">Jenis Pemeriksaan <b
+            <label for="examination_type_id" class="col-sm-2 control-label">Jenis Pemeriksaan <b
                 class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="examination" name="examination"
-                placeholder="Jenis Pemeriksaan" value="{{$medicalaction->examination_type_id}}" required>
+              <input type="text" class="form-control" id="examination_type_id" name="examination_type_id"
+                placeholder="Jenis Pemeriksaan" required>
             </div>
           </div>
           <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+            <label for="name" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="code" name="code" placeholder="Kode"
-                value="{{$medicalaction->code}}" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" id="name" name="name" placeholder="Nama"
-                value="{{$medicalaction->name}}" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="price" class="col-sm-2 control-label">Template <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <select name="template_id" id="template_id" class="form-control select2" placeholder="Pilih Template"
-                required>
-                <option value=""></option>
-                @foreach($templates as $template)
-                <option value="{{$template->id}}" @if($template->id == $medicalaction->template_id) selected
-                  @endif>{{$template->name}}</option>
-                @endforeach
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="price" class="col-sm-2 control-label">Keterangan <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <textarea name="description" id="description" class="form-control"
-                placeholder="Keterangan">{{$medicalaction->description}}</textarea>
+              <input type="text" class="form-control" id="description" name="description" placeholder="Deskripsi"
+                value="{{$medicalaction->description}}" required>
             </div>
           </div>
         </form>
@@ -151,7 +124,7 @@
         })		
       }
     });
-    $("#examination").select2({
+    $("#examination_type_id").select2({
       ajax: {
         url: "{{route('examinationtype.select')}}",
         type:'GET',
@@ -179,13 +152,13 @@
       },
       allowClear: true,
     });
-    $(document).on("change", "#examination", function () {
+    $(document).on("change", "#examination_type_id", function () {
       if (!$.isEmptyObject($('#form').validate().submitted)) {
         $('#form').validate().form();
       }
     });
     @if ($medicalaction->examination_type_id)
-      $("#examination").select2('data',{id:{{$medicalaction->examination->id}},text:'{{$evaluation->examination->name}}'}).trigger('change');
+      $("#examination_type_id").select2('data',{id:{{$medicalaction->examination->id}},text:'{{$medicalaction->examination->name}}'}).trigger('change');
     @endif
   });
 </script>

@@ -234,6 +234,8 @@ Route::group(['prefix' => 'admin'], function () {
 
         //Medical Action
         Route::get('/medicalaction/read', 'Admin\MedicalActionController@read')->name('medicalaction.read');
+        Route::get('/medicalaction/restore/{id}', 'Admin\MedicalActionController@restore')->name('medicalaction.restore');
+        Route::get('/medicalaction/delete/{id}', 'Admin\MedicalActionController@delete')->name('medicalaction.delete');
         Route::resource('/medicalaction', 'Admin\MedicalActionController');
 
         //Invoice
