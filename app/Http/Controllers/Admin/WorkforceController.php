@@ -43,6 +43,8 @@ class WorkforceController extends Controller
         $nid = strtoupper($request->nid);
         $workforce_group_id = $request->workforce_group_id;
         $agency_id = $request->agency_id;
+        $site = $request->site;
+        $data_manager = $request->data_manager;
         $site_id = $request->site_id;
         $arsip = $request->category;
 
@@ -54,8 +56,11 @@ class WorkforceController extends Controller
         if ($agency_id) {
             $query->where('agency_id', $agency_id);
         }
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
@@ -70,8 +75,11 @@ class WorkforceController extends Controller
         if ($agency_id) {
             $query->where('agency_id', $agency_id);
         }
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();

@@ -62,37 +62,37 @@
       <div class="modal-body">
         <form id="form-search" autocomplete="off">
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label" for="name">Nama</label>
                 <input type="text" name="name" class="form-control" placeholder="Nama">
               </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label" for="nid">NID</label>
                 <input type="text" name="nid" class="form-control" placeholder="NID">
               </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label" for="site">Distrik</label>
+                <input type="text" name="site" id="site" class="form-control" data-placeholder="Pilih Distrik">
+              </div>
+            </div>
+            <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label" for="agency_id">Instansi</label>
                 <input type="text" name="agency_id" id="agency_id" class="form-control" data-placeholder="Instansi">
               </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
                 <input type="text" name="workforce_group_id" id="workforce_group_id" class="form-control" data-placeholder="Kelompok Workforce">
               </div>
             </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="site_id">Unit</label>
-                <input type="text" name="site_id" id="site_id" class="form-control" data-placeholder="Unit">
-              </div>
-            </div>
-            <div class="col-md-12">
+            <div class="col-md-6">
               <div class="form-group">
                 <label for="name" class="control-label">Arsip Kelompok</label>
                 <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
@@ -126,7 +126,7 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     });
-    $("#site_id").select2({
+    $("#site").select2({
       ajax: {
           url: "{{route('site.select')}}",
           type:'GET',
@@ -156,11 +156,6 @@
       },
       allowClear: true,
     });
-    $(document).on("change", "#site_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
-    });
     $("#workforce_group_id").select2({
       ajax: {
           url: "{{route('workforcegroup.select')}}",
@@ -170,7 +165,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              data_manager:{{$accesssite}},
           };
           },
           results: function (data,page) {
@@ -188,11 +184,6 @@
           },
       },
       allowClear: true,
-    });
-    $(document).on("change", "#workforce_group_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
     });
     $("#agency_id").select2({
       ajax: {
@@ -203,7 +194,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site').val()==''?-1:$('#site').val()
           };
           },
           results: function (data,page) {
@@ -221,11 +213,6 @@
           },
       },
       allowClear: true,
-    });
-    $(document).on("change", "#agency_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
     });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
@@ -244,13 +231,15 @@
               var nid = $('#form-search').find('input[name=nid]').val();
               var agency_id = $('#form-search').find('input[name=agency_id]').val();
               var workforce_group_id = $('#form-search').find('input[name=workforce_group_id]').val();
-              var site_id = $('#form-search').find('input[name=site_id]').val();
+              var site = $('#form-search').find('input[name=site]').val();
               var category = $('#form-search').find('select[name=category]').val();
               data.name = name;
               data.nid = nid;
               data.agency_id = agency_id;
               data.workforce_group_id = workforce_group_id;
-              data.site_id = site_id;
+              data.site = site;
+              data.data_manager = {{$accesssite}};
+              data.site_id = {{$siteinfo->id}};
               data.category = category;
             }
         },
@@ -292,7 +281,8 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                             <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
                             : 
                             `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
