@@ -484,7 +484,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/patient/delete/{id}', 'Admin\PatientController@delete')->name('patient.delete');
         Route::resource('/patient', 'Admin\PatientController');
 
-        // Pasien
+        // Laporan Mingguan
         Route::get('/reportweekly/read', 'Admin\ReportWeeklyController@read')->name('reportweekly.read');
         Route::get('/reportweekly/select', 'Admin\ReportWeeklyController@select')->name('reportweekly.select');
         Route::get('/reportweekly/totalpersonnel', 'Admin\ReportWeeklyController@totalpersonnel')->name('reportweekly.totalpersonnel');
@@ -496,6 +496,17 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportweekly/restore/{id}', 'Admin\ReportWeeklyController@restore')->name('reportweekly.restore');
         Route::get('/reportweekly/delete/{id}', 'Admin\ReportWeeklyController@delete')->name('reportweekly.delete');
         Route::resource('/reportweekly', 'Admin\ReportWeeklyController');
+
+        // Laporan Kehadiran
+        Route::get('/reportattendance/assessment', 'Admin\ReportAttendanceController@assessment')->name('reportattendance.assessment');
+        Route::get('/reportattendance/export', 'Admin\ReportAttendanceController@export')->name('reportattendance.export');
+        Route::get('/reportattendance/totalassessment', 'Admin\ReportAttendanceController@totalassessment')->name('reportattendance.totalassessment');
+        Route::get('/reportattendance/lowriskassessment', 'Admin\ReportAttendanceController@lowriskassessment')->name('reportattendance.lowriskassessment');
+        Route::get('/reportattendance/highriskassessment', 'Admin\ReportAttendanceController@highriskassessment')->name('reportattendance.highriskassessment');
+        Route::get('/reportattendance/chartassessment', 'Admin\ReportAttendanceController@chartassessment')->name('reportattendance.chartassessment');
+        Route::get('/reportattendance/restore/{id}', 'Admin\ReportAttendanceController@restore')->name('reportattendance.restore');
+        Route::get('/reportattendance/delete/{id}', 'Admin\ReportAttendanceController@delete')->name('reportattendance.delete');
+        Route::resource('/reportattendance', 'Admin\ReportAttendanceController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {

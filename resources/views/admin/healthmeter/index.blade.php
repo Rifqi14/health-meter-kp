@@ -15,8 +15,7 @@
                 <h3 class="box-title">Data Health Meter</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
-                    <a href="{{route('healthmeter.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-                        title="Tambah">
+                    <a href="{{route('healthmeter.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -49,8 +48,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-    aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,8 +69,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="name" class="control-label">Arsip Kelompok</label>
-                                <select id="category" name="category" class="form-control select2"
-                                    placeholder="Pilih Tipe Arsip">
+                                <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
                                     <option value="">Non-Arsip</option>
                                     <option value="1">Arsip</option>
                                 </select>
@@ -82,8 +79,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-                        class="fa fa-search"></i></button>
+                <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
             </div>
         </div>
     </div>

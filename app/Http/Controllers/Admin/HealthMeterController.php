@@ -66,6 +66,38 @@ class HealthMeterController extends Controller
 			'data'=>$data
         ], 200);
     }
+
+    
+
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+        $nid = strtoupper($request->nid);
+        $site_id = $request->site_id;
+
+        //Count Data
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $query->orderBy('name', 'asc');
+        $query->offset($start);
+        $query->limit($length);
+        $results = $query->get();
+
+        $data = [];
+        foreach ($results as $result) {
+            $result->no = ++$start;
+            $data[] = $result;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
     /**
      * Show the form for creating a new resource.
      *
