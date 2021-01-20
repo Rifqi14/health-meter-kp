@@ -33,9 +33,8 @@ class AssessmentController extends Controller
      */
     public function index() 
     {
-        $nid = Auth::user()->username;
-        $employee = Workforce::where('nid', $nid)->get()->first();
-        $assessment = Assessment::where('assessment_date', date('Y-m-d'))->where('workforce_id', $employee->id)->get()->count();
+        $workforce = Auth::user()->workforce;
+        $assessment = Assessment::where('assessment_date', date('Y-m-d'))->where('workforce_id', $workforce->id)->get()->count();
         return view('admin.assessment.index', compact('assessment'));
     }
 
@@ -110,27 +109,22 @@ class AssessmentController extends Controller
      */
     public function create(Request $request)
     {
-        $nid = Auth::user()->workforce_id;
-        $employee = Workforce::find($nid);
-        $workforce = $employee->workforce_group_id ? $employee->workforce_group_id : null;
-        $site = @$employee->site_id;
+        $workforce = Auth::user()->workforce;
+        $workforce_group_id = $workforce->workforce_group_id;
+        $site_id = $workforce->site_id;
         $questions = AssessmentQuestion::with([
           'answer',
           'parent',
           'answercode',
-          'site' => function ($q) use ($site) {
-            $q->where('site_id', $site);
+          'site' => function ($q) use ($site_id) {
+            $q->where('site_id', $site_id);
           },
-          'workforcegroup' => function ($q) use ($workforce) {
-            $q->where('workforce_group_id', $workforce);
+          'workforcegroup' => function ($q) use ($workforce_group_id) {
+            $q->where('workforce_group_id', $workforce_group_id);
           },
         ])->orderBy('order', 'asc')->get();
         $assessment = AssessmentResult::where('date', date('Y-m-d'))->where('workforce_id', Auth::id())->first();
-        if (!$assessment) {
-            return view('admin.assessment.create', compact('questions'));
-        } else {
-            return redirect()->back();
-        }
+        return view('admin.assessment.create', compact('questions','workforce'));
     }
 
     public function information()

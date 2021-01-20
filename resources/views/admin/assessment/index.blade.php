@@ -1,32 +1,24 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Assessment (Individu)')
+@section('title', 'Assessment')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Assessment (Individu)</li>
+<li class="active">Assessment</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Assessment (Individu)</h3>
-        <!-- tools box -->
-        <div class="pull-right box-tools">
-          <a href="{{route('assessment.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
-            <i class="fa fa-plus"></i>
-          </a>
-        </div>
-        <!-- /. tools -->
+        <h3 class="box-title">Data Assessment</h3>
       </div>
       <div class="box-body">
         @if(!$assessment)
         <div class="alert alert-warning">
-          <h4><i class="fa fa-warning"></i> Anda Belum Mengisi Assessment (Individu) Hari Ini</h4>
+          <h4><i class="fa fa-warning"></i> Anda Belum Mengisi Assessment Hari Ini</h4>
           <p>Silahkan Klik Link <a href="{{route('assessment.create')}}">Disini</a> Untuk Mengisi Assessment
-            (Individu)
           </p>
         </div>
         @endif

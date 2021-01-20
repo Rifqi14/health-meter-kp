@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Assessment (Individu)')
+@section('title', 'Tambah Assessment')
 @push('breadcrump')
-<li><a href="{{route('assessment.index')}}">Assessment (Individu)</a></li>
+<li><a href="{{route('assessment.index')}}">Assessment</a></li>
 <li class="active">Tambah</li>
 @endpush
 @section('stylesheets')
@@ -22,7 +22,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Assessment (Individu)</h3>
+        <h3 class="box-title">Tambah Assessment</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
@@ -146,38 +146,37 @@
                     <span class="direct-chat-name pull-left">Bot Assessment</span>
                   </div>
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                  <div class="direct-chat-text pull-left">${message.description}</div>
+                  <div class="direct-chat-text pull-left"><b>Pertanyaan</b><br/>${message.description}</div>
                 </div>`
         html += `<div class="direct-chat-msg right">
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-right">User</span>
+                    <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
                   </div>
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
                   <div class="pull-right form-inline">`
         if (message.answer.length > 0) {
-          $.each(message.answer, function(i, answer) {
-            switch (answer.answer_type) {
+          switch (message.answer_type) {
               case 'checkbox':
+              $.each(message.answer, function(i, answer) {
                 html += `<div class="checkbox direct-chat-text">
                           <input type="checkbox" name="answer_choice" value="${answer.id}" data-description="${answer.description}">
                           ${answer.description}
                         </div>`
-                break;
+              });
+              html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer_type}" onclick="answer(this)">Next</button></div></div>`;
+              break;
               case 'radio':
+              $.each(message.answer, function(i, answer) {
               html += `<div class="radio direct-chat-text">
-                        <input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-description="${answer.description}">
+                        <input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer_type}" data-description="${answer.description}" onclick="answer(this)">
                         ${answer.description}
                       </div>`
+              });
               break;
-            
-              default:
-                break;
-            }
-          });
-          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer[0].answer_type}" onclick="answer(this)">Kirim</button></div></div>`;
+          }
         } else {
           html += `<input type="text" class="form-control direct-chat-text"name="answer_choice" id="freeText${message.id}" placeholder="...">`
-          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="freetext" onclick="answer(this)">Kirim</button></div></div>`;
+          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="freetext" onclick="answer(this)">Next</button></div></div>`;
         }
       }
     });
@@ -194,19 +193,13 @@
                     <span class="direct-chat-name pull-left">Bot Assessment</span>
                   </div>
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assesment Bot">
-                  <div class="direct-chat-text pull-left">${message.description}${i === (countData - 1) ? '<br>Ketik <b>/mulai</b> untuk melakukan assessment' : ''}</div>
+                  <div class="direct-chat-text pull-left"><b>Informasi</b> <br/>${message.description_information}</div>
                 </div>`;
       }
     });
-    html += `<div class="direct-chat-msg right">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-right">User</span>
-              </div>
-              <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-              <div class="pull-right form-inline">
-                <input type="text" name="message" placeholder="Type Message ..." class="form-control direct-chat-text" value="/mulai" readonly>
-                <button type="button" class="btn btn-default" onclick="reply()">Send</button>
-              </div></div>`;
+    setTimeout(function() {
+      rerenderMsg(question(question_data));
+    }, 3000);
     return html;
   }
   // To Render Question child from question_child_data variable to message bubble
@@ -219,11 +212,11 @@
                     <span class="direct-chat-name pull-left">Bot Assessment</span>
                   </div>
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                  <div class="direct-chat-text pull-left">${child.description}</div>
+                  <div class="direct-chat-text pull-left"><b>Pertanyaan</b><br/>${child.description}</div>
                 </div>`
         html += `<div class="direct-chat-msg right">
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-right">User</span>
+                    <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
                   </div>
                   <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
                   <div class="pull-right form-inline">`
@@ -247,10 +240,10 @@
                 break;
             }
           });
-          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="${child.answer[0].answer_type}" onclick="answer(this)">Kirim</button></div></div>`;
+          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="${child.answer[0].answer_type}" onclick="answer(this)">Next</button></div></div>`;
         } else {
           html += `<input type="text" class="form-control direct-chat-text" name="answer_choice" id="freeText${child.id}" placeholder="...">`
-          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="freetext" onclick="answer(this)">Kirim</button></div></div>`;
+          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="freetext" onclick="answer(this)">Next</button></div></div>`;
         }
       }
     });
@@ -276,7 +269,7 @@
                                     </div>
                                     <div class="direct-chat-msg right">
                                       <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-right">User</span>
+                                        <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
                                       </div>
                                       <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
                                       <div class="direct-chat-text pull-right">${answer_choice[answer_choice.length - 1].label}</div>
@@ -293,7 +286,7 @@
                                     </div>
                                     <div class="direct-chat-msg right">
                                       <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-right">User</span>
+                                        <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
                                       </div>
                                       <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
                                       <div class="direct-chat-text pull-right">${answer_choice[answer_choice.length - 1].label}</div>
