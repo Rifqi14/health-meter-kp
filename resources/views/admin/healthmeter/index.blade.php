@@ -1,11 +1,11 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Health Meter')
+@section('title', 'Kategori Resiko')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Health Meter</li>
+<li class="active">Kategori Resiko</li>
 @endpush
 @section('content')
 <div class="row">
@@ -29,14 +29,14 @@
                     <thead>
                         <tr>
                             <th width="10">#</th>
-                            <th width="200">Nama</th>
-                            <th width="100">Min</th>
-                            <th width="100">Max</th>
-                            <th width="100">Warna</th>
-                            <th width="100">Unit</th>
-                            <th width="100">Kelompok Workforce</th>
-                            <th width="100">Status</th>
-                            <th width="100">Dibuat</th>
+                            <th width="100">Distrik</th>
+                            <th width="150">Kelompok Workforce</th>
+                            <th width="100">Kategori</th>
+                            <th width="50">Min</th>
+                            <th width="50">Max</th>
+                            <th width="150">Terakhir Dirubah</th>
+                            <th width="100">Dirubah Oleh</th>
+                            <th width="50">Status</th>
                             <th width="10">#</th>
                         </tr>
                     </thead>
@@ -66,6 +66,12 @@
                                 <input type="text" name="name" class="form-control" placeholder="Nama">
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                              <label class="control-label" for="site">Distrik</label>
+                              <input type="text" name="site" id="site" class="form-control" placeholder="Distrik">
+                            </div>
+                          </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="name" class="control-label">Arsip Kelompok</label>
@@ -100,6 +106,36 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+      });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -115,28 +151,31 @@
             data:function(data){
                 var name = $('#form-search').find('input[name=name]').val();
                 var category = $('#form-search').find('select[name=category]').val();
+                var site = $('#form-search').find('input[name=site]').val();
                 data.name = name;
                 data.category = category;
+                data.site = site;
+                data.data_manager = {{$accesssite}};
+                data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
-                orderable: false,targets:[0]
+                orderable: false,targets:[0,1,2,7]
             },
-            { className: "text-right", targets: [0,2,3] },
+            { className: "text-right", targets: [0] },
             { className: "text-center", targets: [4,5,6,7,9] },
             { render: function ( data, type, row ) {
-                return `<span class="label" style="background-color:${data}">${data}</span>`
-            },targets: [4]
+                return `${row.site.name}`
+            },targets: [1]
             },
             { render: function ( data, type, row ) {
-                return `<span class="label bg-blue">${row.site.name}</span>`
-            },targets: [5]
+                return `${row.workforcegroup.name}`
+            },targets: [2]
             },
-            { render: function ( data, type, row ) {
-                return `<span class="label bg-blue">${row.workforcegroup.name}</span>`
-            },targets: [6]
-            },
+            { render: function (data, type, row) {
+                return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+            }, targets: [7] },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
                 bg = 'bg-red', teks = 'Non-Aktif';
@@ -144,7 +183,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [7]
+            },targets: [8]
             },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
@@ -166,14 +205,14 @@
         ],
         columns: [
             { data: "no" },
+            { data: "site_id" },
+            { data: "workforce_group_id" },
             { data: "name" },
             { data: "min" },
             { data: "max" },
-            { data: "color" },
-            { data: "site_id" },
-            { data: "workforce_group_id" },
+            { data: "updated_at" },
+            { data: "updated_by" },
             { data: "deleted_at" },
-            { data: "created_at" },
             { data: "id" },
         ]
     });

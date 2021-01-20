@@ -37,13 +37,18 @@ class PatientController extends Controller
         $name = strtoupper($request->name);
         $status = strtoupper($request->status);
         $workforce_id = $request->workforce_id;
+        $site = $request->site;
+        $data_manager = $request->data_manager;
         $site_id = $request->site_id;
         $arsip = $request->category;
 
         //Count Data
         $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
@@ -55,8 +60,11 @@ class PatientController extends Controller
 
         //Select Pagination
         $query = Patient::with(['updatedby', 'site', 'workforce', 'inpatient'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(status) like '%$status%'");
-        if ($site_id) {
-            $query->where('site_id', $site_id);
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         if ($arsip) {
             $query->onlyTrashed();
@@ -175,7 +183,12 @@ class PatientController extends Controller
      */
     public function show($id)
     {
-        //
+        $patient = Patient::withTrashed()->find($id);
+        if ($patient) {
+            return view('admin.patient.detail', compact('patient'));
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -190,7 +203,7 @@ class PatientController extends Controller
         if ($patient) {
             return view('admin.patient.edit', compact('patient'));
         } else {
-            # code...
+            abort(404);
         }
         
     }
@@ -205,14 +218,11 @@ class PatientController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'              => 'required|unique:patients,code,'.$id,
-            'nid'               => 'required|unique:patients,nid,'.$id,
+            'site_id'           => 'required',
+            'workforce_id'      => 'required',
             'name'              => 'required',
             'status'            => 'required',
             'birth_date'        => 'required',
-            'site_id'           => 'required',
-            'department_id'     => 'required',
-            'sub_department_id' => 'required',
             'inpatient_id'      => 'required'
         ]);
 
@@ -231,15 +241,11 @@ class PatientController extends Controller
         }
 
         $patient = Patient::withTrashed()->find($id);
+        $patient->site_id           = $request->site_id;
         $patient->workforce_id      = $request->workforce_id;
-        $patient->code              = strtoupper($request->code);
         $patient->name              = $request->name;
-        $patient->nid               = strtoupper($request->nid);
         $patient->status            = $request->status;
         $patient->birth_date        = $request->birth_date;
-        $patient->site_id           = $request->site_id;
-        $patient->department_id     = $request->department_id;
-        $patient->sub_department_id = $request->sub_department_id;
         $patient->inpatient_id      = $request->inpatient_id;
         $patient->updated_by        = Auth::id();
         $patient->save();

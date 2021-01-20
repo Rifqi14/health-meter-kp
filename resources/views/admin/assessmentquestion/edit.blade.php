@@ -40,21 +40,40 @@
               <label for="question_parent_code" class="col-sm-2 control-label">Parent Pertanyaan</label>
               <div class="col-sm-6" style="padding-top: 5px">
                 <input type="text" class="form-control" id="question_parent_code" placeholder="Parent Pertanyaan"
-                  name="question_parent_code" value="{{ $question->question_parent_code }}">
+                  name="question_parent_code">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="answer_parent_code" class="col-sm-2 control-label">Parent Opsi Jawaban</label>
+              <div class="col-sm-6" style="padding-top: 5px">
+                <input type="text" class="form-control" id="answer_parent_code" placeholder="Parent Opsi Jawaban"
+                  name="answer_parent_code">
               </div>
             </div>
             <div class="form-group">
               <label for="type" class="col-sm-2 control-label">Jenis Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="type" placeholder="Jenis Pertanyaan" name="type" required
-                  value="{{ $question->type }}">
+                <select id="type" name="type" class="form-control select2" placeholder="Pilih Type"
+                  required>
+                  <option value=""></option>
+                  <option value="Informasi" @if($question->type == 'Informasi') selected @endif>Informasi</option>
+                  <option value="Pertanyaan" @if($question->type == 'Pertanyaan') selected @endif>Pertanyaan</option>
+                  <option value="Informasi Dan Pertanyaan" @if($question->type == 'Informasi Dan Pertanyaan') selected @endif>Informasi Dan Pertanyaan</option>
+                </select>
               </div>
             </div>
             <div class="form-group">
-              <label for="description" class="col-sm-2 control-label">Deskripsi <b class="text-danger">*</b></label>
+              <label for="description" class="col-sm-2 control-label">Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Deskripsi"
+                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Pertanyaan"
                   name="description" required>{{ $question->description }}</textarea>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="description_information" class="col-sm-2 control-label">Informasi <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Informasi"
+                  name="description_information" required>{{ $question->description_information }}</textarea>
               </div>
             </div>
             <div class="form-group">
@@ -72,8 +91,20 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="date" class="col-sm-2 control-label">Tanggal Mulai - Sampai <b
-                  class="text-danger">*</b></label>
+              <label class="col-sm-2 control-label" for="answer_type">Tipe Jawaban <b class="text-danger">*</b></label>
+              <div class="col-sm-6">  
+              <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban">
+                    <option value=""></option>
+                    <option value="checkbox"  @if ($question->answer_type == 'checkbox') selected @endif>Checkbox</option>
+                    <option value="radio" @if ($question->answer_type == 'radio') selected @endif>Radio Button</option>
+                    <option value="text" @if ($question->answer_type == 'text') selected @endif>Teks</option>
+                    <option value="number" @if ($question->answer_type == 'number') selected @endif>Angka</option>
+                    <option value="select" @if ($question->answer_type == 'select') selected @endif>List Dropdown</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="date" class="col-sm-2 control-label">Tanggal Mulai - Sampai</label>
               <div class="col-sm-3">
                 <input type="text" class="form-control date" id="start_date" placeholder="Tanggal Mulai"
                   name="start_date" value="{{ $question->start_date }}">
@@ -87,15 +118,39 @@
               <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
                   class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="workforce_group_id" placeholder="Kelompok Workforce"
-                  name="workforce_group_id" required value="{{ $question->workforce_group_id }}">
+                  <table class="table table-bordered table-striped" id="table-workforcegroup">
+                    <thead>
+                        <th>Nama</th>
+                        <th>Status</th>
+                    </thead>
+                    <tbody>
+                      @foreach ($workforcegroups as $workforcegroup)
+                      <tr>
+                      <td><input type="hidden" name="workforcegroup[]" value="{{$workforcegroup->id}}"/>{{$workforcegroup->name}}</td>
+                        <td class="text-center"><input type="checkbox" name="workforcegroup_status[{{$workforcegroup->id}}]" @if($workforcegroup->assessment_question_workforce_group_id) checked @endif></td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                </table>
               </div>
             </div>
             <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" placeholder="Unit" name="site_id" required
-                  value="{{ $question->site_id }}">
+                <table class="table table-bordered table-striped" id="table-workforcegroup">
+                  <thead>
+                      <th>Nama</th>
+                      <th>Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($sites as $site)
+                    <tr>
+                    <td><input type="hidden" name="site[]" value="{{$site->id}}"/>{{$site->name}}</td>
+                      <td class="text-center"><input type="checkbox" name="site_status[{{$site->id}}]" @if($site->assessment_question_site_id) checked @endif></td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+              </table>
               </div>
             </div>
           </div>
@@ -119,73 +174,29 @@
         autoclose: true,
         format: 'yyyy-mm-dd'
       })
+      $('input[name^=workforcegroup_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
+      });
+      $('input[name^=site_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
+      });
+      $('#type').on('change',function(){
+         $('#description').closest('.form-group').hide();
+         $('#description_information').closest('.form-group').hide();
+         if(this.value == 'Pertanyaan'){
+          $('#description').closest('.form-group').show();
+         }
+         if(this.value == 'Informasi'){
+          $('#description_information').closest('.form-group').show();
+         }
+         if(this.value == 'Informasi Dan Pertanyaan'){
+          $('#description').closest('.form-group').show();
+          $('#description_information').closest('.form-group').show();
+         }
+      }).trigger('change');
       $('.select2').select2();
-      $("#workforce_group_id").select2({
-        ajax: {
-          url: "{{route('workforcegroup.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#workforce_group_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $("#site_id").select2({
-        ajax: {
-          url: "{{route('site.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
       $("#question_parent_code").select2({
         ajax: {
           url: "{{route('assessmentquestion.select')}}",
@@ -205,7 +216,7 @@
               if (item.is_parent == 0) {
                 option.push({
                   id:item.id,  
-                  text: `${item.type} - ${item.description}`
+                  text: `${item.description?item.description:item.description_information}`
                 });
               }
             });
@@ -216,7 +227,50 @@
         },
         allowClear: true,
       });
+
+
+      @if ($question->question_parent_code)
+      $("#question_parent_code").select2('data',{id:{{$question->parent->id}},text:'{{$question->parent->description?$question->parent->description:$question->parent->description_information}}'}).trigger('change');
+      @endif
       $(document).on("change", "#question_parent_code", function () {
+        $('#answer_parent_code').select2('val','');
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $("#answer_parent_code").select2({
+        ajax: {
+          url: "{{route('assessmentanswer.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+              question_id:$('#question_parent_code').val()==''?-1:$('#question_parent_code').val()
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                  id:item.id,  
+                  text: `${item.description}`
+                });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      @if ($question->answer_parent_code)
+      $("#answer_parent_code").select2('data',{id:{{$question->answercode->id}},text:'{{$question->answercode->description}}'}).trigger('change');
+      @endif
+      $(document).on("change", "#answer_parent_code", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -285,16 +339,7 @@
           })		
         }
       });
-
-      @if ($question->question_parent_code)
-      $("#question_parent_code").select2('data',{id:{{$question->parent->id}},text:'{{$question->parent->type}} - {{$question->parent->description}}'}).trigger('change');
-      @endif
-      @if ($question->workforce_group_id)
-      $("#workforce_group_id").select2('data',{id:{{$question->workforcegroup->id}},text:'{{$question->workforcegroup->name}}'}).trigger('change');
-      @endif
-      @if ($question->site_id)
-      $("#site_id").select2('data',{id:{{$question->site->id}},text:'{{$question->site->name}}'}).trigger('change');
-      @endif
+      
   });
 </script>
 @endpush

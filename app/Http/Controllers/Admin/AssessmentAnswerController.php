@@ -25,13 +25,6 @@ class AssessmentAnswerController extends Controller
 
     public function read(Request $request)
     {
-        $type = [
-            'checkbox'  => 'Checkbox',
-            'radio'     => 'Radio Button',
-            'text'      => 'Teks',
-            'number'    => 'Angka',
-            'select'    => 'List Dropdown'
-        ];
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
@@ -60,7 +53,6 @@ class AssessmentAnswerController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
-            $result->type = $type[$result->answer_type];
             $data[] = $result;
         }
         return response()->json([
@@ -73,25 +65,18 @@ class AssessmentAnswerController extends Controller
 
     public function select(Request $request)
     {
-        $type = [
-            'checkbox'  => 'Checkbox',
-            'radio'     => 'Radio Button',
-            'text'      => 'Teks',
-            'number'    => 'Angka',
-            'select'    => 'List Dropdown'
-        ];
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
         $question = $request->question_id;
 
         //Count Data
-        $query = AssessmentAnswer::whereRaw("upper(answer_type) like '%$name%'");
+        $query = AssessmentAnswer::whereRaw("upper(description) like '%$name%'");
         $query->where('assessment_question_id', $question);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = AssessmentAnswer::whereRaw("upper(answer_type) like '%$name%'");
+        $query = AssessmentAnswer::whereRaw("upper(description) like '%$name%'");
         $query->where('assessment_question_id', $question);
         $query->offset($start);
         $query->limit($length);
@@ -100,7 +85,6 @@ class AssessmentAnswerController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
-            $result->answer_type = $type[$result->answer_type];
             $data[] = $result;
         }
         return response()->json([
@@ -129,7 +113,6 @@ class AssessmentAnswerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'assessment_question_id'    => 'required',
-            'answer_type'               => 'required',
             'description'               => 'required',
             'rating'                    => 'required',
         ]);
@@ -144,7 +127,7 @@ class AssessmentAnswerController extends Controller
         try {
             $answer = AssessmentAnswer::create([
                 'assessment_question_id'    => $request->assessment_question_id,
-                'answer_type'               => $request->answer_type,
+                'answer_type'               => '',
                 'description'               => $request->description,
                 'rating'                    => $request->rating,
                 'information'               => $request->information,
@@ -199,7 +182,6 @@ class AssessmentAnswerController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'assessment_question_id'    => 'required',
-            'answer_type'               => 'required',
             'description'               => 'required',
             'rating'                    => 'required',
         ]);
@@ -213,7 +195,6 @@ class AssessmentAnswerController extends Controller
 
         $answer = AssessmentAnswer::withTrashed()->find($id);
         $answer->assessment_question_id = $request->assessment_question_id;
-        $answer->answer_type            = $request->answer_type;
         $answer->description            = $request->description;
         $answer->rating                 = $request->rating;
         $answer->information            = $request->information;

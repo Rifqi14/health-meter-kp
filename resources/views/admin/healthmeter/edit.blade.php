@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Health Meter')
+@section('title', 'Ubah Kategori Resiko')
 @push('breadcrump')
-<li><a href="{{route('healthmeter.index')}}">Health Meter</a></li>
+<li><a href="{{route('healthmeter.index')}}">Kategori Resiko</a></li>
 <li class="active">Ubah</li>
 @endpush
 @section('stylesheets')
@@ -14,7 +14,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Ubah Health Meter</h3>
+        <h3 class="box-title">Ubah Kategori Resiko</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
@@ -29,11 +29,32 @@
           method="post" autocomplete="off">
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
+
           <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
+            <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="name" name="name" placeholder="Nama"
-                value="{{$healthmeter->name}}" required>
+              <input type="text" class="form-control" id="site_id" name="site_id" placeholder="Pilih Unit"
+                value="{{ $healthmeter->site_id }}" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
+                class="text-danger">*</b></label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="workforce_group_id" name="workforce_group_id"
+                placeholder="Pilih Kelompok Workforce" value="{{ $healthmeter->workforce_group_id }}" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
+            <div class="col-sm-6">
+              <select id="name" name="name" class="form-control select2" placeholder="Pilih Kategori" required>
+                <option value=""></option>
+                <option value="RENDAH" @if($healthmeter->name == 'RENDAH') selected @endif>RENDAH</option>
+                <option value="SEDANG" @if($healthmeter->name == 'SEDANG') selected @endif>SEDANG</option>
+                <option value="TINGGI" @if($healthmeter->name == 'TINGGI') selected @endif>TINGGI</option>
+              </select>
             </div>
           </div>
           <div class="form-group">
@@ -51,32 +72,10 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="min" class="col-sm-2 control-label">Warna <b class="text-danger">*</b></label>
+            <label for="recomendation" class="col-sm-2 control-label">Tindak lanjut <b class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control my-colorpicker1" id="color" name="color" placeholder="Warna"
-                value="{{$healthmeter->color}}" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" id="site_id" name="site_id" placeholder="Pilih Unit"
-                value="{{ $healthmeter->site_id }}" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
-                class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" id="workforce_group_id" name="workforce_group_id"
-                placeholder="Pilih Kelompok Workforce" value="{{ $healthmeter->workforce_group_id }}" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="recomendation" class="col-sm-2 control-label">Rekomendasi <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <textarea class="form-control summernote" id="recomendation" name="recomendation"
-                placeholder="Rekomendasi" required>{{$healthmeter->recomendation}}</textarea>
+              <textarea class="form-control" id="recomendation" name="recomendation"
+                placeholder="Tindak lanjut" required>{{$healthmeter->recomendation}}</textarea>
             </div>
           </div>
         </form>
@@ -96,6 +95,9 @@
 <script>
   $(document).ready(function(){
       $('.my-colorpicker1').colorpicker();
+      $('.select2').select2({
+        allowClear:true
+      });
       $("#site_id").select2({
         ajax: {
           url: "{{route('site.select')}}",
@@ -106,6 +108,8 @@
               name:term,
               page:page,
               limit:30,
+              data_manager:{{$accesssite}},
+              site_id : {{$siteinfo->id}}
             };
           },
           results: function (data,page) {
@@ -131,7 +135,7 @@
       });
       $("#workforce_group_id").select2({
         ajax: {
-          url: "{{route('site.select')}}",
+          url: "{{route('workforcegroup.select')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
