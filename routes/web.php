@@ -487,6 +487,7 @@ Route::group(['prefix' => 'admin'], function () {
         // Laporan Mingguan
         Route::get('/reportweekly/read', 'Admin\ReportWeeklyController@read')->name('reportweekly.read');
         Route::get('/reportweekly/select', 'Admin\ReportWeeklyController@select')->name('reportweekly.select');
+        Route::get('/reportweekly/selectcategory', 'Admin\ReportWeeklyController@selectcategory')->name('reportweekly.selectcategory');
         Route::get('/reportweekly/totalpersonnel', 'Admin\ReportWeeklyController@totalpersonnel')->name('reportweekly.totalpersonnel');
         Route::get('/reportweekly/lastweekpersonnel', 'Admin\ReportWeeklyController@lastweekpersonnel')->name('reportweekly.lastweekpersonnel');
         Route::get('/reportweekly/todaypersonnel', 'Admin\ReportWeeklyController@todaypersonnel')->name('reportweekly.todaypersonnel');

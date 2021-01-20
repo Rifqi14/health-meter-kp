@@ -26,6 +26,36 @@ class ReportWeeklyController extends Controller
         return view('admin.reportweekly.index');
     }
 
+    public function selectcategory(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+        $nid = strtoupper($request->nid);
+        $site_id = $request->site_id;
+
+        //Count Data
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $query->orderBy('name', 'asc');
+        $query->offset($start);
+        $query->limit($length);
+        $results = $query->get();
+
+        $data = [];
+        foreach ($results as $result) {
+            $result->no = ++$start;
+            $data[] = $result;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+
     public function personnel(Request $request)
     {
         $date = $request->date;
@@ -34,22 +64,23 @@ class ReportWeeklyController extends Controller
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $department_id = $request->department_id;
-        $to = $request->date;
-        $from = Carbon::parse($to)->subWeek();
+        $date = $request->date;
+        $site_id = $request->site_id ? $request->site_id : -1;
+        $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
         
         // Count data
         $query = Workforce::select(
                                 'workforces.*',
-                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar LEFT JOIN health_meters hm ON ar.health_meter_id = hm.id WHERE workforce_id = workforces.id and date BETWEEN '$from' and '$to' and upper(hm.name) like '%TIDAK SEHAT%') as total")
-                            )->with(['department', 'title']);
+                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id'') as total")
+                            )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $recordsTotal = $query->count();
 
         // Select pagination
         $query = Workforce::select(
                                 'workforces.*',
-                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar LEFT JOIN health_meters hm ON ar.health_meter_id = hm.id WHERE workforce_id = workforces.id and date BETWEEN '$from' and '$to' and upper(hm.name) like '%TIDAK SEHAT%') as total")
-                            )->with(['department', 'title']);
+                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+                            )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -57,8 +88,7 @@ class ReportWeeklyController extends Controller
         $data = [];
         foreach ($workforces as $key => $workforce) {
             $workforce->no = ++$start;
-            $workforce->start_date = $from->toDateString();
-            $workforce->finish_date = $to;
+            $workforce->start_date = $date;
             $data[] = $workforce;
         }
         return response()->json([
@@ -108,15 +138,20 @@ class ReportWeeklyController extends Controller
 
     public function chartpersonnel(Request $request)
     {
-        $to = $request->date;
-        $from = Carbon::parse($to)->subWeek();
+        $date = $request->date;
+        $site_id = $request->site_id ? $request->site_id : -1;
+        $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
         $query = Workforce::select(
             'workforces.name',
-            DB::raw("(SELECT count(ar.id) FROM assessment_results ar LEFT JOIN health_meters hm ON ar.health_meter_id = hm.id WHERE workforce_id = workforces.id and date BETWEEN '$from' and '$to' and upper(hm.name) like '%TIDAK SEHAT%') as total")
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
         );
+        $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('total', 'desc');
         $query->limit(10);
         $category = $query->get();
+
+        $title = HealthMeter::find($request->health_meter_id);
 
         $categories = [];
         $series = [];
@@ -126,7 +161,7 @@ class ReportWeeklyController extends Controller
         }
 
         return response()->json([
-            'title'     => Carbon::parse($from)->format('d-m-Y') . ' s/d ' . Carbon::parse($to)->format('d-m-Y'),
+            'title'     => 'Kategori ' . $title->name,
             'series'    => $series,
             'categories'=> $categories,
         ], 200);
@@ -134,7 +169,11 @@ class ReportWeeklyController extends Controller
 
     public function export(Request $request)
     {
-        $to = $request->date;
+        $date = $request->date;
+        $site_id = $request->site_id ? $request->site_id : -1;
+        $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
+        $category_title = HealthMeter::find($health_meter_id);
         $from = Carbon::parse($request->date)->subWeek();
         $object 	= new \PHPExcel();
         $object->getProperties()->setCreator('Health Meter KP');
@@ -143,8 +182,9 @@ class ReportWeeklyController extends Controller
 
         $query = Workforce::select(
             'workforces.*',
-            DB::raw("(SELECT count(ar.id) FROM assessment_results ar LEFT JOIN health_meters hm ON ar.health_meter_id = hm.id WHERE workforce_id = workforces.id and date BETWEEN '$from' and '$to' and upper(hm.name) like '%TIDAK SEHAT%') as total")
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
         )->with(['department', 'title']);
+        $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('total', 'desc');
         $category = $query->get();
 
@@ -153,12 +193,12 @@ class ReportWeeklyController extends Controller
         $sheet->setCellValue('B1', 'Nama');
         $sheet->setCellValue('C1', 'Bidang');
         $sheet->setCellValue('D1', 'Jabatan');
-        $sheet->setCellValue('E1', 'Resiko Tinggi 7 Hari Terakhir');
+        $sheet->setCellValue('E1', 'Kategori Resiko ' . @$category_title->name);
 
         $row_number = 2;
         // Content Data
         foreach ($category as $key => $value) {
-            $sheet->setCellValue('A'.$row_number, $from->toDateString() . ' s/d ' . $to);
+            $sheet->setCellValue('A'.$row_number, $date);
             $sheet->setCellValue('B'.$row_number, $value->name);
             $sheet->setCellValue('C'.$row_number, $value->department ? $value->department->name : '');
             $sheet->setCellValue('D'.$row_number, $value->title ? $value->title->name : '');
@@ -179,8 +219,8 @@ class ReportWeeklyController extends Controller
 		if($category->count() > 0){
             return response()->json([
                 'status' 	=> true,
-                'name'		=> 'data-kategori-tinggi-'.date('d-m-Y').'.xlsx',
-                'message'	=> "Berhasil Download Data Participant",
+                'name'		=> 'data-kategori-'.@$category_title->name.'-'.date('d-m-Y').'.xlsx',
+                'message'	=> "Berhasil Download Data Self Assessment",
                 'file' 		=> "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,".base64_encode($export)
             ], 200);
 		} else {
