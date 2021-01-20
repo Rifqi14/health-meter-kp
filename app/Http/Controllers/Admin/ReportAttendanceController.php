@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\AssessmentResult;
+use App\Models\HealthMeter;
+use App\Models\Workforce;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
 class ReportAttendanceController extends Controller
@@ -116,6 +120,29 @@ class ReportAttendanceController extends Controller
         }
 
         return $query->count();
+    }
+
+    public function chartassessment(Request $request)
+    {
+        // $date               = $request->date;
+        $date               = Carbon::today();
+        // $site_id            = $request->site_id;
+        $site_id            = 16;
+        $health_meter_id    = $request->health_meter_id;
+        $yaxis              = [];
+        $series             = [];
+        $xaxis              = [];
+
+
+        $query             = Workforce::with(['assessmentresult' => function ($q) use ($date) {
+            $q->whereMonth('date', $date);
+        }]);
+
+        $query_yaxis    = HealthMeter::where('site_id', $site_id)->get();
+        foreach ($query_yaxis as $key => $value) {
+            $yaxis[]    = $value->name;
+        }
+        dd($request->site);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class AssessmentResult extends Model
@@ -39,5 +40,9 @@ class AssessmentResult extends Model
     public function category()
     {
         return $this->belongsTo(HealthMeter::class, 'health_meter_id');
+    }
+    public function updatedby()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }
