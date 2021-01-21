@@ -10,6 +10,7 @@ use App\Models\HealthMeter;
 use App\Models\Workforce;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class ReportAttendanceController extends Controller
@@ -75,74 +76,54 @@ class ReportAttendanceController extends Controller
         ], 200);
     }
 
-    public function totalassessment(Request $request)
-    {
-        $date = $request->date;
-        $site_id = $request->site_id;
-        $health_meter_id = $request->health_meter_id;
-
-        $query = AssessmentResult::where('date', $date);
-        if ($site_id) {
-            $query->where('site_id', $site_id);
-        }
-        if ($health_meter_id) {
-            $query->where('health_meter_id', $health_meter_id);
-        }
-
-        return $query->count();
-    }
-
-    public function lowriskassessment(Request $request)
-    {
-        $date           = $request->date;
-        $site_id        = $request->site_id;
-
-        $query          = AssessmentResult::whereHas('category', function ($q) {
-                                                $q->whereRaw("upper(name) not like '%TIDAK SEHAT%'");
-                                            })->where('date', $date);
-        if ($site_id) {
-            $query->where('site_id', $site_id);
-        }
-        
-        return $query->count();
-    }
-    
-    public function highriskassessment(Request $request)
-    {
-        $date           = $request->date;
-        $site_id        = $request->site_id;
-        
-        $query          = AssessmentResult::whereHas('category', function ($q) {
-                                                $q->whereRaw("upper(name) like '%TIDAK SEHAT%'");
-                                            })->where('date', $date);
-        if ($site_id) {
-            $query->where('site_id', $site_id);
-        }
-
-        return $query->count();
-    }
-
     public function chartassessment(Request $request)
     {
-        // $date               = $request->date;
-        $date               = Carbon::today();
-        // $site_id            = $request->site_id;
-        $site_id            = 16;
-        $health_meter_id    = $request->health_meter_id;
-        $yaxis              = [];
-        $series             = [];
-        $xaxis              = [];
+        $date               = $request->date;
+        $site_id            = $request->site_id ? $request->site_id : -1;
+        $health_meter_id    = $request->health_meter_id ? $request->health_meter_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
 
+        $query = Workforce::select(
+            'workforces.*',
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+        );
+        $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+        $query->orderBy('total', 'desc');
+        $query->limit(10);
+        $category = $query->get();
 
-        $query             = Workforce::with(['assessmentresult' => function ($q) use ($date) {
-            $q->whereMonth('date', $date);
-        }]);
+        $title = HealthMeter::find($request->health_meter_id);
 
-        $query_yaxis    = HealthMeter::where('site_id', $site_id)->get();
-        foreach ($query_yaxis as $key => $value) {
-            $yaxis[]    = $value->name;
+        $categories = [];
+        $cat = [];
+        $series = [];
+        $colors = [];
+        foreach ($category as $key => $value) {
+            $cat[] = $value->name;
+            $categories[]   = $value;
         }
-        dd($request->site);
+        $risks          = HealthMeter::where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id)->orderBy('max', 'asc')->get();
+        foreach ($risks as $key => $risk) {
+            $series[]['name'] = $risk->name;
+            $colors[] = $risk->color;
+        }
+        foreach ($series as $key => $name) {
+            foreach ($categories as $k => $value) {
+                $value->total = AssessmentResult::whereHas('category', function ($q) use ($name, $site_id, $workforce_group_id)
+                {
+                    $q->where('name', $name['name'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+                })->where('workforce_id', $value->id)->count();
+                $series[$key]['data'][] = $value->total;
+            }
+        }
+
+        return response()->json([
+            'title'     => 'Laporan Bulanan',
+            'subtitle'  => 'Periode ' . date('F', strtotime($date)),
+            'series'    => $series,
+            'categories'=> $cat,
+            'colors'    => $colors,
+        ], 200);
     }
 
     /**
