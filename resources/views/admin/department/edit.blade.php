@@ -26,13 +26,13 @@
             <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required readonly>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required >
               </div>
             </div>
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{$department->code}}" required readonly>
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{$department->code}}" required >
               </div>
             </div>
             <div class="form-group">

@@ -41,10 +41,8 @@ class SiteController extends Controller
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
         if ($category) {
-            $query->whereNotNull('deleted_at');
-        } else {
-            $query->whereNull('deleted_at');
-        }
+            $query->onlyTrashed();
+        } 
         $recordsTotal = $query->count();
 
         //Select Pagination
@@ -52,10 +50,8 @@ class SiteController extends Controller
         $query->whereRaw("upper(code) like '%$code%'");
         $query->whereRaw("upper(name) like '%$name%'");
         if ($category) {
-            $query->whereNotNull('deleted_at');
-        } else {
-            $query->whereNull('deleted_at');
-        }
+            $query->onlyTrashed();
+        } 
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);

@@ -53,6 +53,30 @@ class RoleMenuController extends Controller
                 $rolemenu->save();
                 $message = 'Delete Access Has Been Updated';
                 break;
+            case 'import':
+                $rolemenu = RoleMenu::find($request->id);
+                $rolemenu->import = $request->checked;
+                $rolemenu->save();
+                $message = 'Import Access Has Been Updated';
+                break;
+            case 'export':
+                $rolemenu = RoleMenu::find($request->id);
+                $rolemenu->export = $request->checked;
+                $rolemenu->save();
+                $message = 'Export Access Has Been Updated';
+                break;
+            case 'print':
+                $rolemenu = RoleMenu::find($request->id);
+                $rolemenu->print = $request->checked;
+                $rolemenu->save();
+                $message = 'Print Access Has Been Updated';
+                break;
+            case 'sync':
+                $rolemenu = RoleMenu::find($request->id);
+                $rolemenu->sync = $request->checked;
+                $rolemenu->save();
+                $message = 'Sync Access Has Been Updated';
+                break;
         }
         
         if (!$rolemenu) {

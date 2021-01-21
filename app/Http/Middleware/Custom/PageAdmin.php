@@ -5,9 +5,11 @@ namespace App\Http\Middleware\Custom;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Route;
 
 use App\Role;
 use App\Models\Employee;
+use App\Models\Menu;
 use App\Models\RoleMenu;
 use App\RoleTitle;
 use App\Models\Title;
@@ -26,6 +28,7 @@ class PageAdmin
     {
         if (Auth::guard('admin')->check()) {
             if(Auth::guard('admin')->user()->workforce){
+                $route = explode('.',Route::currentRouteName());
                 $workforce = Workforce::with(['site', 'title'])->where('id', Auth::guard('admin')->user()->workforce->id)->first();
                 if($workforce->title){
                     $role_id = [];
@@ -46,6 +49,55 @@ class PageAdmin
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
                         if(Auth::guard('admin')->user()->workforce->site){
+                            $menu = Menu::where('menu_route',$route[0])->first();
+                            $actionmenu = [];
+                            if($menu){
+                                $actions = RoleMenu::where('menu_id',$menu->id)->whereIn('role_id',$role_id)->get();
+                                foreach($actions as $action){
+                                    if($action->create){
+                                        if(!in_array('create',$actionmenu)){
+                                            array_push($actionmenu,'create');
+                                        }
+                                    }
+                                    if($action->read){
+                                        if(!in_array('read',$actionmenu)){
+                                            array_push($actionmenu,'read');
+                                        }
+                                    }
+                                    if($action->update){
+                                        if(!in_array('update',$actionmenu)){
+                                            array_push($actionmenu,'update');
+                                        }
+                                    }
+                                    if($action->delete){
+                                        if(!in_array('delete',$actionmenu)){
+                                            array_push($actionmenu,'delete');
+                                        }
+                                    }
+                                    if($action->import){
+                                        if(!in_array('import',$actionmenu)){
+                                            array_push($actionmenu,'import');
+                                        }
+                                    }
+                                    if($action->export){
+                                        if(!in_array('export',$actionmenu)){
+                                            array_push($actionmenu,'export');
+                                        }
+                                    }
+                                    if($action->print){
+                                        if(!in_array('print',$actionmenu)){
+                                            array_push($actionmenu,'print');
+                                        }
+                                    }
+                                    if($action->sync){
+                                        if(!in_array('sync',$actionmenu)){
+                                            array_push($actionmenu,'sync');
+                                        }
+                                    }
+                                }
+                            }
+                            View::share('actionmenu', $actionmenu);
+                            request()->merge(['actionmenu' => $actionmenu]);
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $data_manager);
                             View::share('siteinfo', Auth::guard('admin')->user()->workforce->site);
@@ -65,6 +117,55 @@ class PageAdmin
                             ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                             ->get();
                             if( Auth::guard('admin')->user()->workforce->site){
+                                $menu = Menu::where('menu_route',$route[0])->first();
+                                $actionmenu = [];
+                                if($menu){
+                                    $actions = RoleMenu::where('menu_id',$menu->id)->where('role_id',$role->id)->get();
+                                    foreach($actions as $action){
+                                        if($action->create){
+                                            if(!in_array('create',$actionmenu)){
+                                                array_push($actionmenu,'create');
+                                            }
+                                        }
+                                        if($action->read){
+                                            if(!in_array('read',$actionmenu)){
+                                                array_push($actionmenu,'read');
+                                            }
+                                        }
+                                        if($action->update){
+                                            if(!in_array('update',$actionmenu)){
+                                                array_push($actionmenu,'update');
+                                            }
+                                        }
+                                        if($action->delete){
+                                            if(!in_array('delete',$actionmenu)){
+                                                array_push($actionmenu,'delete');
+                                            }
+                                        }
+                                        if($action->import){
+                                            if(!in_array('import',$actionmenu)){
+                                                array_push($actionmenu,'import');
+                                            }
+                                        }
+                                        if($action->export){
+                                            if(!in_array('export',$actionmenu)){
+                                                array_push($actionmenu,'export');
+                                            }
+                                        }
+                                        if($action->print){
+                                            if(!in_array('print',$actionmenu)){
+                                                array_push($actionmenu,'print');
+                                            }
+                                        }
+                                        if($action->sync){
+                                            if(!in_array('sync',$actionmenu)){
+                                                array_push($actionmenu,'sync');
+                                            }
+                                        }
+                                    }
+                                }
+                                View::share('actionmenu', $actionmenu);
+                                request()->merge(['actionmenu' => $actionmenu]);
                                 View::share('menuaccess', $rolemenus);
                                 View::share('accesssite', $role->data_manager);
                                 View::share('siteinfo',  Auth::guard('admin')->user()->workforce->site);
@@ -90,6 +191,55 @@ class PageAdmin
                         ->groupBy('menus.id','menus.parent_id','menus.menu_name','menus.menu_route','menus.menu_icon','menus.menu_sort')
                         ->get();
                         if( Auth::guard('admin')->user()->workforce->site){
+                            $menu = Menu::where('menu_route',$route[0])->first();
+                            $actionmenu = [];
+                            if($menu){
+                                $actions = RoleMenu::where('menu_id',$menu->id)->where('role_id',$role->id)->get();
+                                foreach($actions as $action){
+                                    if($action->create){
+                                        if(!in_array('create',$actionmenu)){
+                                            array_push($actionmenu,'create');
+                                        }
+                                    }
+                                    if($action->read){
+                                        if(!in_array('read',$actionmenu)){
+                                            array_push($actionmenu,'read');
+                                        }
+                                    }
+                                    if($action->update){
+                                        if(!in_array('update',$actionmenu)){
+                                            array_push($actionmenu,'update');
+                                        }
+                                    }
+                                    if($action->delete){
+                                        if(!in_array('delete',$actionmenu)){
+                                            array_push($actionmenu,'delete');
+                                        }
+                                    }
+                                    if($action->import){
+                                        if(!in_array('import',$actionmenu)){
+                                            array_push($actionmenu,'import');
+                                        }
+                                    }
+                                    if($action->export){
+                                        if(!in_array('export',$actionmenu)){
+                                            array_push($actionmenu,'export');
+                                        }
+                                    }
+                                    if($action->print){
+                                        if(!in_array('print',$actionmenu)){
+                                            array_push($actionmenu,'print');
+                                        }
+                                    }
+                                    if($action->sync){
+                                        if(!in_array('sync',$actionmenu)){
+                                            array_push($actionmenu,'sync');
+                                        }
+                                    }
+                                }
+                            }
+                            View::share('actionmenu', $actionmenu);
+                            request()->merge(['actionmenu' => $actionmenu]);
                             View::share('menuaccess', $rolemenus);
                             View::share('accesssite', $role->data_manager);
                             View::share('siteinfo',  Auth::guard('admin')->user()->workforce->site);
