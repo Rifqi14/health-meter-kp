@@ -33,13 +33,14 @@ class ReportWeeklyController extends Controller
         $name = strtoupper($request->name);
         $nid = strtoupper($request->nid);
         $site_id = $request->site_id;
+        $workforce_group_id = $request->workforce_group_id;
 
         //Count Data
-        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id);
+        $query = HealthMeter::whereRaw("upper(name) like '%$name%'")->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('name', 'asc');
         $query->offset($start);
         $query->limit($length);
