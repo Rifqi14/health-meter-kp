@@ -234,6 +234,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         //Medical Action
         Route::get('/medicalaction/read', 'Admin\MedicalActionController@read')->name('medicalaction.read');
+        Route::get('/medicalaction/select', 'Admin\MedicalActionController@select')->name('medicalaction.select');
         Route::get('/medicalaction/restore/{id}', 'Admin\MedicalActionController@restore')->name('medicalaction.restore');
         Route::get('/medicalaction/delete/{id}', 'Admin\MedicalActionController@delete')->name('medicalaction.delete');
         Route::resource('/medicalaction', 'Admin\MedicalActionController');
@@ -507,6 +508,15 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportattendance/restore/{id}', 'Admin\ReportAttendanceController@restore')->name('reportattendance.restore');
         Route::get('/reportattendance/delete/{id}', 'Admin\ReportAttendanceController@delete')->name('reportattendance.delete');
         Route::resource('/reportattendance', 'Admin\ReportAttendanceController');
+
+        //Konsultasi Kehadiran
+        Route::get('/healthconsultation/read', 'Admin\HealthConsultationController@read')->name('healthconsultation.read');
+        Route::get('/healthconsultation/select', 'Admin\HealthConsultationController@select')->name('healthconsultation.select');
+        Route::resource('/healthconsultation', 'Admin\HealthConsultationController');
+
+        //Penanganan Medis
+        Route::get('/medicaltreatment/read', 'Admin\MedicalTreatmentController@read')->name('medicaltreatment.read');
+        Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
