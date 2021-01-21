@@ -508,6 +508,11 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportattendance/restore/{id}', 'Admin\ReportAttendanceController@restore')->name('reportattendance.restore');
         Route::get('/reportattendance/delete/{id}', 'Admin\ReportAttendanceController@delete')->name('reportattendance.delete');
         Route::resource('/reportattendance', 'Admin\ReportAttendanceController');
+
+        // Hasil Pemeriksaan
+        Route::get('/checkupresult/read', 'Admin\CheckupResultController@read')->name('checkupresult.read');
+        Route::get('/checkupresult/select', 'Admin\CheckupResultController@select')->name('checkupresult.select');
+        Route::resource('/checkupresult', 'Admin\CheckupResultController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
