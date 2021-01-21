@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Ubah Sub Bidang')
+@section('title', 'Detail Sub Bidang')
 @push('breadcrump')
 <li><a href="{{route('subdepartment.index')}}">Sub Bidang</a></li>
 <li class="active">Detail</li>
@@ -25,13 +25,7 @@
             <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Distrik</label>
               <div class="col-sm-6">
-                <p class="form-control-static">{{$subdepartment->department->site->name}}</p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Bidang</label>
-              <div class="col-sm-6">
-                <p class="form-control-static">{{$subdepartment->department->name}}</p>
+                <p class="form-control-static">{{$subdepartment->site->name}}</p>
               </div>
             </div>
             <div class="form-group">

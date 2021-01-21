@@ -12,7 +12,7 @@
 </style>
 @endsection
 @push('breadcrump')
-<li><a href="{{route('department.index')}}">Department</a></li>
+<li><a href="{{route('department.index')}}">Bidang</a></li>
 <li class="active">Import</li>
 @endpush
 @section('content')

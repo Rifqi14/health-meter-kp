@@ -27,6 +27,9 @@
                 <input type="hidden" name="title_id" value="{{ $title->id }}">
                 <ul class="list-group list-group-unbordered">
                     <li class="list-group-item">
+                        <b>Distrik</b> <span class="pull-right">{{ $title->site->name }}</span>
+                    </li>
+                    <li class="list-group-item">
                         <b>Nama</b> <span class="pull-right">{{ $title->name }}</span>
                     </li>
                     <li class="list-group-item">

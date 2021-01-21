@@ -463,8 +463,11 @@ Route::group(['prefix' => 'admin'], function () {
         // Sub Department
         Route::get('/subdepartment/read', 'Admin\SubDepartmentController@read')->name('subdepartment.read');
         Route::get('/subdepartment/select', 'Admin\SubDepartmentController@select')->name('subdepartment.select');
+        Route::get('/subdepartment/import', 'Admin\SubDepartmentController@import')->name('subdepartment.import');
         Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
+        Route::post('/subdepartment/preview', 'Admin\SubDepartmentController@preview')->name('subdepartment.preview');
+        Route::post('/subdepartment/storemass', 'Admin\SubDepartmentController@storemass')->name('subdepartment.storemass');
         Route::resource('/subdepartment', 'Admin\SubDepartmentController');
 
         // Workforce

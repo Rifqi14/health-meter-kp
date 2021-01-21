@@ -363,7 +363,6 @@
       allowClear: true,
     });
     $(document).on("change", "#department_id", function () {
-      $('#sub_department_id').select2('val','');
       if (!$.isEmptyObject($('#form').validate().submitted)) {
         $('#form').validate().form();
       }
@@ -377,8 +376,7 @@
           return {
               name:term,
               page:page,
-              limit:30,
-              department_id:$('#department_id').val()==''?-1:$('#department_id').val()
+              limit:30
           };
           },
           results: function (data,page) {
