@@ -101,10 +101,9 @@
               <thead>
                 <tr>
                   <th style="text-align:center" width="10">#</th>
-                  <th width="100">Status</th>
                   <th width="250">Nama</th>
                   <th width="100">Tgl Lahir</th>
-                  <th width="200">Hak Rawat Inap</th>
+                  <th width="200">Tarif</th>
                 </tr>
               </thead>
             </table>
@@ -186,7 +185,7 @@
           info:false,
           lengthChange:false,
           responsive: true,
-          order: [[0, "asc" ]],
+          order: [[1, "asc" ]],
           ajax: {
               url: "{{url('admin/patient/read')}}",
               type: "GET",
@@ -199,15 +198,18 @@
                   orderable: false,targets:[0]
               },
               { className: "text-right", targets: [0] },
-              { className: "text-center", targets: [3] },
+              { className: "text-center", targets: [2] },
+              { render: function ( data, type, row ) {
+                  return `${row.name} <br><small>${row.status}</small>`
+              },targets: [1]
+              },
               { render: function ( data, type, row ) {
                   return `${row.inpatient_id ? row.inpatient.name : ''}`
-              },targets: [4]
+              },targets: [3]
               }
           ],
           columns: [
               { data: "no" },
-              { data: "status" },
               { data: "name" },
               { data: "birth_date" },
               { data: "inpatient_id" },
