@@ -100,9 +100,14 @@ class GradeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.grade.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.grade.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -148,9 +153,20 @@ class GradeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        //
+        if(in_array('read',$request->actionmenu)){
+            $grade = Grade::find($id);
+            if($grade){
+                return view('admin.grade.detail',compact('grade'));
+            }
+            else{
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -159,14 +175,19 @@ class GradeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $grade = Grade::find($id);
-        if($grade){
-            return view('admin.grade.edit',compact('grade'));
+        if(in_array('update',$request->actionmenu)){
+            $grade = Grade::find($id);
+            if($grade){
+                return view('admin.grade.edit',compact('grade'));
+            }
+            else{
+                abort(404);
+            }
         }
         else{
-            abort(404);
+            abort(403);
         }
     }
 
@@ -263,6 +284,109 @@ class GradeController extends Controller
         return response()->json([
             'status'    => true,
             'message'   => 'Success delete data'
+        ], 200);
+    }
+    public function import(Request $request)
+    {
+        if(in_array('import',$request->actionmenu)){
+            return view('admin.grade.import');
+        }
+        else{
+            abort(403);
+        }
+    }
+
+    public function preview(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' 	    => 'required|mimes:xlsx'
+        ]);
+        $file = $request->file('file');
+        try {
+            $filetype 	= \PHPExcel_IOFactory::identify($file);
+            $objReader = \PHPExcel_IOFactory::createReader($filetype);
+            $objPHPExcel = $objReader->load($file);
+        } catch(\Exception $e) {
+            die('Error loading file "'.pathinfo($file,PATHINFO_BASENAME).'": '.$e->getMessage());
+        }
+        $data 	= [];
+        $no = 1;
+        $sheet = $objPHPExcel->getActiveSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        for ($row = 2; $row <= $highestRow; $row++){
+            $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
+            $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+            $status = $sheet->getCellByColumnAndRow(2, $row)->getValue();
+            if($code){
+                $error = [];
+                $data[] = array(
+                    'index'=>$no,
+                    'code' => trim($code),
+                    'name' => $name,
+                    'status'=>$status=='Y'?1:0,
+                    'error'=>implode($error,'<br>'),
+                    'is_import'=>count($error) == 0?1:0
+                );
+                $no++;
+            }
+        }
+        return response()->json([
+            'status' 	=> true,
+            'data' 	=> $data
+        ], 200);
+    }
+
+    public function storemass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'grades' 	    => 'required'
+        ]);
+
+        if ($validator->fails()) {
+        	return response()->json([
+        		'status' 	=> false,
+        		'message' 	=> $validator->errors()->first()
+        	], 400);
+        }
+        DB::beginTransaction();
+        $grades = json_decode($request->grades);
+        foreach($grades as $grade){
+            $cek = Grade::whereRaw("upper(code) = '$grade->code'")->withTrashed()->first();
+            if(!$cek){
+                $grade = Grade::create([
+                    'code' 	        => strtoupper($grade->code),
+                    'name'          => $grade->name,
+                    'updated_by'    => Auth::id()
+                ]);
+                if (!$grade) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $grade
+                    ], 400);
+                }
+                $grade->deleted_at = $grade->status?null:date('Y-m-d H:i:s');
+                $grade->save();
+            }
+            else{
+                $cek->code      = strtoupper($grade->code);
+                $cek->name      = $grade->name;
+                $cek->deleted_at= $grade->status?null:date('Y-m-d H:i:s');
+                $cek->updated_by= Auth::id();
+                $cek->save();
+                if (!$cek) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $cek
+                    ], 400);
+                }
+            }
+        }
+        DB::commit();
+        return response()->json([
+        	'status' 	=> true,
+        	'results' 	=> route('grade.index'),
         ], 200);
     }
 }

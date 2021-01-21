@@ -75,6 +75,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
         Route::get('/grade/restore/{id}', 'Admin\GradeController@restore')->name('grade.restore');
         Route::get('/grade/delete/{id}', 'Admin\GradeController@delete')->name('grade.delete');
+        Route::get('/grade/import', 'Admin\GradeController@import')->name('grade.import');
+        Route::post('/grade/preview', 'Admin\GradeController@preview')->name('grade.preview');
+        Route::post('/grade/storemass', 'Admin\GradeController@storemass')->name('grade.storemass');
         Route::resource('/grade', 'Admin\GradeController');
         //Route Employee
         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
