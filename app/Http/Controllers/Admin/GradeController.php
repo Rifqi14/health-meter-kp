@@ -81,7 +81,7 @@ class GradeController extends Controller
         //Select Pagination
         $query = Grade::select('grades.*');
         $query->whereRaw("upper(name) like '%$name%'");
-        $query->offset($start);
+        $query->offset($start*$length);
         $query->limit($length);
         $grades = $query->get();
 
