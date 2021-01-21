@@ -15,9 +15,16 @@
                 <h3 class="box-title">Data Bidang</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
+                    @if(in_array('create',$actionmenu))
                     <a href="{{route('department.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
+                    @endif
+                    @if(in_array('import',$actionmenu))
+                    <a href="{{route('department.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -178,13 +185,13 @@ $(function(){
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            `@if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                             : 
-                            `<li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                            <li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                            @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/department')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>@endif`
                             }
                         </ul>
                       </div>`

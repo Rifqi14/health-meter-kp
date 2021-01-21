@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Title;
 use App\Role;
+use App\Models\Site;
 use App\Models\Workforce;
 use App\Models\Department;
 use Illuminate\Http\Request;
@@ -40,18 +41,32 @@ class TitleController extends Controller
         $code = strtoupper($request->code);
         $shortname = strtoupper($request->shortname);
         $category = $request->category;
-
+        $site = $request->site;
+        $data_manager = $request->data_manager;
+        $site_id = $request->site_id;
         //Count Data
-        $query = Title::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
+        $query = Title::with(['user','site'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
         if ($category) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Title::with(['user'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
+        $query = Title::with(['user','site'])->whereRaw("upper(name) like '%$name%'")->whereRaw("upper(code) like '%$code%'")->whereRaw("upper(shortname) like '%$shortname%'");
         if ($category) {
             $query->onlyTrashed();
+        }
+        if ($site) {
+            $query->where('site_id', $site);
+        }
+        if($data_manager){
+            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -139,18 +154,24 @@ class TitleController extends Controller
         $start = $request->page?$request->page - 1:0;
         $length = $request->limit;
         $name = strtoupper($request->name);
-
+        $site_id = $request->site_id;
         //Count Data
         $query = DB::table('titles');
         $query->select('titles.*');
         $query->whereRaw("upper(name) like '%$name%'");
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = DB::table('titles');
         $query->select('titles.*');
         $query->whereRaw("upper(name) like '%$name%'");
-        $query->offset($start);
+        if($site_id){
+            $query->where('site_id',$site_id);
+        }
+        $query->offset($start*$length);
         $query->limit($length);
         $titles = $query->get();
 
@@ -169,9 +190,14 @@ class TitleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.title.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.title.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -184,6 +210,7 @@ class TitleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code'      => 'required|unique:titles',
+            'site_id'   => 'required',
             'name'      => 'required',
             'shortname' => 'required',
         ]);
@@ -196,6 +223,7 @@ class TitleController extends Controller
         }
 
         $title = Title::create([
+            'site_id'   => $request->site_id,
             'name'      => $request->name,
             'code'      => strtoupper($request->code),
             'shortname' => $request->shortname,
@@ -274,14 +302,19 @@ class TitleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $title = Title::with(['user'])->withTrashed()->find($id);
-        if($title){
-            return view('admin.title.edit',compact('title'));
+        if(in_array('update',$request->actionmenu)){
+            $title = Title::with(['user','site'])->withTrashed()->find($id);
+            if($title){
+                return view('admin.title.edit',compact('title'));
+            }
+            else{
+                abort(404);
+            }
         }
         else{
-            abort(404);
+            abort(403);  
         }
     }
 
@@ -296,6 +329,7 @@ class TitleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code'      => 'required|unique:titles,code,'.$id,
+            'site_id'   => 'required',
             'name'      => 'required',
             'shortname' => 'required',
         ]);
@@ -308,6 +342,7 @@ class TitleController extends Controller
         }
 
         $title = Title::withTrashed()->find($id);
+        $title->site_id = $request->site_id;
         $title->code = $request->code;
         $title->name = $request->name;
         $title->shortname = $request->shortname;
@@ -383,9 +418,14 @@ class TitleController extends Controller
         ], 200);
     }
     
-    public function import()
+    public function import(Request $request)
     {
-        return view('admin.title.import');
+        if(in_array('import',$request->actionmenu)){
+            return view('admin.title.import');
+        }
+        else{
+            abort(403);
+        }
     }
     
     public function preview(Request $request)
@@ -409,12 +449,24 @@ class TitleController extends Controller
             $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
             $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
             $shortname = $sheet->getCellByColumnAndRow(2, $row)->getValue();
+            $site_code = strtoupper($sheet->getCellByColumnAndRow(3, $row)->getValue());
+            $status = $sheet->getCellByColumnAndRow(4, $row)->getValue();
+            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
             if($code){
+                $error = [];
+                if(!$site){
+                    array_push($error,'Distrik Tidak Ditemukan');
+                }
                 $data[] = array(
                     'index'=>$no,
-                    'code' => $code,
+                    'code' => trim($code),
                     'name' => $name,
                     'shortname' => $shortname,
+                    'site_name'=>$site?$site->name:null,
+                    'site_id'=>$site?$site->id:null,
+                    'status'=>$status=='Y'?1:0,
+                    'error'=>implode($error,'<br>'),
+                    'is_import'=>count($error) == 0?1:0
                 );
                 $no++; 
             }
@@ -437,18 +489,47 @@ class TitleController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
+        DB::beginTransaction();
         $titles = json_decode($request->titles);
         foreach($titles as $title){
-            $cek = Title::whereRaw("upper(code) = '$title->code'")->first();
+            $cek = Title::whereRaw("upper(code) = '$title->code'")->withTrashed()->first();
             if(!$cek){
                 $title = Title::create([
-                    'code' 	=> strtoupper($title->code),
-                    'name' => $title->name,
+                    'code' 	    => strtoupper($title->code),
+                    'name'      => $title->name,
                     'shortname' => $title->shortname,
+                    'site_id'   => $title->site_id,
+                    'deleted_at'=> $title->status?null:date('Y-m-d H:i:s'),
                     'updated_by'=> Auth::id()
                 ]);
+                if (!$title) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $title
+                    ], 400);
+                }
+                $title->deleted_at = $title->status?null:date('Y-m-d H:i:s');
+                $title->save();
+            }
+            else{
+                $cek->code      = strtoupper($title->code);
+                $cek->name      = $title->name;
+                $cek->shortname = $title->shortname;
+                $cek->site_id   = $title->site_id;
+                $cek->deleted_at= $title->status?null:date('Y-m-d H:i:s');
+                $cek->updated_by= Auth::id();
+                $cek->save();
+                if (!$cek) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $cek
+                    ], 400);
+                }
             }
         }
+        DB::commit();
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('title.index'),

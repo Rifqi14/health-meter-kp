@@ -23,4 +23,8 @@ class HealthMeter extends Model
     {
         return $this->belongsTo(WorkforceGroup::class, 'workforce_group_id');
     }
+    public function assessmentresult()
+    {
+        return $this->hasMany(AssessmentResult::class, 'health_meter_id');
+    }
 }

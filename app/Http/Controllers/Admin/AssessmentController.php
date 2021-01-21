@@ -48,12 +48,12 @@ class AssessmentController extends Controller
         $workforce_id = $request->workforce_id;
 
         //Count Data
-        $query = Assessment::with(['question', 'answer'])->where('workforce_id', $workforce_id);
+        $query = AssessmentResult::with(['category', 'updatedby'])->where('workforce_id', $workforce_id);
         $query->orderBy('created_at', 'desc');
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Assessment::with(['question', 'answer'])->where('workforce_id', $workforce_id);
+        $query = AssessmentResult::with(['category', 'updatedby'])->where('workforce_id', $workforce_id);
         $query->orderBy('created_at', 'desc');
         $query->offset($start);
         $query->limit($length);
@@ -402,7 +402,13 @@ class AssessmentController extends Controller
      */
     public function show($id)
     {
-        //
+        $assessment_result = AssessmentResult::find($id);
+        $assessment = Assessment::with(['question', 'answer'])->where('assessment_date', $assessment_result->date)->where('workforce_id', $assessment_result->workforce_id)->get();
+        if ($assessment) {
+            return view('admin.assessment.detail', compact('assessment'));
+        } else {
+            abort(404);
+        }
     }
 
     /**

@@ -144,9 +144,14 @@ class WorkforceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.workforce.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.workforce.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -183,6 +188,7 @@ class WorkforceController extends Controller
                 'name'              => $request->name,
                 'workforce_group_id'=> $request->workforce_group_id,
                 'agency_id'         => $request->agency_id,
+                'grade_id'          => $request->grade_id,
                 'title_id'          => $request->title_id,
                 'site_id'           => $request->site_id,
                 'department_id'     => $request->department_id,
@@ -245,7 +251,7 @@ class WorkforceController extends Controller
      */
     public function show($id)
     {
-        $workforce = Workforce::find($id);
+        $workforce = Workforce::withTrashed()->find($id);
         if ($workforce) {
             return view('admin.workforce.detail', compact('workforce'));
         } else {

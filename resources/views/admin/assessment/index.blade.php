@@ -26,10 +26,13 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Parameter</th>
-              <th width="100">Nilai</th>
+              <th width="100">Total Nilai</th>
+              <th width="200">Hasil Kategori</th>
               <th width="100">Tanggal</th>
               <th width="100">Dibuat</th>
+              <th width="100">Terakhir Dirubah</th>
+              <th width="100">Dirubah Oleh</th>
+              <th width="10">#</th>
             </tr>
           </thead>
         </table>
@@ -69,18 +72,34 @@ $(function(){
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [2,3] },
-            { render: function( data, type, row ) {
-              return row.question.description
-            },targets: [1] },
+            { className: "text-right", targets: [0,1] },
+            { className: "text-center", targets: [2] },
+            { render: function ( type, data, row ) {
+              return `<span class="label" style="background-color:${row.category.color}">${row.category.name}</span>`
+            },targets:[2] },
+            { render: function ( type, data, row ) {
+              return `<span class="label bg-blue">${row.updatedby.name}</span>`
+            },targets:[6] },
+            { render: function ( type, data, row ) {
+              return `<div class="dropdown">
+                            <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li><a class="dropdown-item" href="{{url('admin/assessment')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            </ul>
+                        </div>`
+            },targets:[7] }
         ],
         columns: [
             { data: "no" },
-            { data: "assessment_question_id" },
-            { data: "rating" },
-            { data: "assessment_date" },
-            { data: "created_at" }
+            { data: "value_total" },
+            { data: "health_meter_id" },
+            { data: "date" },
+            { data: "created_at" },
+            { data: "updated_at" },
+            { data: "updated_by" },
+            { data: "id" },
         ]
     });
     $('#form-search').submit(function(e){

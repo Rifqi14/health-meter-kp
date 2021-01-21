@@ -12,7 +12,7 @@
 </style>
 @endsection
 @push('breadcrump')
-<li><a href="{{route('department.index')}}">Department</a></li>
+<li><a href="{{route('department.index')}}">Bidang</a></li>
 <li class="active">Import</li>
 @endpush
 @section('content')
@@ -37,8 +37,12 @@
                 <table class="table table-striped table-bordered" style="width:100%" id="table-item">
                     <thead>
                         <tr>
-                            <th width="100">Kode</th>
-                            <th width="100">Nama</th>
+                            <th width="100">Distrik</th>
+                            <th width="50">Kode</th>
+                            <th width="250">Nama</th>
+                            <th width="20">Status</th>
+                            <th width="100">Error</th>
+                            <th width="20">#</th>
                         </tr>
                     </thead>
                 </table>
@@ -103,8 +107,12 @@ function loadItem(table_item){
     count=0;
     $.each(items, function() {
         table_item.row.add([
+                this.site_name,
                 this.code,
-                this.name
+                this.name,
+                this.status,
+                this.error,
+                this.is_import,
         ]).draw(false);
         count++;
     })
@@ -127,13 +135,24 @@ $(function(){
         responsive:true,
         filter:false,
         info:false,
-        lengthChange:false,
+        lengthChange:true,
         autoWidth:false,
-        paging:false,
-        order: [[ 0, "asc" ]],
+        paging:true,
+        order: [[ 5, "asc" ]],
         columnDefs: [
             {
-                orderable: false,targets:[0,1]
+                orderable: false,targets:[0,1,2,3,4,5]
+            },
+            { className: "text-center", targets: [3,5] },
+            {
+                render:function( data, type, row ) {
+                    return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? 'Non-Aktif' : 'Aktif'}</span>`
+                },targets: [3]
+            },
+            {
+                render:function( data, type, row ) {
+                    return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? '<i class="fa fa-times"></i>' : '<i class="fa fa-check"></i>'}</span>`
+                },targets: [5]
             },
         ],
     });
@@ -220,7 +239,9 @@ $(function(){
             }
             var departments =[];
             $.each(items, function() {
-                departments.push(this);
+                if(this.is_import == 1){
+                    departments.push(this);
+                }
             });
             //waitingDialog.show('Silahkan tunggu sebentar...');
             $.ajax({

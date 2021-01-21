@@ -15,8 +15,8 @@ class SubDepartment extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-    public function department()
+    public function site()
     {
-        return $this->belongsTo(Department::class, 'department_id');
+        return $this->hasOne('App\Models\Site', 'id', 'site_id');
     }
 }

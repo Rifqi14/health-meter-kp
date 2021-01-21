@@ -157,7 +157,7 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                   <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-3 hidden">
                       <div>
                         <h2 class="m-b-xs animate total-assessment">0</h2>
                         <span class="no-margins">
@@ -178,7 +178,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                       <div id="chart-assessment" class=" animate" style="height: 160px"></div>
                     </div>
                   </div>
@@ -243,7 +243,17 @@
                 <label class="control-label" for="site_id">Distrik</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <input type="text" name="site_id" class="form-control" data-placeholder="Nama Distrik">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Pilih Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Pilih Kelompok Workforce">
                   </div>
                 </div>
               </div>
@@ -253,7 +263,7 @@
                 <label class="control-label" for="health_meter_id">Kategori Resiko</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <input type="text" name="health_meter_id" class="form-control" data-placeholder="Nama Kategori Resiko">
+                    <input type="text" name="health_meter_id" class="form-control" data-placeholder="Pilih Kategori Resiko">
                   </div>
                 </div>
               </div>
@@ -320,60 +330,6 @@
   function exportassessment(){
       $('#export-assessment').modal('show');
   }
-  function totalassessment(){
-      $.ajax({
-          url:"{{route('reportattendance.totalassessment')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              site_id:$('#form-search input[name=site_id]').val(),
-              health_meter_id:$('#form-search input[name=health_meter_id]').val()
-          },
-          beforeSend:function(){
-              $('.total-assessment').removeClass('no-after');
-          },
-          success:function(data){
-              $('.total-assessment').addClass('no-after');
-              $('.total-assessment').html(data);
-          }
-      });
-  }
-  function lowriskassessment(){
-      $.ajax({
-          url:"{{route('reportattendance.lowriskassessment')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              site_id:$('#form-search input[name=site_id]').val(),
-              health_meter_id:$('#form-search input[name=health_meter_id]').val()
-          },
-          beforeSend:function(){
-              $('.low-risk-assessment').removeClass('no-after');
-          },
-          success:function(data){
-              $('.low-risk-assessment').addClass('no-after');
-              $('.low-risk-assessment').html(data);
-          }
-      });
-  }
-  function highriskassessment(){
-      $.ajax({
-          url:"{{route('reportattendance.highriskassessment')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              site_id:$('#form-search input[name=site_id]').val(),
-              health_meter_id:$('#form-search input[name=health_meter_id]').val()
-          },
-          beforeSend:function(){
-              $('.high-risk-assessment').removeClass('no-after');
-          },
-          success:function(data){
-              $('.high-risk-assessment').addClass('no-after');
-              $('.high-risk-assessment').html(data);
-          }
-      });
-  }
 
   //chart personel
   function chartassessment(){
@@ -384,7 +340,8 @@
           data:{
               date:$('#form-search input[name=date]').val(),
               site_id:$('#form-search input[name=site_id]').val(),
-              health_meter_id:$('#form-search input[name=health_meter_id]').val()
+              health_meter_id:$('#form-search input[name=health_meter_id]').val(),
+              workforce_group_id:$('#form-search input[name=workforce_group_id]').val()
           },
           beforeSend:function() {
               $('#chart-assessment').removeClass('no-after');
@@ -392,50 +349,41 @@
           success:function(response) {
               $('#chart-assessment').addClass('no-after');
               Highcharts.chart('chart-assessment', {
-                  title:{
-                      text:response.title,
-                  },
                   chart: {
-                      type: 'area'
+                      type: 'column'
+                  },
+                  title: {
+                      text: response.title
+                  },
+                  subtitle: {
+                      text: response.subtitle
                   },
                   xAxis: {
                       categories: response.categories,
+                      crosshair: true
                   },
                   yAxis: {
                       min: 0,
                       title: {
-                        text: false,
+                          text: 'Health Meter'
                       }
                   },
-                  legend: {
-                      enabled:false,
-                  },
+                  colors: response.colors,
                   tooltip: {
                       headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                      pointFormat: '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                      pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                          '<td style="padding:0"><b>{point.y:.1f} kali</b></td></tr>',
                       footerFormat: '</table>',
                       shared: true,
                       useHTML: true
                   },
                   plotOptions: {
-                      area: {
-                          marker: {
-                              enabled: false,
-                              symbol: 'circle',
-                              radius: 2,
-                              states: {
-                                  hover: {
-                                      enabled: true
-                                  }
-                              }
-                          }
+                      column: {
+                          pointPadding: 0.2,
+                          borderWidth: 0
                       }
                   },
-                  colors: ['#CAE3BF'],
-                  credits: false,
-                  series: [{
-                      data: response.series
-                  }]
+                  series: response.series
               });
           }
       });
@@ -474,9 +422,37 @@
           },
           allowClear: true,
       });
+      $("input[name=workforce_group_id]").select2({
+          ajax: {
+          url: "{{route('workforcegroup.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+              return {
+                name:term,
+                page:page,
+                limit:30,
+              };
+          },
+          results: function (data,page) {
+              var more = (page * 30) < data.total;
+              var option = [];
+              $.each(data.rows,function(index,item){
+              option.push({
+                  id:item.id,
+                  text: item.name
+              });
+              });
+              return {
+                results: option, more: more,
+              };
+          },
+          },
+          allowClear: true,
+      });
       $("input[name=health_meter_id]").select2({
         ajax: {
-          url: "{{route('healthmeter.select')}}",
+          url: "{{route('reportweekly.selectcategory')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
@@ -484,7 +460,8 @@
               name:term,
               page:page,
               limit:30,
-              site_id : {{$siteinfo->id}}
+              site_id : $("#form-search").find('input[name=site_id]').val(),
+              workforce_group_id : $("#form-search").find('input[name=workforce_group_id]').val(),
             };
           },
           results: function (data,page) {
@@ -503,9 +480,6 @@
         },
         allowClear: true,
       });
-      totalassessment();
-      lowriskassessment();
-      highriskassessment();
       chartassessment();
       dataTablePersonnel = $('#table-assessment').DataTable( {
           stateSave:true,
@@ -521,7 +495,9 @@
               type: "GET",
               data:function(data){
                   data.date = $('#form-search input[name=date]').val();
-                  data.department_id = $('#form-search input[name=department_id]').val();
+                  data.site_id = $('#form-search input[name=site_id]').val();
+                  data.health_meter_id = $('#form-search input[name=health_meter_id]').val();
+                  data.workforce_group_id = $('#form-search input[name=workforce_group_id]').val();
               }
           },
           columnDefs:[
@@ -570,9 +546,6 @@
       $('#form-search').submit(function(e){
           e.preventDefault();
           dataTablePersonnel.draw();
-          totalassessment();
-          lowriskassessment();
-          highriskassessment();
           chartassessment();
           $('#add-filter-assessment').modal('hide');
       })

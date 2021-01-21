@@ -26,19 +26,13 @@
             <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required readonly>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="department_id" name="department_id" placeholder="Bidang" aria-placeholder="Pilih Parent" value="{{ $subdepartment->department_id }}" required readonly>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
               </div>
             </div>
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $subdepartment->code }}" required readonly>
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $subdepartment->code }}" required>
               </div>
             </div>
             <div class="form-group">
@@ -92,38 +86,10 @@
         },
         allowClear: true,
       });
-      @if($subdepartment->department->site)
-      $("#site_id").select2('data',{id:{{$subdepartment->department->site->id}},text:'{{$subdepartment->department->site->name}}'}).trigger('change');
+      @if($subdepartment->site_id)
+      $("#site_id").select2('data',{id:{{$subdepartment->site->id}},text:'{{$subdepartment->site->name}}'}).trigger('change');
       @endif
-      $( "#department_id" ).select2({
-        ajax: {
-          url: "{{url('admin/department/select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#department_id", function () {
+      $(document).on("change", "#site_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -192,9 +158,6 @@
           })		
         }
       });
-      @if ($subdepartment->department_id)
-      $('#department_id').select2('data', {id: {{ $subdepartment->department->id }}, text: `{{ $subdepartment->department->name }}`}).trigger('change');
-      @endif
   });
 </script>
 @endpush

@@ -82,29 +82,7 @@
       <!-- /.box-header -->
       <div class="box-body">
         <div class="row">
-          <div class="col-md-3">
-            <div>
-              <h2 class="m-b-xs animate total-personnel">0</h2>
-              <span class="no-margins">
-                Total Workforce
-              </span>
-              <div class="progress">
-                <div class="progress-bar" style="width: 100%;"></div>
-              </div>
-              <div class="row">
-                <div class="col-xs-6">
-                  <small>Sudah Lapor</small>
-                  <h4 class="animate last-week-personnel">0</h4>
-                </div>
-
-                <div class="col-xs-6">
-                  <small>Belum Lapor</small>
-                  <h4 class="animate today-personnel">0</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-9">
+          <div class="col-md-12">
             <div id="chart-personnel" class=" animate" style="height: 160px"></div>
           </div>
         </div>
@@ -117,7 +95,7 @@
               <th width="200">Nama</th>
               <th width="100">Bidang</th>
               <th width="100">Jabatan</th>
-              <th width="200">Resiko Tinggi 7 Hari Terakhir</th>
+              <th width="200">Kategori Resiko</th>
             </tr>
           </thead>
         </table>
@@ -155,6 +133,36 @@
                 </div>
               </div>
             </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="site_id">Distrik</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Nama Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Nama Kelompok Workforce">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="health_meter_id">Kategori Resiko</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="health_meter_id" class="form-control" data-placeholder="Nama Kategori Resiko">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -175,7 +183,7 @@
         <h4 class="modal-title">Export</h4>
       </div>
       <div class="modal-body">
-        <form id="form-export" action="{{ route('reportdaily.export') }}" autocomplete="off">
+        <form id="form-export" action="{{ route('reportweekly.export') }}" autocomplete="off">
           @csrf
           <div class="row">
             <div class="col-md-12">
@@ -189,6 +197,36 @@
                         <i class="fa fa-calendar"></i>
                       </span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="site_id">Distrik</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Nama Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Nama Kelompok Workforce">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="health_meter_id">Kategori Resiko</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="health_meter_id" class="form-control" data-placeholder="Nama Kategori Resiko">
                   </div>
                 </div>
               </div>
@@ -217,57 +255,6 @@
   function exportfile(){
       $('#export-file').modal('show');
   }
-  function totalpersonnel(){
-      $.ajax({
-          url:"{{route('reportweekly.totalpersonnel')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              department_id:$('#form-search input[name=department_id]').val()
-          },
-          beforeSend:function(){
-              $('.total-personnel').removeClass('no-after');
-          },
-          success:function(data){
-              $('.total-personnel').addClass('no-after');
-              $('.total-personnel').html(data);
-          }
-      });
-  }
-  function todaypersonnel(){
-      $.ajax({
-          url:"{{route('reportweekly.todaypersonnel')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              department_id:$('#form-search input[name=department_id]').val()
-          },
-          beforeSend:function(){
-              $('.today-personnel').removeClass('no-after');
-          },
-          success:function(data){
-              $('.today-personnel').addClass('no-after');
-              $('.today-personnel').html(data);
-          }
-      });
-  }
-  function lastweekpersonnel(){
-      $.ajax({
-          url:"{{route('reportweekly.lastweekpersonnel')}}",
-          type:'GET',
-          data:{
-              date:$('#form-search input[name=date]').val(),
-              department_id:$('#form-search input[name=department_id]').val()
-          },
-          beforeSend:function(){
-              $('.last-week-personnel').removeClass('no-after');
-          },
-          success:function(data){
-              $('.last-week-personnel').addClass('no-after');
-              $('.last-week-personnel').html(data);
-          }
-      });
-  }
 
   //chart personel
   function chartpersonnel(){
@@ -277,7 +264,9 @@
           dataType: 'json',
           data:{
               date:$('#form-search input[name=date]').val(),
-              department_id:$('#form-search input[name=department_id]').val()
+              site_id:$('#form-search input[name=site_id]').val(),
+              health_meter_id:$('#form-search input[name=health_meter_id]').val(),
+              workforce_group_id:$('#form-search input[name=workforce_group_id]').val(),
           },
           beforeSend:function() {
               $('#chart-personnel').removeClass('no-after');
@@ -339,9 +328,9 @@
           autoclose: true,
           format: 'yyyy-mm-dd'
       })
-      $( "input[name=department_id]" ).select2({
+      $( "input[name=site_id]" ).select2({
           ajax: {
-          url: "{{route('department.select')}}",
+          url: "{{route('site.select')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
@@ -367,9 +356,65 @@
           },
           allowClear: true,
       });
-      totalpersonnel();
-      todaypersonnel();
-      lastweekpersonnel();
+
+      $( "input[name=workforce_group_id]" ).select2({
+          ajax: {
+          url: "{{route('workforcegroup.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+              return {
+              name:term,
+              page:page,
+              limit:30,
+              };
+          },
+          results: function (data,page) {
+              var more = (page * 30) < data.total;
+              var option = [];
+              $.each(data.rows,function(index,item){
+              option.push({
+                  id:item.id,
+                  text: item.name
+              });
+              });
+              return {
+              results: option, more: more,
+              };
+            },
+          },
+          allowClear: true,
+      });
+
+      $( "input[name=health_meter_id]" ).select2({
+          ajax: {
+          url: "{{route('reportweekly.selectcategory')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+              return {
+              name:term,
+              page:page,
+              limit:30,
+              site_id: $("#form-search").find('input[name=site_id]').val(),
+              };
+          },
+          results: function (data,page) {
+              var more = (page * 30) < data.total;
+              var option = [];
+              $.each(data.rows,function(index,item){
+              option.push({
+                  id:item.id,
+                  text: item.name
+              });
+              });
+              return {
+              results: option, more: more,
+              };
+            },
+          },
+          allowClear: true,
+      });
       chartpersonnel();
       dataTablePersonnel = $('#table-personnel').DataTable( {
           stateSave:true,
@@ -385,7 +430,9 @@
               type: "GET",
               data:function(data){
                   data.date = $('#form-search input[name=date]').val();
-                  data.department_id = $('#form-search input[name=department_id]').val();
+                  data.site_id = $('#form-search input[name=site_id]').val();
+                  data.health_meter_id = $('#form-search input[name=health_meter_id]').val();
+                  data.workforce_group_id = $('#form-search input[name=workforce_group_id]').val();
               }
           },
           columnDefs:[
@@ -394,9 +441,6 @@
               },
               { className: "text-right", targets: [0] },
               { className: "text-center", targets: [5] },
-              { render:function( data, type, row ) {
-                  return row.start_date + ' s/d ' + row.finish_date
-                },targets: [1] },
               { render:function( data, type, row ) {
                   return row.department ? row.department.name : ''
                 },targets: [3] },
@@ -421,9 +465,6 @@
       $('#form-search').submit(function(e){
           e.preventDefault();
           dataTablePersonnel.draw();
-          totalpersonnel();
-          todaypersonnel();
-          lastweekpersonnel();
           chartpersonnel();
           $('#add-filter').modal('hide');
       })

@@ -40,7 +40,7 @@ class DepartmentController extends Controller
         $data_manager = $request->data_manager;
         $site_id = $request->site_id;
         //Count Data
-        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
         }
@@ -53,7 +53,7 @@ class DepartmentController extends Controller
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
         }
@@ -88,18 +88,18 @@ class DepartmentController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user'])->whereRaw("upper(departments.name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user'])->whereRaw("upper(departments.name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
-        $query->offset($start);
+        $query->offset($start*$length);
         $query->limit($length);
         $departments = $query->get();
 
@@ -118,9 +118,14 @@ class DepartmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.department.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.department.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -143,10 +148,8 @@ class DepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-        $site = Site::find($request->site_id);
-
         $department = Department::create([
-            'code' 	    => $site->code.strtoupper($request->code),
+            'code' 	    => strtoupper($request->code),
             'name' 	    => $request->name,
             'site_id' 	=> $request->site_id,
             'updated_by'=> Auth::id()
@@ -169,14 +172,19 @@ class DepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        $department = Department::find($id);
-        if($department){
-            return view('admin.department.detail',compact('department'));
+        if(in_array('read',$request->actionmenu)){
+            $department = Department::find($id);
+            if($department){
+                return view('admin.department.detail',compact('department'));
+            }
+            else{
+                abort(404);
+            }
         }
         else{
-            abort(404);
+            abort(403);
         }
     }
 
@@ -186,14 +194,19 @@ class DepartmentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $department = Department::find($id);
-        if($department){
-            return view('admin.department.edit',compact('department'));
+        if(in_array('update',$request->actionmenu)){
+            $department = Department::find($id);
+            if($department){
+                return view('admin.department.edit',compact('department'));
+            }
+            else{
+                abort(404);
+            }
         }
         else{
-            abort(404);
+            abort(403);
         }
     }
 
@@ -220,8 +233,9 @@ class DepartmentController extends Controller
         }
 
         $department = Department::find($id);
-        //$department->code = $request->code;
-        $department->name = $request->name;
+        $department->site_id    = $request->site_id;
+        $department->code       = $request->code;
+        $department->name       = $request->name;
         $department->updated_by = Auth::id();
         $department->save();
 
@@ -294,9 +308,14 @@ class DepartmentController extends Controller
         ], 200);
     }
 
-    public function import()
+    public function import(Request $request)
     {
-        return view('admin.department.import');
+        if(in_array('import',$request->actionmenu)){
+            return view('admin.department.import');
+        }
+        else{
+            abort(403);
+        }
     }
 
     public function preview(Request $request)
@@ -319,11 +338,23 @@ class DepartmentController extends Controller
         for ($row = 2; $row <= $highestRow; $row++){
             $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
             $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+            $site_code = strtoupper($sheet->getCellByColumnAndRow(2, $row)->getValue());
+            $status = $sheet->getCellByColumnAndRow(3, $row)->getValue();
+            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
             if($code){
+                $error = [];
+                if(!$site){
+                    array_push($error,'Distrik Tidak Ditemukan');
+                }
                 $data[] = array(
                     'index'=>$no,
-                    'code' => $code,
+                    'code' => trim($code),
                     'name' => $name,
+                    'site_name'=>$site?$site->name:null,
+                    'site_id'=>$site?$site->id:null,
+                    'status'=>$status=='Y'?1:0,
+                    'error'=>implode($error,'<br>'),
+                    'is_import'=>count($error) == 0?1:0
                 );
                 $no++;
             }
@@ -346,17 +377,44 @@ class DepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
+        DB::beginTransaction();
         $departments = json_decode($request->departments);
         foreach($departments as $department){
-            $cek = Department::whereRaw("upper(code) = '$department->code'")->first();
+            $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->first();
             if(!$cek){
                 $department = Department::create([
-                    'code' 	=> strtoupper($department->code),
-                    'name' => $department->name,
-                    'updated_by' => Auth::id()
+                    'code' 	        => strtoupper($department->code),
+                    'name'          => $department->name,
+                    'site_id'       => $department->site_id,
+                    'updated_by'    => Auth::id()
                 ]);
+                if (!$department) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $department
+                    ], 400);
+                }
+                $department->deleted_at = $department->status?null:date('Y-m-d H:i:s');
+                $department->save();
+            }
+            else{
+                $cek->code      = strtoupper($department->code);
+                $cek->name      = $department->name;
+                $cek->site_id   = $department->site_id;
+                $cek->deleted_at= $department->status?null:date('Y-m-d H:i:s');
+                $cek->updated_by= Auth::id();
+                $cek->save();
+                if (!$cek) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $cek
+                    ], 400);
+                }
             }
         }
+        DB::commit();
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('department.index'),

@@ -15,9 +15,16 @@
                 <h3 class="box-title">Data Jabatan</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
+                    @if(in_array('create',$actionmenu))
                     <a href="{{route('title.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
+                    @endif
+                    @if(in_array('import',$actionmenu))
+                    <a href="{{route('title.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -29,6 +36,7 @@
                     <thead>
                         <tr>
                             <th width="10">#</th>
+                            <th width="50">Distrik</th>
                             <th width="50">Kode</th>
                             <th width="200">Nama</th>
                             <th width="100">Terakhir Dirubah</th>
@@ -57,24 +65,30 @@
             <div class="modal-body">
                 <form id="form-search" autocomplete="off">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="name">Nama</label>
                                 <input type="text" name="name" class="form-control" placeholder="Nama">
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="code">Kode</label>
                                 <input type="text" name="code" class="form-control" placeholder="Kode">
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="shortname">Singkatan</label>
                                 <input type="text" name="shortname" class="form-control" placeholder="Singkatan">
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="site" class="control-label">Distrik</label>
+                                <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
+                            </div>
+                          </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="name" class="control-label">Arsip Kelompok</label>
@@ -103,6 +117,36 @@
     $('#add-filter').modal('show');
 }
 $(function(){
+    $("#site").select2({
+        ajax: {
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+            return {
+                name:term,
+                page:page,
+                limit:30,
+                data_manager:{{$accesssite}},
+                site_id : {{$siteinfo->id}}
+            };
+            },
+            results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                id:item.id,  
+                text: `${item.name}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+            },
+        },
+        allowClear: true,
+    });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -111,7 +155,7 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 6, "asc" ]],
+        order: [[ 7, "asc" ]],
         ajax: {
             url: "{{route('title.read')}}",
             type: "GET",
@@ -120,10 +164,14 @@ $(function(){
                 var code = $('#form-search').find('input[name=code]').val();
                 var shortname = $('#form-search').find('input[name=shortname]').val();
                 var category = $('#form-search').find('select[name=category]').val();
+                var site = $('#form-search').find('input[name=site]').val();
                 data.name = name;
                 data.code = code;
                 data.shortname = shortname;
                 data.category = category;
+                data.site = site;
+                data.data_manager = {{$accesssite}};
+                data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
@@ -131,17 +179,20 @@ $(function(){
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [5,6] },
+            { className: "text-center", targets: [6,7] },
+            { render:function( data, type, row ) {
+              return `${row.site.name}`
+            },targets: [1] },
             { render:function( data, type, row ) {
                 return `${row.name} <br>
                         <small>${row.shortname}</small>`
-            },targets: [2] },
+            },targets: [3] },
             { render:function( data, type, row ) {
                 return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [4] },
+            },targets: [5] },
             { render:function( data, type, row ) {
                 return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
-            },targets: [5] },
+            },targets: [6] },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                             <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -149,20 +200,22 @@ $(function(){
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 ${row.deleted_at ?
-                                `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                                <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                                `@if(in_array('delete',$actionmenu))
+                                @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                                <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                                 : 
-                                `<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                                <li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                                <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                                `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                                @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                                @if(in_array('delete',$actionmenu))<li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>@endif`
                                 }
                             </ul>
                         </div>`
-            },targets: [6]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
+            { data: "site_id" },
             { data: "code" },
             { data: "name" },
             { data: "updated_at" },

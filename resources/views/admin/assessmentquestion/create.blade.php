@@ -96,7 +96,6 @@
                     <option value="radio">Radio Button</option>
                     <option value="text">Teks</option>
                     <option value="number">Angka</option>
-                    <option value="select">List Dropdown</option>
                 </select>
               </div>
             </div>

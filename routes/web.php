@@ -75,6 +75,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
         Route::get('/grade/restore/{id}', 'Admin\GradeController@restore')->name('grade.restore');
         Route::get('/grade/delete/{id}', 'Admin\GradeController@delete')->name('grade.delete');
+        Route::get('/grade/import', 'Admin\GradeController@import')->name('grade.import');
+        Route::post('/grade/preview', 'Admin\GradeController@preview')->name('grade.preview');
+        Route::post('/grade/storemass', 'Admin\GradeController@storemass')->name('grade.storemass');
         Route::resource('/grade', 'Admin\GradeController');
         //Route Employee
         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
@@ -464,8 +467,11 @@ Route::group(['prefix' => 'admin'], function () {
         // Sub Department
         Route::get('/subdepartment/read', 'Admin\SubDepartmentController@read')->name('subdepartment.read');
         Route::get('/subdepartment/select', 'Admin\SubDepartmentController@select')->name('subdepartment.select');
+        Route::get('/subdepartment/import', 'Admin\SubDepartmentController@import')->name('subdepartment.import');
         Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
+        Route::post('/subdepartment/preview', 'Admin\SubDepartmentController@preview')->name('subdepartment.preview');
+        Route::post('/subdepartment/storemass', 'Admin\SubDepartmentController@storemass')->name('subdepartment.storemass');
         Route::resource('/subdepartment', 'Admin\SubDepartmentController');
 
         // Workforce
@@ -488,6 +494,7 @@ Route::group(['prefix' => 'admin'], function () {
         // Laporan Mingguan
         Route::get('/reportweekly/read', 'Admin\ReportWeeklyController@read')->name('reportweekly.read');
         Route::get('/reportweekly/select', 'Admin\ReportWeeklyController@select')->name('reportweekly.select');
+        Route::get('/reportweekly/selectcategory', 'Admin\ReportWeeklyController@selectcategory')->name('reportweekly.selectcategory');
         Route::get('/reportweekly/totalpersonnel', 'Admin\ReportWeeklyController@totalpersonnel')->name('reportweekly.totalpersonnel');
         Route::get('/reportweekly/lastweekpersonnel', 'Admin\ReportWeeklyController@lastweekpersonnel')->name('reportweekly.lastweekpersonnel');
         Route::get('/reportweekly/todaypersonnel', 'Admin\ReportWeeklyController@todaypersonnel')->name('reportweekly.todaypersonnel');
