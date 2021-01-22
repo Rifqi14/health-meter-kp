@@ -1,21 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kontak Erat')
+@section('title', 'Penjadwalan Pemeriksaan')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Kontak Erat</li>
+<li class="active">Penjadwalan Pemeriksaan</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Kontak Erat</h3>
+        <h3 class="box-title">Data Penjadwalan Pemeriksaan</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          @if(in_array('create',$actionmenu))
+           @if(in_array('create',$actionmenu))
             <a href="{{route('closecontact.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
               title="Tambah">
               <i class="fa fa-plus"></i>
@@ -32,10 +32,12 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">NID</th>
+              <th width="200">Nama Pasien</th>
               <th width="100">Tanggal</th>
-              <th width="100">Terakhir Dirubah</th>
-              <th width="100">Dirubah Oleh</th>
+              <th width="100">Jenis Pemeriksaan</th>
+              <th width="200">Pembuat Jadwal</th>
+              <th width="200">NID Approval 1</th>
+              <th width="200">NID Approval 2</th>
               <th width="10">#</th>
             </tr>
           </thead>
@@ -109,9 +111,9 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 5, "asc" ]],
+        order: [[ 7, "asc" ]],
         ajax: {
-            url: "{{route('closecontact.read')}}",
+            url: "{{route('checkupschedule.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
@@ -125,17 +127,34 @@
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [2,4,5] },
+            { className: "text-center", targets: [2,7] },
 
             { render: function ( data, type, row ) {
                   return `
-                  ${row.workforce.name}<br>
-                  <small>${row.workforce ? row.workforce.nid : ''}</small>`
+                  ${row.patient.name}<br>${row.patient.birth_date}`
             },targets: [1]
             },
+             { render: function ( data, type, row ) {
+                  return `${row.examinationtype.name}`
+            },targets: [3]
+            },
             { render: function ( data, type, row ) {
-                  return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+                  return `<span class="text-blue"><b>${row.w_schedulemaker.name}</b></span><br>
+                         <small>${row.w_schedulemaker.nid}</small><br>
+                         <small><i>${row.t_schedulemaker ? row.t_schedulemaker.name : ''}</i></small>`
             },targets: [4]
+            },
+            { render: function ( data, type, row ) {
+                  return `<span class="text-blue"><b>${row.w_firstapproval.name}</b></span/><br>
+                         <small>${row.w_firstapproval.nid}</small><br>
+                         <small><i>${row.t_firstapproval ? row.t_firstapproval.name : ''}</i></small>`
+            },targets: [5]
+            },
+            { render: function ( data, type, row ) {
+                  return `<span class="text-blue"><b>${row.w_secondapproval.name}</b></span><br>
+                         <small>${row.w_secondapproval.nid}</small><br>
+                         <small><i>${row.t_secondapproval ? row.t_secondapproval.name : ''}</i></small>`
+            },targets: [6]
             },
         
             { render: function ( data, type, row ) {
@@ -144,20 +163,22 @@
                             <i class="fa fa-bars"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            @if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/closecontact')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                            @if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/checkupschedule')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
                             @if(in_array('delete',$actionmenu))<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>@endif
                             
                         </ul>
                       </div>`
-            },targets: [5]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "workforce_id" },
-            { data: "date" },
-            { data: "updated_at" },
-            { data: "updated_by" },
+            { data: "patient_id" },
+            { data: "checkup_date" },
+            { data: "examination_type_id" },
+            { data: "schedules_maker_id" },
+            { data: "first_approval_id" },
+            { data: "second_approval_id" },
             { data: "id" },
         ]
     });
@@ -175,7 +196,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus kontak Erat?',
+          title:'Menghapus Penjadwalan Pemeriksaan?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {
@@ -183,7 +204,7 @@
                               _token: "{{ csrf_token() }}"
                           };
               $.ajax({
-                url: `{{url('admin/closecontact')}}/${id}`,
+                url: `{{url('admin/checkupschedule')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'DELETE',
