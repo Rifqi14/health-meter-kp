@@ -68,6 +68,35 @@ class MedicalActionController extends Controller
         ], 200);
     }
 
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+
+        //Count Data
+        $query = DB::table('medical_actions');
+        $query->select('medical_actions.*');
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = DB::table('medical_actions');
+        $query->select('medical_actions.*');
+        // $query->orderBy('complaint', 'asc');
+        $query->offset($start);
+        $query->limit($length);
+        $medicalactions = $query->get();
+
+        $data = [];
+        foreach ($medicalactions as $medicalaction) {
+            $medicalaction->no = ++$start;
+            $data[] = $medicalaction;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

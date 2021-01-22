@@ -25,4 +25,8 @@ class Title extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function site()
+    {
+        return $this->hasOne('App\Models\Site', 'id', 'site_id');
+    }
 }

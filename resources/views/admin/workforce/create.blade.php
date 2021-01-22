@@ -68,6 +68,12 @@
             </div>
             <div class="well well-sm">
               <div class="form-group">
+                <label for="grade_id" class="col-sm-2 control-label">Jenjang Jabatan</label>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control" id="grade_id" name="grade_id" data-placeholder="Jenjang Jabatan">
+                </div>
+              </div>
+              <div class="form-group">
                 <label for="title_id" class="col-sm-2 control-label">Jabatan</label>
                 <div class="col-sm-6">
                   <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Jabatan">
@@ -229,6 +235,11 @@
       allowClear: true,
     });
     $(document).on("change", "#site_id", function () {
+      $('#title_id').select2('val','');
+      $('#department_id').select2('val','');
+      $('#sub_department_id').select2('val','');
+      $('#agency_id').select2('val','');
+      $('#guarantor_id').select2('val','');
       if (!$.isEmptyObject($('#form').validate().submitted)) {
         $('#form').validate().form();
       }
@@ -301,6 +312,39 @@
         $('#form').validate().form();
       }
     });
+    $("#grade_id").select2({
+      ajax: {
+          url: "{{route('grade.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30
+          };
+          },
+          results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+              option.push({
+              id:item.id,  
+              text: `${item.name}`
+              });
+          });
+          return {
+              results: option, more: more,
+          };
+          },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#grade_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
     $("#title_id").select2({
       ajax: {
           url: "{{route('title.select')}}",
@@ -310,7 +354,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -343,7 +388,8 @@
           return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {
@@ -363,7 +409,6 @@
       allowClear: true,
     });
     $(document).on("change", "#department_id", function () {
-      $('#sub_department_id').select2('val','');
       if (!$.isEmptyObject($('#form').validate().submitted)) {
         $('#form').validate().form();
       }
@@ -378,7 +423,7 @@
               name:term,
               page:page,
               limit:30,
-              department_id:$('#department_id').val()==''?-1:$('#department_id').val()
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
           };
           },
           results: function (data,page) {

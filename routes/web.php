@@ -75,6 +75,9 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/grade/select', 'Admin\GradeController@select')->name('grade.select');
         Route::get('/grade/restore/{id}', 'Admin\GradeController@restore')->name('grade.restore');
         Route::get('/grade/delete/{id}', 'Admin\GradeController@delete')->name('grade.delete');
+        Route::get('/grade/import', 'Admin\GradeController@import')->name('grade.import');
+        Route::post('/grade/preview', 'Admin\GradeController@preview')->name('grade.preview');
+        Route::post('/grade/storemass', 'Admin\GradeController@storemass')->name('grade.storemass');
         Route::resource('/grade', 'Admin\GradeController');
         //Route Employee
         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
@@ -234,6 +237,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         //Medical Action
         Route::get('/medicalaction/read', 'Admin\MedicalActionController@read')->name('medicalaction.read');
+        Route::get('/medicalaction/select', 'Admin\MedicalActionController@select')->name('medicalaction.select');
         Route::get('/medicalaction/restore/{id}', 'Admin\MedicalActionController@restore')->name('medicalaction.restore');
         Route::get('/medicalaction/delete/{id}', 'Admin\MedicalActionController@delete')->name('medicalaction.delete');
         Route::resource('/medicalaction', 'Admin\MedicalActionController');
@@ -463,8 +467,11 @@ Route::group(['prefix' => 'admin'], function () {
         // Sub Department
         Route::get('/subdepartment/read', 'Admin\SubDepartmentController@read')->name('subdepartment.read');
         Route::get('/subdepartment/select', 'Admin\SubDepartmentController@select')->name('subdepartment.select');
+        Route::get('/subdepartment/import', 'Admin\SubDepartmentController@import')->name('subdepartment.import');
         Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
+        Route::post('/subdepartment/preview', 'Admin\SubDepartmentController@preview')->name('subdepartment.preview');
+        Route::post('/subdepartment/storemass', 'Admin\SubDepartmentController@storemass')->name('subdepartment.storemass');
         Route::resource('/subdepartment', 'Admin\SubDepartmentController');
 
         // Workforce
@@ -513,6 +520,15 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/checkupresult/read', 'Admin\CheckupResultController@read')->name('checkupresult.read');
         Route::get('/checkupresult/select', 'Admin\CheckupResultController@select')->name('checkupresult.select');
         Route::resource('/checkupresult', 'Admin\CheckupResultController');
+        
+        //Konsultasi Kehadiran
+        Route::get('/healthconsultation/read', 'Admin\HealthConsultationController@read')->name('healthconsultation.read');
+        Route::get('/healthconsultation/select', 'Admin\HealthConsultationController@select')->name('healthconsultation.select');
+        Route::resource('/healthconsultation', 'Admin\HealthConsultationController');
+
+        //Penanganan Medis
+        Route::get('/medicaltreatment/read', 'Admin\MedicalTreatmentController@read')->name('medicaltreatment.read');
+        Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {

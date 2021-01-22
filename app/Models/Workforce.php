@@ -51,4 +51,8 @@ class Workforce extends Model
     {
         return $this->hasMany(AssessmentResult::class, 'workforce_id');
     }
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
+    }
 }

@@ -91,7 +91,7 @@ class GuarantorController extends Controller
         $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
         $query->leftJoin('titles','titles.id','=','guarantors.title_id');
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->where('guarantors.site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
@@ -99,7 +99,7 @@ class GuarantorController extends Controller
         $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
         $query->leftJoin('titles','titles.id','=','guarantors.title_id');
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->where('guarantors.site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);

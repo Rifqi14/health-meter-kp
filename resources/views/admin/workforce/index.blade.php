@@ -15,12 +15,16 @@
         <h3 class="box-title">Data Workforce</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
+          @if(in_array('create',$actionmenu))
           <a href="{{route('workforce.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
-          {{-- <a href="{{route('workforce.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
+          @endif
+          @if(in_array('import',$actionmenu))
+          <a href="{{route('workforce.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
           <i class="fa fa-upload"></i>
-          </a> --}}
+          </a> 
+          @endif
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -32,10 +36,10 @@
           <thead>
             <tr>
               <th width="10">#</th>
+              <th width="200">Distrik</th>
               <th width="200">Nama</th>
               <th width="200">Kelompok Workforce</th>
               <th width="200">Instansi</th>
-              <th width="200">Unit</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
               <th width="100">Status</th>
@@ -248,19 +252,19 @@
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [6,7,8] },
+            { className: "text-center", targets: [7,8] },
             { render: function ( data, type, row) {
               return `${row.name}<br><small>${row.nid}</small>`
-            },targets: [1] },
-            { render: function ( data, type, row) {
-              return `${row.workforce_group_id ? row.workforcegroup.name : ''}`
             },targets: [2] },
             { render: function ( data, type, row) {
-              return `${row.agency_id ? row.agency.name : ''}`
+              return `${row.workforce_group_id ? row.workforcegroup.name : ''}`
             },targets: [3] },
             { render: function ( data, type, row) {
-              return `${row.site_id ? row.site.name : ''}`
+              return `${row.agency_id ? row.agency.name : ''}`
             },targets: [4] },
+            { render: function ( data, type, row) {
+              return `${row.site_id ? row.site.name : ''}`
+            },targets: [1] },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.updatedby ? row.updatedby.name : ''}</span>`
             },targets: [6]
@@ -281,13 +285,12 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            `@if(in_array('read',$actionmenu))<li><li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))<li><li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                             : 
-                            `<li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                            <li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            `@if(in_array('update',$actionmenu))<li><li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                            @if(in_array('read',$actionmenu))<li><li><a class="dropdown-item" href="{{url('admin/workforce')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))<li><li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>@endif`
                             }
                         </ul>
                       </div>`
@@ -296,10 +299,10 @@
         ],
         columns: [
             { data: "no" },
+            { data: "site_id" },
             { data: "name" },
             { data: "workforce_group_id" },
             { data: "agency_id" },
-            { data: "site_id" },
             { data: "updated_at" },
             { data: "updated_by" },
             { data: "deleted_at" },

@@ -29,12 +29,6 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="department_id" name="department_id" placeholder="Bidang" aria-placeholder="Pilih Parent" required>
-              </div>
-            </div>
-            <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="code" name="code" placeholder="Kode" required>
@@ -92,40 +86,6 @@
         allowClear: true,
       });
       $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $( "#department_id" ).select2({
-        ajax: {
-          url: "{{url('admin/department/select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-              site_id:$('#site_id').val() == ''?-1:$('#site_id').val() 
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#department_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }

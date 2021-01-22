@@ -15,9 +15,16 @@
                 <h3 class="box-title">Data Jenjang Jabatan</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
+                    @if(in_array('create',$actionmenu))
                     <a href="{{route('grade.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
                         <i class="fa fa-plus"></i>
                     </a>
+                    @endif
+                    @if(in_array('import',$actionmenu))
+                    <a href="{{route('grade.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -29,11 +36,10 @@
                     <thead>
                         <tr>
                             <th width="10">#</th>
-                            <th width="100">Kode</th>
-                            <th width="200">Nama</th>
+                            <th width="100">Nama</th>
                             <th width="50">Terakhir Dirubah</th>
                             <th width="50">Dirubah Oleh</th>
-                            <th width="50">Status</th>
+                            <th width="20">Status</th>
                             <th width="10">#</th>
                         </tr>
                     </thead>
@@ -105,7 +111,7 @@ $(function(){
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 6, "asc" ]],
+        order: [[ 5, "asc" ]],
         ajax: {
             url: "{{route('grade.read')}}",
             type: "GET",
@@ -122,14 +128,17 @@ $(function(){
             {
                 orderable: false,targets:[0]
             },
-            { className: "text-right", targets: [0,3] },
-            { className: "text-center", targets: [5,6] },
+            { className: "text-right", targets: [0,2] },
+            { className: "text-center", targets: [4,5] },
+            { render: function( data, type, row ) {
+                return `${row.name}<br/><small>${row.code}</small></span>`
+            },targets: [1] },
             { render: function( data, type, row ) {
                 return `<span class="label bg-blue">${row.updated_by ? row.user.name : ''}</span>`
-            },targets: [4] },
+            },targets: [3] },
             { render: function( data, type, row ) {
                 return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
-            },targets: [5] },
+            },targets: [4] },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
                             <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -137,20 +146,20 @@ $(function(){
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 ${row.deleted_at ?
-                                `<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                                <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                                `@if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/grade')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                                @if(in_array('delete',$actionmenu))<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                                 : 
-                                `<li><a class="dropdown-item" href="{{url('admin/grade')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
-                                <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                                `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/grade')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                                @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/grade')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                                @if(in_array('delete',$actionmenu))<li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>@endif`
                                 }
                             </ul>
                         </div>`
-            },targets: [6]
+            },targets: [5]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "code" },
             { data: "name" },
             { data: "updated_at" },
             { data: "updated_by" },

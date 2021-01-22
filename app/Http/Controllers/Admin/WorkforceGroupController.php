@@ -86,7 +86,7 @@ class WorkforceGroupController extends Controller
         if($data_manager){
             $query->where('data_manager',$data_manager);
         }
-        $query->offset($start);
+        $query->offset($start*$length);
         $query->limit($length);
         $results = $query->get();
 

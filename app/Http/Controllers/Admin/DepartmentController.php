@@ -40,7 +40,7 @@ class DepartmentController extends Controller
         $data_manager = $request->data_manager;
         $site_id = $request->site_id;
         //Count Data
-        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
         }
@@ -53,7 +53,7 @@ class DepartmentController extends Controller
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Department::with(['user', 'subdepartment','site'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user','site'])->whereRaw("upper(departments.name) like '%$name%'");
         if ($category) {
             $query->onlyTrashed();
         }
@@ -88,18 +88,18 @@ class DepartmentController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user'])->whereRaw("upper(departments.name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Department::with(['user', 'subdepartment'])->whereRaw("upper(departments.name) like '%$name%'");
+        $query = Department::with(['user'])->whereRaw("upper(departments.name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
-        $query->offset($start);
+        $query->offset($start*$length);
         $query->limit($length);
         $departments = $query->get();
 
@@ -348,7 +348,7 @@ class DepartmentController extends Controller
                 }
                 $data[] = array(
                     'index'=>$no,
-                    'code' => $code,
+                    'code' => trim($code),
                     'name' => $name,
                     'site_name'=>$site?$site->name:null,
                     'site_id'=>$site?$site->id:null,
@@ -386,7 +386,6 @@ class DepartmentController extends Controller
                     'code' 	        => strtoupper($department->code),
                     'name'          => $department->name,
                     'site_id'       => $department->site_id,
-                    'deleted_at'    => $department->status?null:date('Y-m-d H:i:s'),
                     'updated_by'    => Auth::id()
                 ]);
                 if (!$department) {
@@ -396,6 +395,8 @@ class DepartmentController extends Controller
                         'message'     => $department
                     ], 400);
                 }
+                $department->deleted_at = $department->status?null:date('Y-m-d H:i:s');
+                $department->save();
             }
             else{
                 $cek->code      = strtoupper($department->code);
