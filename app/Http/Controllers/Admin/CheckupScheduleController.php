@@ -24,11 +24,17 @@ class CheckupScheduleController extends Controller
         $name = strtoupper($request->name);
 
         //Count Data
-        $query = CheckupSchedule::with('patient')->whereRaw("upper(name) like '%$name%'");
+        $query = CheckupSchedule::with(['patient' => function ($q) use ($name)
+        {
+            $q->whereRaw("upper(name) like '%$name%'");
+        }]);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = CheckupSchedule::with('patient')->whereRaw("upper(name) like '%$name%'");
+        $query = CheckupSchedule::with(['patient' => function ($q) use ($name)
+        {
+            $q->whereRaw("upper(name) like '%$name%'");
+        }]);
         $query->offset($start);
         $query->limit($length);
         $checkupschedules = $query->get();
@@ -36,7 +42,8 @@ class CheckupScheduleController extends Controller
         $data = [];
         foreach ($checkupschedules as $checkupschedule) {
             $checkupschedule->no = ++$start;
-            $checkupschedule->prod = ["<span>$checkupschedule->patient->name</span><span style='float:right'><i> $checkupschedule->checkup_date</i></span>"];
+            $checkupschedule->patientname = $checkupschedule->patient->name;
+            $checkupschedule->prod = ["<span>".$checkupschedule->patient->name."</span><span style='float:right'><i> $checkupschedule->checkup_date</i></span>"];
             $data[] = $checkupschedule;
         }
         return response()->json([
