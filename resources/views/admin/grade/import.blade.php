@@ -1,57 +1,55 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Import Jabatan')
+@section('title', 'Import Jenjang Jabatan')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 <link href="{{asset('adminlte/component/bootstrap-fileinput/css/fileinput.min.css')}}" rel="stylesheet">
 <link href="{{asset('adminlte/component/bootstrap-fileinput/themes/explorer/theme.min.css')}}" rel="stylesheet">
 <style type="text/css">
-    .overlay-wrapper{
-      position:relative;
+    .overlay-wrapper {
+        position: relative;
     }
 </style>
 @endsection
 @push('breadcrump')
-    <li><a href="{{route('title.index')}}">Jabatan</a></li>
-    <li class="active">Import</li>
+<li><a href="{{route('grade.index')}}">Jenjang Jabatan</a></li>
+<li class="active">Import</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
-    <div class="box box-primary" id="title-preview">
-        <div class="box-header">
-          <h3 class="box-title">Pratinjau Import</h3>
-          <!-- tools box -->
-          <div class="pull-right box-tools">
-             <a onclick="addImport()" class="btn btn-success btn-sm" data-toggle="tooltip" title="Tambah">
-                <i class="fa fa-upload"></i>
-              </a>
-              <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-              <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+        <div class="box box-primary" id="grade-preview">
+            <div class="box-header">
+                <h3 class="box-title">Pratinjau Import</h3>
+                <!-- tools box -->
+                <div class="pull-right box-tools">
+                    <a onclick="addImport()" class="btn btn-success btn-sm" data-toggle="tooltip" title="Tambah">
+                        <i class="fa fa-upload"></i>
+                    </a>
+                    <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
+                </div>
+                <!-- /. tools -->
             </div>
-          <!-- /. tools -->
+            <div class="box-body">
+                <form id="form" action="{{route('grade.storemass')}}">
+                </form>
+                <table class="table table-striped table-bordered" style="width:100%" id="table-item">
+                    <thead>
+                        <tr>
+                            <th width="50">Kode</th>
+                            <th width="250">Nama</th>
+                            <th width="20">Status</th>
+                            <th width="100">Error</th>
+                            <th width="20">#</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="overlay hidden">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
         </div>
-        <div class="box-body">
-            <form id="form" action="{{route('title.storemass')}}">
-            </form>
-            <table class="table table-striped table-bordered" style="width:100%" id="table-item">
-                <thead>
-                    <tr>
-                        <th width="100">Distrik</th>
-                        <th width="100">Kode</th>
-                        <th width="100">Nama Singkat</th>
-                        <th width="100">Nama</th>
-                        <th width="20">Status</th>
-                        <th width="100">Error</th>
-                        <th width="20">#</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div class="overlay hidden">
-            <i class="fa fa-refresh fa-spin"></i>
-        </div>
-    </div>
     </div>
 </div>
 <div class="modal" id="select-file" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
@@ -71,7 +69,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label" for="file">File Excel</label>
                                 <div class="col-sm-9">
-                                    <input type="file" class="form-control" id="file" name="file" required accept=".xlsx"/>	
+                                    <input type="file" class="form-control" id="file" name="file" required accept=".xlsx" />
                                 </div>
                             </div>
                         </div>
@@ -96,7 +94,7 @@
 <script src="{{asset('adminlte/component/bootstrap-fileinput/js/fileinput.min.js')}}"></script>
 <script src="{{asset('adminlte/component/bootstrap-fileinput/themes/explorer/theme.min.js')}}"></script>
 <script type="text/javascript">
-var items = {},count=0;
+    var items = {},count=0;
 function addImport(){
     $('#form-import')[0].reset();
     $('#form-import').find('.help-block').remove();
@@ -108,9 +106,7 @@ function loadItem(table_item){
     count=0;
     $.each(items, function() {
         table_item.row.add([
-                this.site_name,
                 this.code,
-                this.shortname,
                 this.name,
                 this.status,
                 this.error,
@@ -140,21 +136,21 @@ $(function(){
         lengthChange:true,
         autoWidth:false,
         paging:true,
-        order: [[ 0, "asc" ]],
+        order: [[ 4, "asc" ]],
         columnDefs: [
             {
-                orderable: false,targets:[0,1,2,3,4,5,6]
+                orderable: false,targets:[0,1,2,3,4]
             },
-            { className: "text-center", targets: [4,6] },
+            { className: "text-center", targets: [2,4] },
             {
                 render:function( data, type, row ) {
                     return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? 'Non-Aktif' : 'Aktif'}</span>`
-                },targets: [4]
+                },targets: [2]
             },
             {
                 render:function( data, type, row ) {
                     return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? '<i class="fa fa-times"></i>' : '<i class="fa fa-check"></i>'}</span>`
-                },targets: [6]
+                },targets: [4]
             },
         ],
     });
@@ -188,7 +184,7 @@ $(function(){
         },
         submitHandler: function() { 
             $.ajax({
-                url:"{{route('title.preview')}}",
+                url:"{{route('grade.preview')}}",
                 method:'post',
                 data: new FormData($('#form-import')[0]),
                 processData: false,
@@ -239,10 +235,10 @@ $(function(){
                 }); 
                 return false;
             }
-            var titles =[];
+            var grades =[];
             $.each(items, function() {
                 if(this.is_import == 1){
-                    titles.push(this);
+                    grades.push(this);
                 }
             });
             //waitingDialog.show('Silahkan tunggu sebentar...');
@@ -252,10 +248,10 @@ $(function(){
                 type:'POST',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    titles: JSON.stringify(titles)
+                    grades: JSON.stringify(grades)
                 },
                 beforeSend:function(){
-                    $('#title-preview .overlay').removeClass('hidden');
+                    $('#grade-preview .overlay').removeClass('hidden');
                 }
             }).done(function(response){
                 $('.overlay').addClass('hidden');

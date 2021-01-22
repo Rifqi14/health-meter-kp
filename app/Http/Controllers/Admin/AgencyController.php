@@ -100,7 +100,7 @@ class AgencyController extends Controller
         if($site_id){
             $query->where('site_id',$site_id);
         }
-        $query->offset($start);
+        $query->offset($start*$length);
         $query->limit($length);
         $results = $query->get();
 

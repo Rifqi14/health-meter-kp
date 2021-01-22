@@ -99,8 +99,7 @@
                     <option value="radio" @if ($question->answer_type == 'radio') selected @endif>Radio Button</option>
                     <option value="text" @if ($question->answer_type == 'text') selected @endif>Teks</option>
                     <option value="number" @if ($question->answer_type == 'number') selected @endif>Angka</option>
-                    <option value="select" @if ($question->answer_type == 'select') selected @endif>List Dropdown</option>
-                </select>
+              </select>
               </div>
             </div>
             <div class="form-group">
