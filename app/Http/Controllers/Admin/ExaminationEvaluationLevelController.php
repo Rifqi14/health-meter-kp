@@ -73,20 +73,16 @@ class ExaminationEvaluationLevelController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
-        $arsip = $request->category;
+        $examination_evaluation_id = $request->examination_evaluation_id;
 
         //Count Data
-        $query = ExaminationEvaluationLevel::Where('status', 1)->whereRaw("upper(examination_level) like '%$name%'");
-        if ($arsip) {
-            $query->onlyTrashed();
-        }
+        $query = ExaminationEvaluationLevel::whereRaw("upper(examination_level) like '%$name%'");
+        $query->where('examination_evaluation_id', $examination_evaluation_id);
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = ExaminationEvaluationLevel::Where('status', 1)->whereRaw("upper(examination_level) like '%$name%'");
-        if ($arsip) {
-            $query->onlyTrashed();
-        }
+        $query = ExaminationEvaluationLevel::whereRaw("upper(examination_level) like '%$name%'");
+        $query->where('examination_evaluation_id', $examination_evaluation_id);
         $query->offset($start);
         $query->limit($length);
         $levels = $query->get();
