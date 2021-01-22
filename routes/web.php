@@ -521,6 +521,14 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/checkupresult/select', 'Admin\CheckupResultController@select')->name('checkupresult.select');
         Route::resource('/checkupresult', 'Admin\CheckupResultController');
         
+        // CloseContact
+        Route::get('/closecontact/read', 'Admin\CloseContactController@read')->name('closecontact.read');
+        // Route::get('/closecontact/select', 'Admin\PatientController@select')->name('closecontact.select');
+        Route::resource('/closecontact', 'Admin\CloseContactController');
+        // CheckupSchedule
+        Route::get('/checkupschedule/read', 'Admin\CheckupScheduleController@read')->name('checkupschedule.read');
+        Route::get('/checkupschedule/select', 'Admin\CheckupScheduleController@select')->name('checkupschedule.select');
+        Route::resource('/checkupschedule', 'Admin\CheckupScheduleController');
         //Konsultasi Kehadiran
         Route::get('/healthconsultation/read', 'Admin\HealthConsultationController@read')->name('healthconsultation.read');
         Route::get('/healthconsultation/select', 'Admin\HealthConsultationController@select')->name('healthconsultation.select');
