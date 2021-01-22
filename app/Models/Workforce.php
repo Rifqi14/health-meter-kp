@@ -51,8 +51,21 @@ class Workforce extends Model
     {
         return $this->hasMany(AssessmentResult::class, 'workforce_id');
     }
+    
     public function grade()
     {
         return $this->belongsTo(Grade::class);
+    }
+    public function w_schedulemaker()
+    {
+        return $this->hasMany(Workforce::class, 'schedules_maker_id');
+    }
+    public function w_firstapproval()
+    {
+        return $this->hasMany(Workforce::class, 'first_approval_id');
+    }
+    public function w_secondapproval()
+    {
+        return $this->hasMany(Workforce::class, 'second_approval_id');
     }
 }

@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CheckupSchedule extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
 
     public function updatedby()
@@ -23,7 +25,7 @@ class CheckupSchedule extends Model
     }
     public function w_schedulemaker()
     {
-        return $this->belongsTo(Workforce::class, 'schedules_maker_id');
+        return $this->hasOne(Workforce::class,'id', 'schedules_maker_id');
     }
     public function w_firstapproval()
     {

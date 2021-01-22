@@ -29,4 +29,16 @@ class Title extends Model
     {
         return $this->hasOne('App\Models\Site', 'id', 'site_id');
     }
+    public function t_schedulemaker()
+    {
+        return $this->hasMany(Title::class, 'schedule_maker_title_id');
+    }
+    public function t_firstapproval()
+    {
+        return $this->hasMany(Title::class, 'first_approval_title_id');
+    }
+    public function t_secondapproval()
+    {
+        return $this->hasMany(Title::class, 'second_approval_title_id');
+    }
 }
