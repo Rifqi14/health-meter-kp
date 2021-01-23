@@ -540,7 +540,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/medicaltreatment/read', 'Admin\MedicalTreatmentController@read')->name('medicaltreatment.read');
         Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
         //CoveringLetter
-        // Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
+        Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
         Route::resource('/coveringletter', 'Admin\CoveringLetterController');
 
         // CheckupSchedule

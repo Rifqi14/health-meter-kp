@@ -15,7 +15,6 @@ class CloseContactController extends Controller
     function __construct()
     {
         View::share('menu_active', url('admin/closecontact'));
-        $this->middleware('accessmenu', ['except' => 'select']);
     }
 
     public function read(Request $request)

@@ -1,9 +1,9 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Tambah Kontak Erat')
+@section('title', 'Ubah Kontak Erat')
 @push('breadcrump')
 <li><a href="{{route('healthmeter.index')}}">Kontak Erat</a></li>
-<li class="active">Tambah</li>
+<li class="active">Ubah</li>
 @endpush
 @section('stylesheets')
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
@@ -14,7 +14,7 @@
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Tambah Kontak Erat</h3>
+        <h3 class="box-title">Ubah Kontak Erat</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
           <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
