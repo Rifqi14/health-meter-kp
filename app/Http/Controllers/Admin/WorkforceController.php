@@ -342,6 +342,7 @@ class WorkforceController extends Controller
         $workforce->name                = $request->name;
         $workforce->workforce_group_id  = $request->workforce_group_id;
         $workforce->agency_id           = $request->agency_id;
+        $workforce->grade_id            = $request->grade_id;
         $workforce->title_id            = $request->title_id;
         $workforce->site_id             = $request->site_id;
         $workforce->department_id       = $request->department_id;

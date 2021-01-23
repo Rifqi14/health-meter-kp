@@ -800,7 +800,7 @@
               $('.overlay').addClass('hidden');
               $('#error_answer').remove();
               if(response.status){
-                //document.location = response.results;
+                document.location = response.results;
               }
               else{	
                 $('.direct-chat-messages').append(`

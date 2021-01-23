@@ -137,6 +137,9 @@ class FormulaController extends Controller
                 'message' 	=> $formula
             ], 400);
         }
+        Formula::where('id','<>',$formula->id)->update([
+            'deleted_at'=>now()
+        ]);
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('formula.index'),
@@ -241,6 +244,9 @@ class FormulaController extends Controller
         try {
             $formula = Formula::onlyTrashed()->find($id);
             $formula->restore();
+            Formula::where('id','<>',$id)->update([
+                'deleted_at'=>now()
+            ]);
         } catch (QueryException $th) {
             return response()->json([
                 'status'    => false,

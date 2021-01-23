@@ -196,30 +196,69 @@ class AssessmentController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'answer_choice'         => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status'        => false,
-                'message'       => $validator->errors()->first()
-            ], 400);
-        }
         DB::beginTransaction();
-        foreach ($request->answer_choice as $key => $values) {
-            $value = (object) $values;
-            $question = AssessmentQuestion::find($value->question_id);
-            if ($value->answer_type != 'freetext') {
-                switch ($value->answer_type) {
-                    case 'checkbox':
-                        foreach ($value->answer_id as $key => $answer) {
-                            $answers = AssessmentAnswer::find($answer);
+        $workforce = Auth::user()->workforce;
+        $workforce_group_id = $workforce->workforce_group_id;
+        $site_id = $workforce->site_id;
+        $questions = AssessmentQuestion::select('assessment_questions.*')
+                            ->leftJoin('assessment_question_workforce_groups','assessment_question_workforce_groups.assessment_question_id','=','assessment_questions.id')
+                            ->leftJoin('assessment_question_sites','assessment_question_sites.assessment_question_id','=','assessment_questions.id')
+                            ->where('workforce_group_id',$workforce_group_id)
+                            ->where('site_id',$site_id)
+                            ->orderBy('order','asc')
+                            ->get();
+        foreach($questions as $question){
+            switch($question->answer_type){
+                case 'checkbox':
+                    if($request->input('answer_choice_'.$question->id)){
+                        foreach($request->input('answer_choice_'.$question->id) as $choice){
+                            $assessmentanswer = AssessmentAnswer::find($choice);
+                            if($assessmentanswer){
+                                $assessment = Assessment::create([
+                                    'assessment_date'           => date('Y-m-d'),
+                                    'assessment_question_id'    => $question->id,
+                                    'assessment_answer_id'      => $assessmentanswer->id,
+                                    'rating'                    => $assessmentanswer->rating,
+                                    'description'               => '',
+                                    'updated_by'                => Auth::id(),
+                                    'workforce_id'              => Auth::id()
+                                ]);
+                                if (!$assessment) {
+                                    DB::rollBack();
+                                    return response()->json([
+                                        'status'        => false,
+                                        'message'       => $assessment
+                                    ], 400);
+                                } 
+                                $assessmentlog = AssessmentLog::create([
+                                    'workforce_id'          => $workforce->id,
+                                    'assessment_id'         => $assessment->id,
+                                    'date'                  => date('Y-m-d'),
+                                    'assessment_answer_id'  => $assessmentanswer->id,
+                                    'status'                => 'Create',
+                                    'updated_by'            => Auth::id(),
+                                ]);
+                                if (!$assessmentlog) {
+                                    DB::rollBack();
+                                    return response()->json([
+                                        'status'        => false,
+                                        'message'       => $assessmentlog
+                                    ], 400);
+                                }
+                            }
+                        }
+                    }
+                break;
+                case 'radio':
+                    if($request->input('answer_choice_'.$question->id)){
+                        $choice = $request->input('answer_choice_'.$question->id);
+                        $assessmentanswer = AssessmentAnswer::find($choice);
+                        if($assessmentanswer){
                             $assessment = Assessment::create([
                                 'assessment_date'           => date('Y-m-d'),
                                 'assessment_question_id'    => $question->id,
-                                'assessment_answer_id'      => $answers->id,
-                                'rating'                    => $answers->rating,
+                                'assessment_answer_id'      => $assessmentanswer->id,
+                                'rating'                    => $assessmentanswer->rating,
                                 'description'               => '',
                                 'updated_by'                => Auth::id(),
                                 'workforce_id'              => Auth::id()
@@ -230,138 +269,243 @@ class AssessmentController extends Controller
                                     'status'        => false,
                                     'message'       => $assessment
                                 ], 400);
-                            } else {
-                                $log = AssessmentLog::create([
-                                    'workforce_id'          => Auth::id(),
-                                    'assessment_id'         => $assessment->id,
-                                    'date'                  => date('Y-m-d'),
-                                    'assessment_answer_id'  => $answers->id,
-                                    'status'                => 'Create',
-                                    'updated_by'            => Auth::id(),
-                                ]);
-                                if (!$log) {
-                                    DB::rollBack();
-                                    return response()->json([
-                                        'status'        => false,
-                                        'message'       => $log
-                                    ], 400);
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'radio':
-                        $answers = AssessmentAnswer::find($value->answer_id);
-                        $assessment = Assessment::create([
-                            'assessment_date'           => date('Y-m-d'),
-                            'assessment_question_id'    => $question->id,
-                            'assessment_answer_id'      => $answers->id,
-                            'rating'                    => $answers->rating,
-                            'description'               => '',
-                            'updated_by'                => Auth::id(),
-                            'workforce_id'              => Auth::id()
-                        ]);
-                        if (!$assessment) {
-                            DB::rollBack();
-                            return response()->json([
-                                'status'        => false,
-                                'message'       => $assessment
-                            ], 400);
-                        } else {
-                            $log = AssessmentLog::create([
-                                'workforce_id'          => Auth::id(),
+                            } 
+                            $assessmentlog = AssessmentLog::create([
+                                'workforce_id'          => $workforce->id,
                                 'assessment_id'         => $assessment->id,
                                 'date'                  => date('Y-m-d'),
-                                'assessment_answer_id'  => $answers->id,
+                                'assessment_answer_id'  => $assessmentanswer->id,
                                 'status'                => 'Create',
                                 'updated_by'            => Auth::id(),
                             ]);
-                            if (!$log) {
+                            if (!$assessmentlog) {
                                 DB::rollBack();
                                 return response()->json([
                                     'status'        => false,
-                                    'message'       => $log
+                                    'message'       => $assessmentlog
                                 ], 400);
                             }
                         }
-                        break;
-                    default:
-                        $answers = AssessmentAnswer::find($value->answer_id);
-                        $assessment = Assessment::create([
-                            'assessment_date'           => date('Y-m-d'),
-                            'assessment_question_id'    => $question->id,
-                            'assessment_answer_id'      => $answers->id,
-                            'rating'                    => $answers->rating,
-                            'description'               => '',
-                            'updated_by'                => Auth::id(),
-                            'workforce_id'              => Auth::id()
-                        ]);
-                        if (!$assessment) {
-                            DB::rollBack();
-                            return response()->json([
-                                'status'        => false,
-                                'message'       => $assessment
-                            ], 400);
-                        } else {
-                            $log = AssessmentLog::create([
-                                'workforce_id'          => Auth::id(),
-                                'assessment_id'         => $assessment->id,
-                                'date'                  => date('Y-m-d'),
-                                'assessment_answer_id'  => $answers->id,
-                                'status'                => 'Create',
-                                'updated_by'            => Auth::id(),
-                            ]);
-                            if (!$log) {
-                                DB::rollBack();
-                                return response()->json([
-                                    'status'        => false,
-                                    'message'       => $log
-                                ], 400);
-                            }
-                        }
-                        break;
-                }
-            } else {
-                $assessment = Assessment::create([
-                    'assessment_date'           => date('Y-m-d'),
-                    'assessment_question_id'    => $question->id,
-                    'rating'                    => 0,
-                    'description'               => $value->answer_id,
-                    'updated_by'                => Auth::id(),
-                    'workforce_id'              => Auth::id()
-                ]);
-                if (!$assessment) {
-                    DB::rollBack();
-                    return response()->json([
-                        'status'        => false,
-                        'message'       => $assessment
-                    ], 400);
-                } else {
-                    $log = AssessmentLog::create([
-                        'workforce_id'          => Auth::id(),
-                        'assessment_id'         => $assessment->id,
-                        'date'                  => date('Y-m-d'),
-                        'status'                => 'Create',
-                        'updated_by'            => Auth::id(),
-                    ]);
-                    if (!$log) {
-                        DB::rollBack();
-                        return response()->json([
-                            'status'        => false,
-                            'message'       => $log
-                        ], 400);
                     }
-                }
+                break;
+                default:
+                    if($request->input('answer_choice_'.$question->id)){
+                        $choice = $request->input('answer_choice_'.$question->id);
+                        $assessment = Assessment::create([
+                            'assessment_date'           => date('Y-m-d'),
+                            'assessment_question_id'    => $question->id,
+                            'rating'                    => 0,
+                            'description'               => $choice,
+                            'updated_by'                => Auth::id(),
+                            'workforce_id'              => $workforce->id
+                        ]);
+                        if (!$assessment) {
+                            DB::rollBack();
+                            return response()->json([
+                                'status'        => false,
+                                'message'       => $assessment
+                            ], 400);
+                        } 
+                        $assessmentlog = AssessmentLog::create([
+                            'workforce_id'          => $workforce->id,
+                            'assessment_id'         => $assessment->id,
+                            'date'                  => date('Y-m-d'),
+                            'status'                => 'Create',
+                            'updated_by'            => Auth::id(),
+                        ]);
+                        if (!$assessmentlog) {
+                            DB::rollBack();
+                            return response()->json([
+                                'status'        => false,
+                                'message'       => $assessmentlog
+                            ], 400);
+                        }
+                    }
             }
         }
-        $calculation = $this->calculation();
-        if (!$calculation) {
-            DB::rollBack();
-            return response()->json([
-                'status'        => false,
-                'message'       => 'Error calculate assessment',
-            ], 400);
-        }
+        // $bobot = 0;
+        // $formula = Formula::with(['detail'])->first();
+        // $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        
+        // if($formula){
+        //     foreach($formula->detail as $formuladetail){
+        //         if($formuladetail->question->answer_type == 'checkbox'){
+        //             if($request->input('answer_choice_'.$formuladetail->question->id)){
+        //                 foreach($request->input('answer_choice_'.$formuladetail->question->id) as $choice){
+        //                     if($choice == $formuladetail->answer->id){
+        //                         $bobot += $formuladetail->answer->rating;
+        //                     }  
+        //                 }
+        //             }
+        //         }   
+        //         else{
+        //             if($request->input('answer_choice_'.$formuladetail->question->id) == $formuladetail->answer->id){
+        //                 $bobot += $formuladetail->answer->rating;
+        //             }
+        //         } 
+        //     }
+        // }
+        // $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+        // foreach($healthmeters as $healthmeter){
+        //     if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
+        //         $message = 'Hai '.$workforce->name.' , menurut bot assessment andatermasuk dalam kategori resiko '.$healthmeter->name.'. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+        //     }
+        // }
+        // foreach ($request->answer_choice as $key => $values) {
+        //     $value = (object) $values;
+        //     $question = AssessmentQuestion::find($value->question_id);
+        //     if ($value->answer_type != 'freetext') {
+        //         switch ($value->answer_type) {
+        //             case 'checkbox':
+        //                 foreach ($value->answer_id as $key => $answer) {
+        //                     $answers = AssessmentAnswer::find($answer);
+        //                     $assessment = Assessment::create([
+        //                         'assessment_date'           => date('Y-m-d'),
+        //                         'assessment_question_id'    => $question->id,
+        //                         'assessment_answer_id'      => $answers->id,
+        //                         'rating'                    => $answers->rating,
+        //                         'description'               => '',
+        //                         'updated_by'                => Auth::id(),
+        //                         'workforce_id'              => Auth::id()
+        //                     ]);
+        //                     if (!$assessment) {
+        //                         DB::rollBack();
+        //                         return response()->json([
+        //                             'status'        => false,
+        //                             'message'       => $assessment
+        //                         ], 400);
+        //                     } else {
+        //                         $log = AssessmentLog::create([
+        //                             'workforce_id'          => Auth::id(),
+        //                             'assessment_id'         => $assessment->id,
+        //                             'date'                  => date('Y-m-d'),
+        //                             'assessment_answer_id'  => $answers->id,
+        //                             'status'                => 'Create',
+        //                             'updated_by'            => Auth::id(),
+        //                         ]);
+        //                         if (!$log) {
+        //                             DB::rollBack();
+        //                             return response()->json([
+        //                                 'status'        => false,
+        //                                 'message'       => $log
+        //                             ], 400);
+        //                         }
+        //                     }
+        //                 }
+        //                 break;
+
+        //             case 'radio':
+        //                 $answers = AssessmentAnswer::find($value->answer_id);
+        //                 $assessment = Assessment::create([
+        //                     'assessment_date'           => date('Y-m-d'),
+        //                     'assessment_question_id'    => $question->id,
+        //                     'assessment_answer_id'      => $answers->id,
+        //                     'rating'                    => $answers->rating,
+        //                     'description'               => '',
+        //                     'updated_by'                => Auth::id(),
+        //                     'workforce_id'              => Auth::id()
+        //                 ]);
+        //                 if (!$assessment) {
+        //                     DB::rollBack();
+        //                     return response()->json([
+        //                         'status'        => false,
+        //                         'message'       => $assessment
+        //                     ], 400);
+        //                 } else {
+        //                     $log = AssessmentLog::create([
+        //                         'workforce_id'          => Auth::id(),
+        //                         'assessment_id'         => $assessment->id,
+        //                         'date'                  => date('Y-m-d'),
+        //                         'assessment_answer_id'  => $answers->id,
+        //                         'status'                => 'Create',
+        //                         'updated_by'            => Auth::id(),
+        //                     ]);
+        //                     if (!$log) {
+        //                         DB::rollBack();
+        //                         return response()->json([
+        //                             'status'        => false,
+        //                             'message'       => $log
+        //                         ], 400);
+        //                     }
+        //                 }
+        //                 break;
+        //             default:
+        //                 $answers = AssessmentAnswer::find($value->answer_id);
+        //                 $assessment = Assessment::create([
+        //                     'assessment_date'           => date('Y-m-d'),
+        //                     'assessment_question_id'    => $question->id,
+        //                     'assessment_answer_id'      => $answers->id,
+        //                     'rating'                    => $answers->rating,
+        //                     'description'               => '',
+        //                     'updated_by'                => Auth::id(),
+        //                     'workforce_id'              => Auth::id()
+        //                 ]);
+        //                 if (!$assessment) {
+        //                     DB::rollBack();
+        //                     return response()->json([
+        //                         'status'        => false,
+        //                         'message'       => $assessment
+        //                     ], 400);
+        //                 } else {
+        //                     $log = AssessmentLog::create([
+        //                         'workforce_id'          => Auth::id(),
+        //                         'assessment_id'         => $assessment->id,
+        //                         'date'                  => date('Y-m-d'),
+        //                         'assessment_answer_id'  => $answers->id,
+        //                         'status'                => 'Create',
+        //                         'updated_by'            => Auth::id(),
+        //                     ]);
+        //                     if (!$log) {
+        //                         DB::rollBack();
+        //                         return response()->json([
+        //                             'status'        => false,
+        //                             'message'       => $log
+        //                         ], 400);
+        //                     }
+        //                 }
+        //                 break;
+        //         }
+        //     } else {
+        //         $assessment = Assessment::create([
+        //             'assessment_date'           => date('Y-m-d'),
+        //             'assessment_question_id'    => $question->id,
+        //             'rating'                    => 0,
+        //             'description'               => $value->answer_id,
+        //             'updated_by'                => Auth::id(),
+        //             'workforce_id'              => Auth::id()
+        //         ]);
+        //         if (!$assessment) {
+        //             DB::rollBack();
+        //             return response()->json([
+        //                 'status'        => false,
+        //                 'message'       => $assessment
+        //             ], 400);
+        //         } else {
+        //             $log = AssessmentLog::create([
+        //                 'workforce_id'          => Auth::id(),
+        //                 'assessment_id'         => $assessment->id,
+        //                 'date'                  => date('Y-m-d'),
+        //                 'status'                => 'Create',
+        //                 'updated_by'            => Auth::id(),
+        //             ]);
+        //             if (!$log) {
+        //                 DB::rollBack();
+        //                 return response()->json([
+        //                     'status'        => false,
+        //                     'message'       => $log
+        //                 ], 400);
+        //             }
+        //         }
+        //     }
+        // }
+        // $calculation = $this->calculation();
+        // if (!$calculation) {
+        //     DB::rollBack();
+        //     return response()->json([
+        //         'status'        => false,
+        //         'message'       => 'Error calculate assessment',
+        //     ], 400);
+        // }
         DB::commit();
         return response()->json([
             'status'    => true,
