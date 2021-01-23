@@ -33,6 +33,77 @@
                   value="{{$formula->name}}" required>
               </div>
             </div>
+
+            <div class="form-group">
+              <label for="calculate" class="col-sm-2 control-label">Formula <b
+                  class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <div class="input-group">
+                  <input type="text" class="form-control" id="assessment_answer_id" name="assessment_answer_id" data-placeholder="Pilih Jabawan"  />
+                  <div class="input-group-btn">
+                      <a class="btn btn-primary" onclick="add()">
+                          <i class="fa fa-plus"></i>
+                      </a>
+                  </div>
+                </div>
+                <br/>
+                <table class="table table-bordered table-striped" id="table-formula">
+                  <thead>
+                      <th>Operator</th>
+                      <th width="250">Nilai</th>
+                      <th>Operator</th>
+                      <th class="text-center">#</th>
+                  </thead>
+                  <tbody>
+                    @php
+                     $sort = 0   
+                    @endphp
+                    @foreach ($formula->detail as $detail)
+                      @php
+                        $sort = $detail->order   
+                    @endphp
+
+                        <tr>
+                          <td class="text-center">
+                            <input type="hidden" name="formula[]" value="{{$sort}}"/>
+                            <input type="hidden" name="update_{{$sort}}" value="{{$detail->id}}"/>
+                            <input type="hidden" name="answer_{{$sort}}" value="{{$detail->answer?$detail->answer->id:''}}"/>
+                            <select name="operation_before_{{$sort}}" onchange="formula()" class="form-control select2 before">
+                              <option value=""></option>
+                              <option value="+" @if($detail->operation_before == '+') selected @endif>+</option>
+                              <option value="-" @if($detail->operation_before == '-') selected @endif>-</option>
+                              <option value="*" @if($detail->operation_before == '*') selected @endif>*</option>
+                              <option value="/" @php if($detail->operation_before == '/') { @endphp selected @php } @endphp>/</option>
+                              <option value="(" @php if($detail->operation_before == '(') { @endphp selected @php } @endphp>(</option>
+                              <option value=")" @php if($detail->operation_before == ')') { @endphp selected @php } @endphp>)</option>
+                              </select></td>
+                          <td>
+                            @if($detail->answer)
+                            <input type="hidden" name="value_{{$sort}}" value="{{$detail->value}}" class="value"/><p class="form-control-static">{{$detail->answer->question->description.' - '.$detail->answer->description}}</p>
+                            @else
+                            <input type="text" name="value_{{$sort}}" class="form-control value" required onkeyup="formula()" value="{{$detail->value}}"/>
+                          @endif
+                          </td>
+                          <td class="text-center"><select name="operation_{{$sort}}" onchange="formula()" class="form-control select2 after">
+                            <option value=""></option>
+                            <option value="+" @if($detail->operation == '+') selected @endif>+</option>
+                            <option value="-" @if($detail->operation == '-') selected @endif>-</option>
+                            <option value="*" @if($detail->operation == '*') selected @endif>*</option>
+                            <option value="/" @php if($detail->operation == '/') { @endphp selected @php } @endphp>/</option>
+                            <option value="(" @php if($detail->operation == '(') { @endphp selected @php } @endphp>(</option>
+                            <option value=")" @php if($detail->operation == ')') { @endphp selected @php } @endphp>)</option>
+                            </select></td>
+                            <td class="text-center">
+                              <a class="btn btn-danger btn-sm" onclick="remove(this)"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+                <input type="hidden" name="calculate"/>
+                <b><p id="result" class="form-control-static"></p></b>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -47,7 +118,110 @@
 @push('scripts')
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
+  var sort = {{++$sort}};
+  function add(){
+    var id = $('#assessment_answer_id').select2('val');
+    if(id){
+      var text = $('#assessment_answer_id').select2('data').text;
+      var description = `<input type="hidden" name="value_${sort}" value="#${id}" class="value"/><p class="form-control-static">${text}</p>`;
+    }
+    else{
+      var description = `<input type="text" name="value_${sort}" class="form-control value" required onkeyup="formula()"/>`;
+    }
+    $('#table-formula tbody').append(`
+      <tr>
+        <td>
+          <input type="hidden" name="formula[]" value="${sort}"/>
+          <input type="hidden" name="update_${sort}" value="0"/>
+          <input type="hidden" name="answer_${sort}" value="${id}"/>
+          <select name="operation_before_${sort}" onchange="formula()" class="form-control select2 before">
+            <option value=""></option>
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            <option value="(">(</option>
+            <option value=")">)</option>
+          </select>
+        </td>
+        <td>${description}</td>
+        <td>
+          <select name="operation_${sort}" onchange="formula()" class="form-control select2 after">
+            <option value=""></option>
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            <option value="(">(</option>
+            <option value=")">)</option>
+          </select>
+        </td>
+        <td class="text-center">
+          <a class="btn btn-danger btn-sm" onclick="remove(this)"><i class="fa fa-times"></i></a>
+        </td>
+      </tr>
+    `);
+    $(`select[name=operation_${sort}]`).select2({
+      allowClear:true
+    });
+    $(`select[name=operation_before_${sort}]`).select2({
+      allowClear:true
+    });
+    $(`input[name=value_${sort}]`).inputmask('decimal', {
+      rightAlign: true
+    });
+    sort++;
+    formula();
+    $('#assessment_answer_id').select2('val','');
+  }
+  function remove(e){
+    $(e).closest('tr').remove();
+    formula();
+  }
+  function formula(){
+    var string = '';
+    $( "input[name^=formula]" ).each(function(  ) {
+      var before = $(this).closest('tr').find('.before').select2('val');
+      var value = $(this).closest('tr').find('.value').val();
+      var after = $(this).closest('tr').find('.after').select2('val');
+      string += (before+' '+value+' '+after+' ');
+    });
+    $('#result').html(string==''?'Belum Ada Formula':string+' = ');
+    $('input[name=calculate]').attr('value',string);
+  }
   $(document).ready(function(){
+    $('.select2').select2({
+      allowClear:true
+    });
+    formula();
+    $("#assessment_answer_id").select2({
+      ajax: {
+        url: "{{route('assessmentanswer.select')}}",
+        type:'GET',
+        dataType: 'json',
+        data: function (term,page) {
+          return {
+            name:term,
+            page:page,
+            limit:30,
+          };
+        },
+        results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+            option.push({
+              id:item.id,  
+              text: `${item.question.description} - ${item.description}`
+            });
+          });
+          return {
+            results: option, more: more,
+          };
+        },
+      },
+      allowClear: true,
+    });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',

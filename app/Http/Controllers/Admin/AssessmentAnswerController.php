@@ -72,14 +72,19 @@ class AssessmentAnswerController extends Controller
 
         //Count Data
         $query = AssessmentAnswer::whereRaw("upper(description) like '%$name%'");
-        $query->where('assessment_question_id', $question);
+        if($question){
+            $query->where('assessment_question_id', $question);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = AssessmentAnswer::whereRaw("upper(description) like '%$name%'");
-        $query->where('assessment_question_id', $question);
-        $query->offset($start);
+        $query = AssessmentAnswer::with('question')->whereRaw("upper(description) like '%$name%'");
+        if($question){
+            $query->where('assessment_question_id', $question);
+        }
+        $query->offset($start*$length);
         $query->limit($length);
+        $query->orderBy('assessment_question_id','asc');
         $results = $query->get();
 
         $data = [];

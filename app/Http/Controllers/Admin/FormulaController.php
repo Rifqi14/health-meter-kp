@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Formula;
+use App\Models\FormulaDetail;
+use App\Models\AssessmentAnswer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
@@ -118,6 +120,7 @@ class FormulaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'      => 'required',
+            'calculate' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -126,20 +129,56 @@ class FormulaController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-
+        $calculate = $request->calculate;
+        $assessmentanswers = AssessmentAnswer::all();
+        foreach($assessmentanswers as $assessmentanswer){
+            $calculate = str_replace('#'.$assessmentanswer->id,$assessmentanswer->rating,$calculate);
+        }
+        try{
+            eval('return '.$calculate.';');
+        }
+        catch(\ParseError $e){
+            return response()->json([
+                'status' 	=> false,
+                'message' 	=> 'Formula Error'
+            ], 400);
+        }
+        DB::beginTransaction();
         $formula = Formula::create([
             'name' 	    => $request->name,
+            'calculate' => $request->calculate,
             'updated_by'=> Auth::id(),
         ]);
         if (!$formula) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' 	=> $formula
             ], 400);
         }
+        $order = 0;
+        foreach($request->formula as $value){
+            $formuladetail = FormulaDetail::create([
+                'formula_id'            => $formula->id,
+                'assessment_answer_id'  => $request->input('answer_'.$value)?$request->input('answer_'.$value):null,
+                'order'                 => ++$order,
+                'value'                 => $request->input('value_'.$value),
+                'operation_before'      => $request->input('operation_before_'.$value),
+                'operation'             => $request->input('operation_'.$value),
+                'updated_by'            => Auth::id()
+            ]);
+            if (!$formuladetail) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' 	=> $formuladetail
+                ], 400);
+            }
+        }
         Formula::where('id','<>',$formula->id)->update([
             'deleted_at'=>now()
         ]);
+        DB::commit();
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('formula.index'),
@@ -191,6 +230,7 @@ class FormulaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' 	    => 'required',
+            'calculate' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -199,17 +239,76 @@ class FormulaController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-
+        $calculate = $request->calculate;
+        $assessmentanswers = AssessmentAnswer::all();
+        foreach($assessmentanswers as $assessmentanswer){
+            $calculate = str_replace('#'.$assessmentanswer->id,$assessmentanswer->rating,$calculate);
+        }
+        try{
+            eval('return '.$calculate.';');
+        }
+        catch(\ParseError $e){
+            return response()->json([
+                'status' 	=> false,
+                'message' 	=> 'Formula Error'
+            ], 400);
+        }
+        DB::beginTransaction();
         $formula = Formula::find($id);
         $formula->name = $request->name;
+        $formula->calculate = $request->calculate;
         $formula->updated_by = Auth::id();
         $formula->save();
         if (!$formula) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' 	=> $formula
             ], 400);
         }
+        $order = 0;
+        $ids = [];
+        foreach($request->formula as $value){
+            if(!$request->input('update_'.$value)){
+                $formuladetail = FormulaDetail::create([
+                    'formula_id'            => $formula->id,
+                    'assessment_answer_id'  => $request->input('answer_'.$value)?$request->input('answer_'.$value):null,
+                    'order'                 => ++$order,
+                    'value'                 => $request->input('value_'.$value),
+                    'operation_before'      => $request->input('operation_before_'.$value),
+                    'operation'             => $request->input('operation_'.$value),
+                    'updated_by'            => Auth::id()
+                ]);
+                if (!$formuladetail) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => false,
+                        'message' 	=> $formuladetail
+                    ], 400);
+                }
+                array_push($ids,$formuladetail->id);
+            }
+            else{
+                array_push($ids,$request->input('update_'.$value));
+                $formuladetail = FormulaDetail::find($request->input('update_'.$value));
+                $formuladetail->order = ++$order;
+                $formuladetail->operation_before = $request->input('operation_before_'.$value);
+                $formuladetail->value = $request->input('value_'.$value);
+                $formuladetail->operation = $request->input('operation_'.$value);
+                $formuladetail->updated_by = Auth::id();
+                $formuladetail->save();
+                if (!$formuladetail) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => false,
+                        'message' 	=> $formuladetail
+                    ], 400);
+                }
+            }
+            
+        }
+        FormulaDetail::whereNotIn('id',$ids)->forceDelete();
+        DB::commit();
         return response()->json([
         	'status' 	=> true,
         	'results' 	=> route('formula.index'),
