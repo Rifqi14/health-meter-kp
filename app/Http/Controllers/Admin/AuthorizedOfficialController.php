@@ -82,6 +82,10 @@ class AuthorizedOfficialController extends Controller
 
     public function select(Request $request)
     {
+        $type = [
+            0   => 'Approval Sistem',
+            1   => 'Tanda Tangan Basah'
+        ];
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
@@ -99,6 +103,7 @@ class AuthorizedOfficialController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
+            $result->type = $type[$result->authority_type];
             $data[] = $result;
         }
         return response()->json([
