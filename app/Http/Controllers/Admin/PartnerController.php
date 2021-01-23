@@ -92,14 +92,18 @@ class PartnerController extends Controller
         $query = DB::table('partners');
         $query->select('partners.*');
         $query->whereRaw("upper(name) like '%$name%'");
-        $query->where('site_id',$site_id);
+        if ($site_id) {
+            $query->where('site_id',$site_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = DB::table('partners');
         $query->select('partners.*');
         $query->whereRaw("upper(name) like '%$name%'");
-        $query->where('site_id',$site_id);
+        if ($site_id) {
+            $query->where('site_id',$site_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $partners = $query->get();

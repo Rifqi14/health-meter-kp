@@ -112,14 +112,14 @@ class WorkforceController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Workforce::whereRaw("upper(name) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Workforce::whereRaw("upper(name) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
         }
@@ -131,6 +131,7 @@ class WorkforceController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
+            $result->namenid = ["<span>$result->name<br><small>$result->nid</small></span>"];
             $data[] = $result;
         }
         return response()->json([

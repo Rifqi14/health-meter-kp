@@ -516,15 +516,22 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportattendance/delete/{id}', 'Admin\ReportAttendanceController@delete')->name('reportattendance.delete');
         Route::resource('/reportattendance', 'Admin\ReportAttendanceController');
 
+        // Hasil Pemeriksaan
+        Route::get('/checkupresult/read', 'Admin\CheckupResultController@read')->name('checkupresult.read');
+        Route::get('/checkupresult/select', 'Admin\CheckupResultController@select')->name('checkupresult.select');
+        Route::resource('/checkupresult', 'Admin\CheckupResultController');
+        
         // CloseContact
         Route::get('/closecontact/read', 'Admin\CloseContactController@read')->name('closecontact.read');
         // Route::get('/closecontact/select', 'Admin\PatientController@select')->name('closecontact.select');
         Route::resource('/closecontact', 'Admin\CloseContactController');
+
         // CheckupSchedule
         Route::get('/checkupschedule/read', 'Admin\CheckupScheduleController@read')->name('checkupschedule.read');
         Route::get('/checkupschedule/select', 'Admin\CheckupScheduleController@select')->name('checkupschedule.select');
         Route::resource('/checkupschedule', 'Admin\CheckupScheduleController');
-        //Konsultasi Kehadiran
+
+        //Konsultasi Kesehatan
         Route::get('/healthconsultation/read', 'Admin\HealthConsultationController@read')->name('healthconsultation.read');
         Route::get('/healthconsultation/select', 'Admin\HealthConsultationController@select')->name('healthconsultation.select');
         Route::resource('/healthconsultation', 'Admin\HealthConsultationController');
@@ -535,6 +542,11 @@ Route::group(['prefix' => 'admin'], function () {
         //CoveringLetter
         // Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
         Route::resource('/coveringletter', 'Admin\CoveringLetterController');
+
+        // CheckupSchedule
+        Route::get('/healthinsurance/read', 'Admin\HealthInsuranceController@read')->name('healthinsurance.read');
+        Route::get('/healthinsurance/select', 'Admin\HealthInsuranceController@select')->name('healthinsurance.select');
+        Route::resource('/healthinsurance', 'Admin\HealthInsuranceController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
