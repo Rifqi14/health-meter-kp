@@ -85,6 +85,34 @@ class DoctorController extends Controller
         ], 200);
     }
 
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+
+        //Count Data
+        $query = Doctor::whereRaw("upper(name) like '%$name%'");
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = Doctor::whereRaw("upper(name) like '%$name%'");
+        $query->orderBy('name', 'asc');
+        $query->offset($start);
+        $query->limit($length);
+        $results = $query->get();
+
+        $data = [];
+        foreach ($results as $result) {
+            $result->no = ++$start;
+            $data[] = $result;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -14,7 +14,7 @@ class UsingRuleController extends Controller
 {
     function __construct() {
         View::share('menu_active', url('admin/usingrule'));
-        $this->middleware('accessmenu', ['except' => 'select']);
+        // $this->middleware('accessmenu', ['except' => 'select']);
     }
     /**
      * Display a listing of the resource.
@@ -26,6 +26,32 @@ class UsingRuleController extends Controller
         return view('admin.usingrule.index');
     }
 
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+
+        //Count Data
+        $query = UsingRule::whereRaw("upper(description) like '%$name%'");
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = UsingRule::whereRaw("upper(description) like '%$name%'");
+        $query->offset($start);
+        $query->limit($length);
+        $medicines = $query->get();
+
+        $data = [];
+        foreach ($medicines as $medicine) {
+            $medicine->no = ++$start;
+            $data[] = $medicine;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
     public function read(Request $request)
     {
         $start = $request->start;

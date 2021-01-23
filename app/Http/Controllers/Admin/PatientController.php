@@ -96,13 +96,20 @@ class PatientController extends Controller
         $start = $request->page ? $request->page - 1 : 0;
         $length = $request->limit;
         $name = strtoupper($request->name);
+        $workforce_id   = $request->workforce_id;
 
         //Count Data
         $query = Patient::whereRaw("upper(name) like '%$name%'");
+        if($workforce_id){
+            $query->where('workforce_id', $workforce_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = Patient::whereRaw("upper(name) like '%$name%'");
+        if ($workforce_id) {
+            $query->where('workforce_id', $workforce_id);
+        }
         $query->orderBy('name', 'asc');
         $query->offset($start);
         $query->limit($length);
