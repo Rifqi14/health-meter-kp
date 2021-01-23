@@ -532,6 +532,9 @@ Route::group(['prefix' => 'admin'], function () {
         //Penanganan Medis
         Route::get('/medicaltreatment/read', 'Admin\MedicalTreatmentController@read')->name('medicaltreatment.read');
         Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
+        //CoveringLetter
+        // Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
+        Route::resource('/coveringletter', 'Admin\CoveringLetterController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
