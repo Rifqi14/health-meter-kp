@@ -22,7 +22,7 @@ class ConfigController extends Controller
     public function update(Request $request)
     {
         $fields = [
-            'app_name','app_copyright','app_logo','company_name','company_email','company_phone','company_address','company_latitude','company_longitude','surat_pengantar','resep_dokter'
+            'app_name','app_copyright','app_logo','company_name','company_email','company_phone','company_address','company_latitude','company_longitude'
         ];
         $validator = Validator::make($request->all(), [
             'app_name' 	=> 'required',

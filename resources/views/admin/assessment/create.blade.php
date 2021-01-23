@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style>
 
-.direct-chat-messages {
+  .direct-chat-messages {
     height: 400px !important;
   }
   .direct-chat-text{
@@ -24,40 +24,40 @@
       margin-left: 0;
   }
   .dot-typing {
-  position: relative;
-  left: -9999px;
-  width: 8px;
-  height: 8px;
-  border-radius: 5px;
-  background-color: #444;
-  color: #444;
-  box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
-  animation: dotTyping 1.5s infinite linear;
-}
+    position: relative;
+    left: -9999px;
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #444;
+    color: #444;
+    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    animation: dotTyping 1.5s infinite linear;
+  }
 
-@keyframes dotTyping {
-  0% {
-    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+  @keyframes dotTyping {
+    0% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    16.667% {
+      box-shadow: 9984px -10px 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    33.333% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    50% {
+      box-shadow: 9984px 0 0 0 #444, 9999px -10px 0 0 #444, 10014px 0 0 0 #444;
+    }
+    66.667% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    83.333% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px -10px 0 0 #444;
+    }
+    100% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
   }
-  16.667% {
-    box-shadow: 9984px -10px 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
-  }
-  33.333% {
-    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
-  }
-  50% {
-    box-shadow: 9984px 0 0 0 #444, 9999px -10px 0 0 #444, 10014px 0 0 0 #444;
-  }
-  66.667% {
-    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
-  }
-  83.333% {
-    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px -10px 0 0 #444;
-  }
-  100% {
-    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
-  }
-}
 </style>
 @endsection
 @section('content')
@@ -67,33 +67,13 @@
       <div class="box-header">
         <h3 class="box-title">Tambah Assessment</h3>
         <!-- tools box -->
-        <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
-        </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
         <form id="form" action="{{route('assessment.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
-          <!-- Conversations are loaded here -->
-          <div class="direct-chat-messages assessment-msg">
-            {{-- Information Section Message --}}
-            <div class="information-msg">
-            </div>
-            {{-- .Information Section Message --}}
-            {{-- Question Message --}}
-            <div class="question-msg">
-
-            </div>
-            {{-- .Question Message --}}
-
-            {{-- Answer Message --}}
-            <div class="answer-msg form-inline">
-            </div>
-            {{-- .Answer Message --}}
+          <div class="direct-chat-messages">
           </div>
-          <!--/.direct-chat-messages-->
         </form>
       </div>
       <div class="overlay hidden">
@@ -102,333 +82,674 @@
     </div>
   </div>
 </div>
-@foreach($questions as $question)
-@foreach($question->answer as $answer)
-<div class="modal fade" id="modalinfo{{$answer->id}}" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span></button>
-        <h5 class="modal-title">Cara Pengisian</h5>
-      </div>
-      <div class="modal-body">
-        {!!$answer->information!!}
-      </div>
-    </div>
-  </div>
-</div>
-@endforeach
-@endforeach
 @endsection
 
 @push('scripts')
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
-<script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 <script>
-  let assessment_data = @json($questions, JSON_PRETTY_PRINT);
-  let information_data = [];
-  let question_data = [];
-  let question_child_data = [];
-  let question_parameter = {
-    offset: 0,
-    limit: 0,
-  };
-  let message = [];
-  let answer_choice = [];
-  // To assign QuestionType Informasi to information_data variable
-  function informationData(params) {
-    $.each(params, function(i, message) {
-      if (message.type == 'Informasi') {  
-        information_data.push(message);
-      }
-    });
-  }
-  // To assign QuestionType Question Parent to question_data variable
-  function questionData(params) {
-    $.each(params, function(i, message) {
-      if (message.type == 'Pertanyaan' && message.is_parent == 0) {  
-        question_data.push(message);
-      }
-    });
-  }
-  // To assign QuestionType Question Child to question_child_data variable
-  function questionChildData(params) {
-    $.each(params, function(i, message) {
-      if (message.type == 'Pertanyaan' && message.is_parent == 1) {  
-        question_child_data.push(message);
-      }
-    });
-  }
-  // To Start conversation with bot
-  // Can be change
-  function reply() {
-    var start = $('input[name=message]').val();
-    if (start === '/mulai') {
-      rerenderMsg(question(question_data));
-      $('input[name=message]').val('');
-      $('.box-footer').addClass('hidden');
-    } else {
-      let message_not_found = [{
-        type: 'Informasi',
-        description: 'Maaf kami tidak mengerti perintah ini.'
-      }];
-      rerenderMsg(information(message_not_found));
+  var assessments = [];
+  var questions = [];
+  var question_childs = [];
+  var answers = [];
+  var answer_questions = [];
+  var start = 0;
+  $.each(@json($questions, JSON_PRETTY_PRINT), function(i, message) {
+    if (message.is_parent == 0) {  
+        questions.push(message);
     }
-    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000);
-  }
-  // To Render question from question_data variable to message bubble
-  function question(params) {
-    html = '';
-    countData = params.length;
-    $.each(params, function(i, message) {
-      if (question_parameter.limit == i) {
-        html += `<div class="direct-chat-msg">
+  });
+  $.each(@json($questions, JSON_PRETTY_PRINT), function(i, message) {
+    if (message.is_parent == 1) {  
+        question_childs[message.answer_parent_code] = message;
+    }
+  });
+  $.each(@json($questions, JSON_PRETTY_PRINT), function(i, message) { 
+      assessments[message.id] = message;
+  });
+  $.each(@json($answers, JSON_PRETTY_PRINT), function(i, message) { 
+    if(!answers[message.assessment_question_id]){
+      answers[message.assessment_question_id] = [];
+      answers[message.assessment_question_id].push(message);
+    }
+    else{
+      answers[message.assessment_question_id].push(message);
+    }
+    
+  });
+  $.each(@json($answers, JSON_PRETTY_PRINT), function(i, message) { 
+    answer_questions[message.id] = message;
+  });
+  function loader(){
+    if(start == questions.length){
+      $.ajax({
+          url:'{{route('assessment.check')}}',
+          method:'post',
+          data: new FormData($('#form')[0]),
+          processData: false,
+          contentType: false,
+          dataType: 'json', 
+          beforeSend:function(){
+            $('.direct-chat-messages').append(`
+                <div class="direct-chat-msg loader">
                   <div class="direct-chat-info clearfix">
                     <span class="direct-chat-name pull-left">Bot Assessment</span>
                   </div>
-                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                  <div class="direct-chat-text">${message.description}</div>
-                </div>`
-        html += `<div class="direct-chat-msg right">
-                  <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <div class="direct-chat-text">
+                    <div style="padding:5px 0 5px 15px">
+                      <div class="dot-typing"></div>
+                    </div>
                   </div>
-                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">`
-        if (message.answer.length > 0) {
-          switch (message.answer_type) {
-              case 'checkbox':
-              html += `<div class="checkbox direct-chat-text">`;
-              $.each(message.answer, function(i, answer) {
-                html += `<input type="checkbox" name="answer_choice" value="${answer.id}" data-description="${answer.description}">
-                          ${answer.description} <br/>`;
-                        
-              });
-              html += `<button type="button" class="btn btn-block btn-default btn-sm" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer_type}" onclick="answer(this)"><i class="fa fa-check"></i></button></div></div>`;
-              break;
-              case 'radio':
-              html += `<div class="radio direct-chat-text">`;
-              $.each(message.answer, function(i, answer) {
-              html += `<input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="${message.answer_type}" data-description="${answer.description}" onclick="answer(this)">
-                        ${answer.description} <br/>`
-              });
-              html += `</div>`;
-              break;
+                </div>
+              `);
           }
-        } else {
-          html += `<input type="text" class="form-control direct-chat-text"name="answer_choice" id="freeText${message.id}" placeholder="...">`
-          html += `<button type="button" class="btn btn-default" data-question="${message.description}" data-question_id="${message.id}" data-answer_type="freetext" onclick="answer(this)"><i class="fa fa-check"></i></button></div></div>`;
-        }
-      }
-    });
-    return html;
-  }
-  // To Render information from information_data variable to message bubble
-  function information(params) {
-    html = '';
-    countData = params.length;
-    $.each(params, function(i, message) {
-      if (message.type == 'Informasi') {  
-        html += `<div class="direct-chat-msg">
-                  <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+        }).done(function(response){
+              $('.loader').remove();
+              if(response.status){
+                  $('.direct-chat-messages').append(`
+                  <div class="direct-chat-msg loader">
+                    <div class="direct-chat-info clearfix">
+                      <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    </div>
+                    <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                    <div class="direct-chat-text">
+                      ${response.message} 
+                      </div>
                   </div>
-                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assesment Bot">
-                  <div class="direct-chat-text">${message.description_information}</div>
-                </div>`;
-      }
-    });
-    setTimeout(function() {
-      rerenderMsg(question(question_data));
-    }, 3000);
-    return html;
-  }
-  // To Render Question child from question_child_data variable to message bubble
-  function child(params) {
-    html = '';
-    $.each(question_child_data, function(i, child){
-      if (child.question_parent_code == params.question_id && child.answer_parent_code == params.answer_id) {
-        html += `<div class="direct-chat-msg">
-                  <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                `);
+                $('.direct-chat-messages').append(`
+                  <div class="direct-chat-msg right" id="finish_answer">
+                    <div class="direct-chat-info clearfix">
+                      <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                    </div>
+                    <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                    <div class="direct-chat-text pull-right">
+                      <input type="radio" value="1" onclick="finish(this)">
+                      Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                    </div>
                   </div>
-                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                  <div class="direct-chat-text">${child.description}</div>
-                </div>`
-        html += `<div class="direct-chat-msg right">
+              `);
+              }else{
+                $('.direct-chat-messages').append(`
+                  <div class="direct-chat-msg error">
+                    <div class="direct-chat-info clearfix">
+                      <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    </div>
+                    <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                    <div class="direct-chat-text">
+                      Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                      </div>
+                  </div>
+                `);
+              $('.direct-chat-messages').append(`
+                <div class="direct-chat-msg right" id="error_answer">
                   <div class="direct-chat-info clearfix">
                     <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
                   </div>
-                  <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">`
-        if (child.answer.length > 0) {
-          $.each(child.answer, function(i, answer) {
-            switch (answer.answer_type) {
-              case 'checkbox':
-                html += `<div class="checkbox direct-chat-text">
-                          <input type="checkbox" name="answer_choice" value="${answer.id}" data-description="${answer.description}">
-                          ${answer.description}
-                        </div>`
-                break;
-              case 'radio':
-              html += `<div class="radio direct-chat-text">
-                        <input type="radio" name="answer_choice" id="answerRadio${answer.id}" value="${answer.id}" data-description="${answer.description}">
-                        ${answer.description}
-                      </div>`
-              break;
-            
-              default:
-                break;
-            }
-          });
-          html += `<button type="button" class="btn btn-default" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="${child.answer[0].answer_type}" onclick="answer(this)"><i class="fa fa-check"></i></button></div></div>`;
-        } else {
-          html += `<div class="direct-chat-text"><div class="input-group"><input type="text" class="form-control" name="answer_choice" id="freeText${child.id}" placeholder="..."><span class="input-group-addon" data-question="${child.description}" data-question_id="${child.id}" data-answer_type="freetext" onclick="answer(this)" style="cursor:pointer"><i class="fa fa-check"></i></span>`
-          html += `</div></div>`;
-        }
-      }
-    });
-    return html;
-  }
-  // To take value of choosen answer
-  function answer(params) {
-    var choice = {
-      question: $(params).data('question'),
-      question_id: $(params).data('question_id'),
-      answer_type: $(params).data('answer_type'),
-      answer_id: answerValue($(params).data('answer_type')),
-      label: answerDesc($(params).data('answer_type')),
-    };
-    answer_choice.push(choice);
-    if (child(choice)) {
-      message[message.length - 1] = `<div class="direct-chat-msg">
-                                      <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-left">Bot Assessment</span>
-                                      </div>
-                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                                      <div class="direct-chat-text">${answer_choice[answer_choice.length - 1].question}</div>
-                                    </div>
-                                    <div class="direct-chat-msg right">
-                                      <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
-                                      </div>
-                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                                      <div class="direct-chat-text">${answer_choice[answer_choice.length - 1].label}</div>
-                                    </div>`;
-      rerenderMsg(child(choice));
-    } else {
-      ++question_parameter.limit;
-      message[message.length - 1] = `<div class="direct-chat-msg">
-                                      <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-left">Bot Assessment</span>
-                                      </div>
-                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                                      <div class="direct-chat-text">${answer_choice[answer_choice.length - 1].question}</div>
-                                    </div>
-                                    <div class="direct-chat-msg right">
-                                      <div class="direct-chat-info clearfix">
-                                        <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
-                                      </div>
-                                      <img class="direct-chat-img" src="{{ asset('assets/user/1.png') }}" alt="Assessment Bot">
-                                      <div class="direct-chat-text">${answer_choice[answer_choice.length - 1].label}</div>
-                                    </div>`;
-      rerenderMsg(question(question_data));
+                  <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                  <div class="direct-chat-text pull-right">
+                    <input type="radio" value="1" onclick="reload(this)">
+                    Ya <br/><input type="radio" value="0" onclick="reload(this)"> Tidak
+                  </div>
+                </div>`);
+              }
+              $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
+              return;
+        }).fail(function(response){
+            $('.loader').remove();
+            $('.direct-chat-messages').append(`
+                <div class="direct-chat-msg error" >
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <div class="direct-chat-text">
+                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                    </div>
+                </div>
+              `);
+            $('.direct-chat-messages').append(`
+              <div class="direct-chat-msg right" id="error_answer">
+                <div class="direct-chat-info clearfix">
+                  <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                </div>
+                <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                <div class="direct-chat-text pull-right">
+                  <input type="radio" value="1" onclick="reload(this)">
+                  Ya <br/><input type="radio" value="0" onclick="reload(this)"> Tidak
+                </div>
+              </div>`);
+
+            $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
+        })	
+      return;
     }
+    $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg loader">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-left">Bot Assessment</span>
+        </div>
+        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <div class="direct-chat-text">
+          <div style="padding:5px 0 5px 15px">
+            <div class="dot-typing"></div>
+          </div>
+        </div>
+      </div>
+    `);
     $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000);
+    setTimeout(function() {
+      bot();
+    }, 1000);
   }
-  // To get value from data button
-  function answerValue(params) {
-    let answer_id = [];
-    switch (params) {
-      case 'checkbox':
-        answer_id = $('input:checkbox[name=answer_choice]:checked').map(function(){
-            return this.value;
-        }).get();
-        break;
-      
-      case 'radio':
-        answer_id = $('input:radio[name=answer_choice]:checked').val();    
-        break;
-
-      case 'select':
-        answer_id = $('select[name=answer_choice]').val();
-        break;
-
-      case 'freetext':
-        answer_id = $('input:text[name=answer_choice]').val();
-        break;
-
+  function bot(){
+    $('.loader').remove();
+    var message = '';
+    switch(questions[start].type){
+      case 'Pertanyaan':
+            message = questions[start].description;
+            write(message,questions[start].id);
+            user();
+            break;
+      case 'Informasi' :
+            message = questions[start].description_information;
+            write(message,questions[start].id);
+            setTimeout(function() {
+              start++;
+              loader();
+            }, 1000);
+            break;
       default:
-        answer_id = $('input[name=answer_choice]').val();
+            message = questions[start].description;
+            write(message,questions[start].id);
+            
+    }
+  }
+  function botchild(id){
+    $('.loader').remove();
+    var message = '';
+    switch(question_childs[id].type){
+      case 'Pertanyaan':
+            message = question_childs[id].description;
+            write(message,question_childs[id].id);
+            userchild(id);
+            break;
+      case 'Informasi' :
+            message = question_childs[id].description_information;
+            write(message,question_childs[id].id);
+            setTimeout(function() {
+              start++;
+              loader();
+            }, 1000);
+            break;
+      default:
+            message = question_childs[id].description;
+            write(message,question_childs[id].id);
+            
+    }
+  }
+  function botchildreset(id,next){
+    var message = '';
+    switch(question_childs[id].type){
+      case 'Pertanyaan':
+            message = question_childs[id].description;
+            writenext(message,question_childs[id].id,next);
+            userchildreset(id,question_childs[id].id);
+            break;
+      case 'Informasi' :
+            message = question_childs[id].description_information;
+            writenext(message,question_childs[id].id,next);
+            break;
+      default:
+            message = question_childs[id].description;
+            writenext(message,question_childs[id].id,next);
+            
+    }
+  }
+  function write(message,id){
+    $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg" id="question_${id}">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-left">Bot Assessment</span>
+        </div>
+        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <div class="direct-chat-text">
+          ${message}
+        </div>
+      </div>
+    `);
+  }
+  function writenext(message,id,next){
+    $('#answerdesc_'+next).after(`
+      <div class="direct-chat-msg" id="question_${id}">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-left">Bot Assessment</span>
+        </div>
+        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <div class="direct-chat-text">
+          ${message}
+        </div>
+      </div>
+    `);
+  }
+  function user(){
+    var message = '';
+    var chatclass = '';
+    switch(questions[start].answer_type){
+      case 'checkbox':
+            $.each(answers[questions[start].id], function(i, answer) {
+              message += `<input type="checkbox" name="answer_choice_${questions[start].id}[]" value="${answer.id}" data-reset="0">
+                        ${answer.description} <br/>`;   
+            });
+            message += `<button type="button" class="btn btn-block btn-default btn-sm" onclick="answer(${questions[start].id})"><i class="fa fa-check"></i></button>`;
+            chatclass = 'pull-right';
+            break;
+      case 'radio':
+        $.each(answers[questions[start].id], function(i, answer) {
+          message += `<input type="radio" name="answer_choice_${questions[start].id}" value="${answer.id}" onclick="answer(${questions[start].id})" data-reset="0">
+                    ${answer.description} <br/>`;  
+          chatclass = 'pull-right'; 
+        });
+        break;
+        case 'text':
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          chatclass = 'form-inline';
+          break;
+        case 'number':
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`;
+          chatclass = 'form-inline'; 
         break;
     }
-    return answer_id;
+    $('.direct-chat-messages').append(`
+        <div class="direct-chat-msg right" id="answer_${questions[start].id}">
+          <div class="direct-chat-info clearfix">
+            <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+          </div>
+          <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+          <div class="direct-chat-text ${chatclass}">
+            ${message}
+          </div>
+        </div>
+    `);
+    
+    $(".numberfield").inputmask('decimal', {
+      rightAlign: true
+    });
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
   }
-  // To get label from answer data button
-  function answerDesc(params) {
-    let answer_id = [];
-    switch (params) {
+  function userchild(id){
+    var message = '';
+    var chatclass = '';
+    switch(question_childs[id].answer_type){
       case 'checkbox':
-        if($('input:checkbox[name=answer_choice]:checked').length > 0){
-          answer_id = $('input:checkbox[name=answer_choice]:checked').map(function(){
-            return $(this).data('description');
-        }).get();
+            $.each(answers[question_childs[id].id], function(i, answer) {
+              message += `<input type="checkbox" name="answer_choice_${question_childs[id].id}[]" value="${answer.id}"  data-reset="0">
+                        ${answer.description} <br/>`;   
+            });
+            message += `<button type="button" class="btn btn-block btn-default btn-sm" onclick="answer(${question_childs[id].id})"><i class="fa fa-check"></i></button>`;
+            chatclass = 'pull-right';
+            break;
+      case 'radio':
+        $.each(answers[question_childs[id].id], function(i, answer) {
+          message += `<input type="radio" name="answer_choice_${question_childs[id].id}" value="${answer.id}" onclick="answer(${question_childs[id].id})" data-reset="0">
+                    ${answer.description} <br/>`; 
+          chatclass = 'pull-right';  
+        });
+        break;
+      case 'text':
+          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          chatclass = 'form-inline'; 
+          break;
+      case 'number':
+           message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+           chatclass = 'form-inline'; 
+        break;
+    }
+    $('.direct-chat-messages').append(`
+        <div class="direct-chat-msg right" id="answer_${question_childs[id].id}">
+          <div class="direct-chat-info clearfix">
+            <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+          </div>
+          <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+          <div class="direct-chat-text ${chatclass}">
+            ${message}
+          </div>
+        </div>
+      `);
+    
+    $(".numberfield").inputmask('decimal', {
+      rightAlign: true
+    });
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
+  }
+  function userchildreset(id,next){
+    var message = '';
+    var chatclass = '';
+    switch(question_childs[id].answer_type){
+      case 'checkbox':
+            $.each(answers[question_childs[id].id], function(i, answer) {
+              message += `<input type="checkbox" name="answer_choice_${question_childs[id].id}[]" value="${answer.id}"  data-reset="0">
+                        ${answer.description} <br/>`;   
+            });
+            message += `<button type="button" class="btn btn-block btn-default btn-sm" onclick="answerreset(${question_childs[id].id})"><i class="fa fa-check"></i></button>`;
+            chatclass = 'pull-right';
+            break;
+      case 'radio':
+        $.each(answers[question_childs[id].id], function(i, answer) {
+          message += `<input type="radio" name="answer_choice_${question_childs[id].id}" value="${answer.id}" onclick="answerreset(${question_childs[id].id})" data-reset="0">
+                    ${answer.description} <br/>`; 
+          chatclass = 'pull-right';  
+        });
+        break;
+      case 'text':
+          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answerreset(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          chatclass = 'form-inline'; 
+          break;
+      case 'number':
+           message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answerreset(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+           chatclass = 'form-inline'; 
+        break;
+    }
+    $('#question_'+next).after(`
+        <div class="direct-chat-msg right" id="answer_${question_childs[id].id}">
+          <div class="direct-chat-info clearfix">
+            <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+          </div>
+          <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+          <div class="direct-chat-text ${chatclass}">
+            ${message}
+          </div>
+        </div>
+      `);
+    
+    $(".numberfield").inputmask('decimal', {
+      rightAlign: true
+    });
+  }
+  function answer(id){
+    var isreset = 0;
+    switch(assessments[id].answer_type){
+      case 'checkbox':
+          var answerusers = $('input[name^=answer_choice_'+id+']:checked').map(function(){
+            return this.value;
+          }).get();
+          if(answerusers.length > 0){
+            var answerdesc = [];
+            var answeruser = 0;
+            $.each(answerusers, function( index, value ) {
+              if(question_childs[value]){
+                answeruser = value; 
+              }
+              answerdesc.push(answer_questions[value].description);
+            });
+            answerdescription = answerdesc.join(',');
+          }
+          else{
+            answerdescription = 'Tidak ada opsi yang dipilih';
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'radio':
+          var answeruser = $('input[name=answer_choice_'+id+']:checked').val();
+          answerdescription = answer_questions[answeruser].description;
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'text':
+          answerdescription = $('input[name=answer_choice_'+id+']').val();
+          if(answerdescription == ''){
+            $.gritter.add({
+                title: 'Warning!',
+                text: 'Jawaban tidak boleh kosong',
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+            return;
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'number':
+          answerdescription = $('input[name=answer_choice_'+id+']').val();
+          if(answerdescription == ''){
+          $.gritter.add({
+                title: 'Warning!',
+                text: 'Jawaban tidak boleh kosong',
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+            return;
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+    }
+    if(isreset == 0){
+        $('#answer_'+id).hide();
+        $('.direct-chat-messages').append(`
+          <div class="direct-chat-msg right" id="answerdesc_${id}">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+            </div>
+            <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+            <div class="direct-chat-text pull-right" style="cursor:pointer" onclick="reset(${id})">
+              ${answerdescription}
+            </div>
+          </div>
+        `);
+        if(question_childs[answeruser]){
+            botchild(answeruser);
         }
         else{
-          answer_id = 'Tidak Ada Yang Dipilih'; 
+          start++;
+          loader();
         }
-        break;
-      
-      case 'radio':
-        answer_id = $('input:radio[name=answer_choice]:checked').data('description');    
-        break;
-
-      case 'select':
-        answer_id = $('select[name=answer_choice]').data('description');
-        break;
-
-      case 'freetext':
-        answer_id = $('input:text[name=answer_choice]').val();
-        break;
-
-      default:
-        answer_id = $('input[name=answer_choice]').val();
-        break;
     }
-    return answer_id;
+    else{
+      $('#answer_'+id).hide();
+      $('#answerdesc_'+id).find('.direct-chat-text').html(answerdescription);
+      $('#answerdesc_'+id).show();
+      var havechild = null;
+      $.each(assessments,function(){
+          if(this.question_parent_code == id){
+            havechild = this;
+          }
+      });
+      
+      if(question_childs[answeruser]){
+          botchildreset(answeruser,id);
+      }
+      else{
+        if(havechild){
+          $('#question_'+havechild.id).remove();
+          $('#answer_'+havechild.id).remove();
+          $('#answerdesc_'+havechild.id).remove();
+        }
+        if(questions[start].id == id){
+          start++;
+          loader();
+        }
+      }
+    }
+    
   }
-  // Re render message bubble, can call everywhere to refresh
-  function rerenderMsg(params) {
-    $('.information-msg').empty();
-    message.push(params);
-    $('.information-msg').append(message);
+  function answerreset(id){
+    var isreset = 0;
+    switch(assessments[id].answer_type){
+      case 'checkbox':
+          var answerusers = $('input[name^=answer_choice_'+id+']:checked').map(function(){
+            return this.value;
+          }).get();
+          if(answerusers.length > 0){
+            var answerdesc = [];
+            var answeruser = 0;
+            $.each(answerusers, function( index, value ) {
+              if(question_childs[value]){
+                answeruser = value; 
+              }
+              answerdesc.push(answer_questions[value].description);
+            });
+            answerdescription = answerdesc.join(',');
+          }
+          else{
+            answerdescription = 'Tidak ada opsi yang dipilih';
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'radio':
+          var answeruser = $('input[name=answer_choice_'+id+']:checked').val();
+          answerdescription = answer_questions[answeruser].description;
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'text':
+          answerdescription = $('input[name=answer_choice_'+id+']').val();
+          if(answerdescription == ''){
+            $.gritter.add({
+                title: 'Warning!',
+                text: 'Jawaban tidak boleh kosong',
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+            return;
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+      case 'number':
+          answerdescription = $('input[name=answer_choice_'+id+']').val();
+          if(answerdescription == ''){
+          $.gritter.add({
+                title: 'Warning!',
+                text: 'Jawaban tidak boleh kosong',
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+            return;
+          }
+          isreset = $('input[name^=answer_choice_'+id+']').attr('data-reset');
+          break;
+    }
+    $('#answer_'+id).hide();
+    $('#answer_'+id).after(`
+      <div class="direct-chat-msg right" id="answerdesc_${id}">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+        </div>
+        <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+        <div class="direct-chat-text pull-right" style="cursor:pointer" onclick="reset(${id})">
+          ${answerdescription}
+        </div>
+      </div>
+    `);
+    
   }
-  function loader(){
-    return `
-            <div class="direct-chat-msg">
-              <div class="direct-chat-info clearfix">
-                <span class="direct-chat-name pull-left">Bot Assessment</span>
-              </div>
-              <img class="direct-chat-img" src="http://127.0.0.1:8000/assets/user/1.png" alt="Assessment Bot">
-              <div class="direct-chat-text">
-                <div  style="padding:5px 0 5px 15px">
-                 <div class="dot-typing"></div>
-                </div>
-              </div>
-            </div>`;
+  function reset(id){
+    $('input[name^=answer_choice_'+id+']').attr('data-reset',1);
+    $('#answer_'+id).show();
+    $('#answerdesc_'+id).hide();
+  }
+  function finish(e){
+    if(e.value == 1){
+      $('#finish_answer').hide();
+      $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg right">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+        </div>
+        <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+        <div class="direct-chat-text pull-right">
+          Ya
+        </div>
+      </div>
+    `);
+      $('.direct-chat-messages').append(`
+          <div class="direct-chat-msg loader">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-left">Bot Assessment</span>
+            </div>
+            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <div class="direct-chat-text">
+               Terimakasih semua jawaban anda akan dikirim ke server.
+            </div>
+          </div>
+        `);
+      $('#form').submit();
+    }
+    else{
+      $('#finish_answer').hide();
+      $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg right">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+        </div>
+        <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+        <div class="direct-chat-text pull-right">
+          Tidak
+        </div>
+      </div>
+    `);
+      $('.direct-chat-messages').append(`
+          <div class="direct-chat-msg loader">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-left">Bot Assessment</span>
+            </div>
+            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <div class="direct-chat-text">
+               Pertanyaan akan diatur ulang beberapa detik lagi.
+            </div>
+          </div>
+        `);
+        setTimeout(function() {
+          start = 0;
+          $('.direct-chat-messages').empty();
+          loader();
+        }, 2000);
+    }
+
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
+  }
+  function reload(e){
+    if(e.value == 1){
+      $('.error').remove();
+      loader();
+    }
+    else{
+      $('#error_answer').remove();
+      $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg right">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+        </div>
+        <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+        <div class="direct-chat-text pull-right">
+          Tidak
+        </div>
+      </div>
+    `);
+      $('.direct-chat-messages').append(`
+          <div class="direct-chat-msg loader">
+            <div class="direct-chat-info clearfix">
+              <span class="direct-chat-name pull-left">Bot Assessment</span>
+            </div>
+            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <div class="direct-chat-text">
+               Pertanyaan akan diatur ulang beberapa detik lagi.
+            </div>
+          </div>
+        `);
+        setTimeout(function() {
+          start = 0;
+          $('.direct-chat-messages').empty();
+          loader();
+        }, 2000);
+    }
+
+    $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
   }
   $(document).ready(function(){
-    question_param = {
-      limit: 1,
-      workforce: 1,
-      user: 1
-    };
-    informationData(assessment_data);
-    questionData(assessment_data);
-    questionChildData(assessment_data);
-    rerenderMsg(loader());
-    setTimeout(function() {
-      rerenderMsg(information(information_data));
-    }, 3000);
+    loader();
+    $(document).on('keypress','input',function(event){
+      var keycode = (event.keyCode ? event.keyCode : event.which);
+      if(keycode == '13'){
+        event.preventDefault()
+      }
+    });
     $("#form").validate({
       errorElement: 'span',
       errorClass: 'help-block',
@@ -457,41 +778,84 @@
         }
       },
       submitHandler: function() { 
-        var data = {
-                      _token: "{{ csrf_token() }}",
-                      answer_choice: answer_choice
-                    };
+        if(start != questions.length){
+          $.gritter.add({
+              title: 'Warning!',
+              text: 'Silahkan lengkapi isian semua jawaban terlebih dahulu',
+              class_name: 'gritter-warning',
+              time: 1000,
+          });
+        }
         $.ajax({
           url:$('#form').attr('action'),
           method:'post',
-          data: data,
+          data: new FormData($('#form')[0]),
+          processData: false,
+          contentType: false,
           dataType: 'json', 
           beforeSend:function(){
               $('.overlay').removeClass('hidden');
           }
         }).done(function(response){
               $('.overlay').addClass('hidden');
+              $('#error_answer').remove();
               if(response.status){
-                document.location = response.results;
+                //document.location = response.results;
               }
               else{	
-                $.gritter.add({
-                    title: 'Warning!',
-                    text: response.message,
-                    class_name: 'gritter-warning',
-                    time: 1000,
-                });
+                $('.direct-chat-messages').append(`
+                <div class="direct-chat-msg error" >
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <div class="direct-chat-text">
+                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                    </div>
+                </div>
+              `);
+            $('.direct-chat-messages').append(`
+              <div class="direct-chat-msg right" id="error_answer">
+                <div class="direct-chat-info clearfix">
+                  <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                </div>
+                <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                <div class="direct-chat-text pull-right">
+                  <input type="radio" value="1" onclick="finish(this)">
+                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                </div>
+              </div>`);
+
+            $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
               }
               return;
         }).fail(function(response){
             $('.overlay').addClass('hidden');
-            var response = response.responseJSON;
-            $.gritter.add({
-                title: 'Error!',
-                text: response.message,
-                class_name: 'gritter-error',
-                time: 1000,
-            });
+            $('#error_answer').remove();
+            $('.direct-chat-messages').append(`
+                <div class="direct-chat-msg error" >
+                  <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                  </div>
+                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <div class="direct-chat-text">
+                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau mengirimkan lagi ?
+                    </div>
+                </div>
+              `);
+            $('.direct-chat-messages').append(`
+              <div class="direct-chat-msg right" id="error_answer">
+                <div class="direct-chat-info clearfix">
+                  <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                </div>
+                <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                <div class="direct-chat-text pull-right">
+                  <input type="radio" value="1" onclick="finish(this)">
+                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                </div>
+              </div>`);
+
+            $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
         })		
       }
     });

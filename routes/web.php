@@ -429,10 +429,10 @@ Route::group(['prefix' => 'admin'], function () {
         // Assessment
         Route::get('/assessment/read', 'Admin\AssessmentController@read')->name('assessment.read');
         Route::get('/assessment/select', 'Admin\AssessmentController@select')->name('assessment.select');
+        Route::post('/assessment/check', 'Admin\AssessmentController@check')->name('assessment.check');
         Route::post('/assessment/restore', 'Admin\AssessmentController@restore')->name('assessment.restore');
         Route::post('/assessment/delete', 'Admin\AssessmentController@delete')->name('assessment.delete');
         Route::post('/assessment/question', 'Admin\AssessmentController@question')->name('assessment.question');
-        Route::post('/assessment/information', 'Admin\AssessmentController@information')->name('assessment.information');
         Route::resource('/assessment', 'Admin\AssessmentController');
 
         // Guarantor

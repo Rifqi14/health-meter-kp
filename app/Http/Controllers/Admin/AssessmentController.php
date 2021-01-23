@@ -112,19 +112,61 @@ class AssessmentController extends Controller
         $workforce = Auth::user()->workforce;
         $workforce_group_id = $workforce->workforce_group_id;
         $site_id = $workforce->site_id;
-        $questions = AssessmentQuestion::with([
-          'answer',
-          'parent',
-          'answercode',
-          'site' => function ($q) use ($site_id) {
-            $q->where('site_id', $site_id);
-          },
-          'workforcegroup' => function ($q) use ($workforce_group_id) {
-            $q->where('workforce_group_id', $workforce_group_id);
-          },
-        ])->orderBy('order', 'asc')->get();
-        $assessment = AssessmentResult::where('date', date('Y-m-d'))->where('workforce_id', Auth::id())->first();
-        return view('admin.assessment.create', compact('questions','workforce'));
+        // $questions = AssessmentQuestion::with([
+        //   'answer',
+        //   'parent',
+        //   'answercode',
+        //   'site' => function ($q) use ($site_id) {
+        //     $q->where('site_id', $site_id);
+        //   },
+        //   'workforcegroup' => function ($q) use ($workforce_group_id) {
+        //     $q->where('workforce_group_id', $workforce_group_id);
+        //   },
+        // ])->orderBy('order', 'asc')->get();
+        // $assessment = AssessmentResult::where('date', date('Y-m-d'))->where('workforce_id', Auth::id())->first();
+        $questions = AssessmentQuestion::select('assessment_questions.*')
+                            ->leftJoin('assessment_question_workforce_groups','assessment_question_workforce_groups.assessment_question_id','=','assessment_questions.id')
+                            ->leftJoin('assessment_question_sites','assessment_question_sites.assessment_question_id','=','assessment_questions.id')
+                            ->where('workforce_group_id',$workforce_group_id)
+                            ->where('site_id',$site_id)
+                            ->orderBy('order','asc')
+                            ->get();
+        $filters = [];
+        foreach($questions as $question){
+            switch($question->frequency){
+                case 'harian':
+                    $start_date = $question->start_date;
+                    $finish_date = $question->finish_date;
+                    if($start_date && $start_date > date('Y-m-d')){
+                        continue;
+                    }
+                    if($finish_date && $finish_date < date('Y-m-d')){
+                        continue;
+                    }
+                    $filters[] = $question;
+                    break;
+                case 'bulanan':
+                    $filters[] = $question;
+                    break;
+                case 'tahunan':
+                    $filters[] = $question;
+                    break;
+                case 'perkejadian':
+                    $start_date = $question->start_date;
+                    $finish_date = $question->finish_date;
+                    if($start_date && $start_date > date('Y-m-d')){
+                        continue;
+                    }
+                    if($finish_date && $finish_date < date('Y-m-d')){
+                        continue;
+                    }
+                    $filters[] = $question;
+                    break;
+            }
+        }
+        $questions = $filters;
+        $answers = AssessmentAnswer::all();
+        return view('admin.assessment.create', compact('questions','answers','workforce'));
     }
 
     public function information()
@@ -325,6 +367,44 @@ class AssessmentController extends Controller
             'status'    => true,
             'results'   => route('assessment.index'),
         ], 200);
+    }
+
+    public function check(Request $request)
+    {
+        $workforce = Auth::user()->workforce;
+        $workforce_group_id = $workforce->workforce_group_id;
+        $site_id = $workforce->site_id;
+        $bobot = 0;
+        $formula = Formula::with(['detail'])->first();
+        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        if($formula){
+            foreach($formula->detail as $formuladetail){
+                if($formuladetail->question->answer_type == 'checkbox'){
+                    if($request->input('answer_choice_'.$formuladetail->question->id)){
+                        foreach($request->input('answer_choice_'.$formuladetail->question->id) as $choice){
+                            if($choice == $formuladetail->answer->id){
+                                $bobot += $formuladetail->answer->rating;
+                            }  
+                        }
+                    }
+                }   
+                else{
+                    if($request->input('answer_choice_'.$formuladetail->question->id) == $formuladetail->answer->id){
+                        $bobot += $formuladetail->answer->rating;
+                    }
+                } 
+            }
+        }
+        $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+        foreach($healthmeters as $healthmeter){
+            if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
+                $message = 'Hai '.$workforce->name.' , menurut bot assessment andatermasuk dalam kategori resiko '.$healthmeter->name.'. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+            }
+        }
+        return response()->json([
+            'status'    => true,
+            'message'   => $message,
+        ], 200); 
     }
 
     public function calculation()
