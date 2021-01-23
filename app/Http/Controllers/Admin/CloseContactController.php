@@ -201,7 +201,7 @@ class CloseContactController extends Controller
     {
         try {
             $closecontact = CloseContact::find($id);
-            $closecontact->forceDelete()();
+            $closecontact->forceDelete();
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'     => false,

@@ -16,7 +16,7 @@
         <!-- tools box -->
         <div class="pull-right box-tools">
            @if(in_array('create',$actionmenu))
-            <a href="{{route('closecontact.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
+            <a href="{{route('checkupschedule.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
               title="Tambah">
               <i class="fa fa-plus"></i>
             </a>

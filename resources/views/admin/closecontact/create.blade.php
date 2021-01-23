@@ -29,7 +29,7 @@
           autocomplete="off">
           {{ csrf_field() }}
           <div class="form-group">
-            <label for="workforce_id" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
+            <label for="workforce_id" class="col-sm-2 control-label">Workforce<b class="text-danger">*</b></label>
             <div class="col-sm-6">
               <input type="text" class="form-control" id="workforce_id" name="workforce_id" placeholder="Pilih NID" required>
             </div>
@@ -87,7 +87,8 @@
             $.each(data.rows,function(index,item){
               option.push({
                 id:item.id,  
-                text: `${item.nid}`
+                text: `${item.nid}`,
+                namenid: `${item.namenid}`
               });
             });
             return {
@@ -95,7 +96,10 @@
             };
           },
         },
-        allowClear: true,
+         formatResult: function(item) {
+          return item.namenid
+        },
+        allowClear: true
       });
       $(document).on("change", "#workforce_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {

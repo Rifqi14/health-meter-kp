@@ -32,7 +32,7 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">NID</th>
+              <th width="200">Workforce</th>
               <th width="100">Tanggal</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
@@ -175,7 +175,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus kontak Erat?',
+          title:'Menghapus Kontak Erat?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {

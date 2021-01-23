@@ -43,7 +43,7 @@
             <label for="number" class="col-sm-2 control-label">Nomor Surat<b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="number" placeholder="Nomor Surat"
-                  name="number">
+                  name="number" required>
               </div>
           </div>
           <div class="form-group">
@@ -172,6 +172,7 @@
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
+        $('#patient_id').select2('val','');
       });
       $("#patient_id").select2({
         ajax: {
