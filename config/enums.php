@@ -28,4 +28,8 @@ return [
         'Resep'   => "Resep",
         'Penjadwalan Pemeriksaan'  => "Penjadwalan Pemeriksaan"
     ],
+    'coveringletter_type' => [
+        'Resep'   => "Resep",
+        'Rujukan' => "Rujukan"
+    ],
 ];
