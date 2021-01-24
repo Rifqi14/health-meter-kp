@@ -123,7 +123,7 @@
     var id = $('#assessment_answer_id').select2('val');
     if(id){
       var text = $('#assessment_answer_id').select2('data').text;
-      var description = `<input type="hidden" name="value_${sort}" value="#${id}" class="value"/><p class="form-control-static">${text}</p>`;
+      var description = `<input type="hidden" name="value_${sort}" value="#${id}#" class="value"/><p class="form-control-static">${text}</p>`;
     }
     else{
       var description = `<input type="text" name="value_${sort}" class="form-control value" required onkeyup="formula()"/>`;

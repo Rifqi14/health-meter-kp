@@ -308,7 +308,7 @@
   }
   function write(message,id){
     $('.direct-chat-messages').append(`
-      <div class="direct-chat-msg" id="question_${id}">
+      <div class="direct-chat-msg question" id="question_${id}">
         <div class="direct-chat-info clearfix">
           <span class="direct-chat-name pull-left">Bot Assessment</span>
         </div>
@@ -321,7 +321,7 @@
   }
   function writenext(message,id,next){
     $('#answerdesc_'+next).after(`
-      <div class="direct-chat-msg" id="question_${id}">
+      <div class="direct-chat-msg question" id="question_${id}">
         <div class="direct-chat-info clearfix">
           <span class="direct-chat-name pull-left">Bot Assessment</span>
         </div>
@@ -361,7 +361,7 @@
         break;
     }
     $('.direct-chat-messages').append(`
-        <div class="direct-chat-msg right" id="answer_${questions[start].id}">
+        <div class="direct-chat-msg right answer" id="answer_${questions[start].id}">
           <div class="direct-chat-info clearfix">
             <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
           </div>
@@ -406,7 +406,7 @@
         break;
     }
     $('.direct-chat-messages').append(`
-        <div class="direct-chat-msg right" id="answer_${question_childs[id].id}">
+        <div class="direct-chat-msg right answer" id="answer_${question_childs[id].id}">
           <div class="direct-chat-info clearfix">
             <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
           </div>
@@ -451,7 +451,7 @@
         break;
     }
     $('#question_'+next).after(`
-        <div class="direct-chat-msg right" id="answer_${question_childs[id].id}">
+        <div class="direct-chat-msg right answer" id="answer_${question_childs[id].id}">
           <div class="direct-chat-info clearfix">
             <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
           </div>
@@ -524,7 +524,7 @@
     if(isreset == 0){
         $('#answer_'+id).hide();
         $('.direct-chat-messages').append(`
-          <div class="direct-chat-msg right" id="answerdesc_${id}">
+          <div class="direct-chat-msg right answerdesc" id="answerdesc_${id}">
             <div class="direct-chat-info clearfix">
               <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
             </div>
@@ -627,7 +627,7 @@
     }
     $('#answer_'+id).hide();
     $('#answer_'+id).after(`
-      <div class="direct-chat-msg right" id="answerdesc_${id}">
+      <div class="direct-chat-msg right answerdesc" id="answerdesc_${id}">
         <div class="direct-chat-info clearfix">
           <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
         </div>
@@ -706,7 +706,18 @@
   }
   function reload(e){
     if(e.value == 1){
-      $('.error').remove();
+      $('#error_answer').remove();
+      $('.direct-chat-messages').append(`
+      <div class="direct-chat-msg right">
+        <div class="direct-chat-info clearfix">
+          <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+        </div>
+        <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+        <div class="direct-chat-text pull-right">
+          Ya
+        </div>
+      </div>
+    `);
       loader();
     }
     else{
@@ -786,10 +797,36 @@
               time: 1000,
           });
         }
+        var record = '';
+        $(".direct-chat-msg").each(function() {
+          if($(this).hasClass('question')){
+            var question_id = $(this).attr('id');
+            var question_class = $(this).attr('class');
+            record+=`<div id="${question_id}" class="${question_class}">`;
+            record+=$(this).html();
+            record+=`</div>`;
+          }
+          if($(this).hasClass('answer')){
+            var answer_id = $(this).attr('id');
+            var answer_class = $(this).attr('class');
+            record+=`<div id="answer_${answer_id}" class="${answer_class}" style="display:none">`;
+            record+=$(this).html();
+            record+=`</div>`;
+          }
+          if($(this).hasClass('answerdesc')){
+            var answerdesc_id = $(this).attr('id');
+            var answerdesc_class = $(this).attr('class');
+            record+=`<div id="${answerdesc_id}" class="${answerdesc_class}">`;
+            record+=$(this).html();
+            record+=`</div>`;
+          }
+        });
+        var data = new FormData($('#form')[0]);
+        data.append('record',record);
         $.ajax({
           url:$('#form').attr('action'),
           method:'post',
-          data: new FormData($('#form')[0]),
+          data: data,
           processData: false,
           contentType: false,
           dataType: 'json', 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Assessment;
 use App\Models\AssessmentAnswer;
+use App\Models\AssessmentBot;
 use App\Models\AssessmentLog;
 use App\Models\AssessmentQuestion;
 use App\Models\AssessmentResult;
@@ -323,189 +324,64 @@ class AssessmentController extends Controller
                     }
             }
         }
-        // $bobot = 0;
-        // $formula = Formula::with(['detail'])->first();
-        // $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
-        
-        // if($formula){
-        //     foreach($formula->detail as $formuladetail){
-        //         if($formuladetail->question->answer_type == 'checkbox'){
-        //             if($request->input('answer_choice_'.$formuladetail->question->id)){
-        //                 foreach($request->input('answer_choice_'.$formuladetail->question->id) as $choice){
-        //                     if($choice == $formuladetail->answer->id){
-        //                         $bobot += $formuladetail->answer->rating;
-        //                     }  
-        //                 }
-        //             }
-        //         }   
-        //         else{
-        //             if($request->input('answer_choice_'.$formuladetail->question->id) == $formuladetail->answer->id){
-        //                 $bobot += $formuladetail->answer->rating;
-        //             }
-        //         } 
-        //     }
-        // }
-        // $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
-        // foreach($healthmeters as $healthmeter){
-        //     if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
-        //         $message = 'Hai '.$workforce->name.' , menurut bot assessment andatermasuk dalam kategori resiko '.$healthmeter->name.'. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
-        //     }
-        // }
-        // foreach ($request->answer_choice as $key => $values) {
-        //     $value = (object) $values;
-        //     $question = AssessmentQuestion::find($value->question_id);
-        //     if ($value->answer_type != 'freetext') {
-        //         switch ($value->answer_type) {
-        //             case 'checkbox':
-        //                 foreach ($value->answer_id as $key => $answer) {
-        //                     $answers = AssessmentAnswer::find($answer);
-        //                     $assessment = Assessment::create([
-        //                         'assessment_date'           => date('Y-m-d'),
-        //                         'assessment_question_id'    => $question->id,
-        //                         'assessment_answer_id'      => $answers->id,
-        //                         'rating'                    => $answers->rating,
-        //                         'description'               => '',
-        //                         'updated_by'                => Auth::id(),
-        //                         'workforce_id'              => Auth::id()
-        //                     ]);
-        //                     if (!$assessment) {
-        //                         DB::rollBack();
-        //                         return response()->json([
-        //                             'status'        => false,
-        //                             'message'       => $assessment
-        //                         ], 400);
-        //                     } else {
-        //                         $log = AssessmentLog::create([
-        //                             'workforce_id'          => Auth::id(),
-        //                             'assessment_id'         => $assessment->id,
-        //                             'date'                  => date('Y-m-d'),
-        //                             'assessment_answer_id'  => $answers->id,
-        //                             'status'                => 'Create',
-        //                             'updated_by'            => Auth::id(),
-        //                         ]);
-        //                         if (!$log) {
-        //                             DB::rollBack();
-        //                             return response()->json([
-        //                                 'status'        => false,
-        //                                 'message'       => $log
-        //                             ], 400);
-        //                         }
-        //                     }
-        //                 }
-        //                 break;
-
-        //             case 'radio':
-        //                 $answers = AssessmentAnswer::find($value->answer_id);
-        //                 $assessment = Assessment::create([
-        //                     'assessment_date'           => date('Y-m-d'),
-        //                     'assessment_question_id'    => $question->id,
-        //                     'assessment_answer_id'      => $answers->id,
-        //                     'rating'                    => $answers->rating,
-        //                     'description'               => '',
-        //                     'updated_by'                => Auth::id(),
-        //                     'workforce_id'              => Auth::id()
-        //                 ]);
-        //                 if (!$assessment) {
-        //                     DB::rollBack();
-        //                     return response()->json([
-        //                         'status'        => false,
-        //                         'message'       => $assessment
-        //                     ], 400);
-        //                 } else {
-        //                     $log = AssessmentLog::create([
-        //                         'workforce_id'          => Auth::id(),
-        //                         'assessment_id'         => $assessment->id,
-        //                         'date'                  => date('Y-m-d'),
-        //                         'assessment_answer_id'  => $answers->id,
-        //                         'status'                => 'Create',
-        //                         'updated_by'            => Auth::id(),
-        //                     ]);
-        //                     if (!$log) {
-        //                         DB::rollBack();
-        //                         return response()->json([
-        //                             'status'        => false,
-        //                             'message'       => $log
-        //                         ], 400);
-        //                     }
-        //                 }
-        //                 break;
-        //             default:
-        //                 $answers = AssessmentAnswer::find($value->answer_id);
-        //                 $assessment = Assessment::create([
-        //                     'assessment_date'           => date('Y-m-d'),
-        //                     'assessment_question_id'    => $question->id,
-        //                     'assessment_answer_id'      => $answers->id,
-        //                     'rating'                    => $answers->rating,
-        //                     'description'               => '',
-        //                     'updated_by'                => Auth::id(),
-        //                     'workforce_id'              => Auth::id()
-        //                 ]);
-        //                 if (!$assessment) {
-        //                     DB::rollBack();
-        //                     return response()->json([
-        //                         'status'        => false,
-        //                         'message'       => $assessment
-        //                     ], 400);
-        //                 } else {
-        //                     $log = AssessmentLog::create([
-        //                         'workforce_id'          => Auth::id(),
-        //                         'assessment_id'         => $assessment->id,
-        //                         'date'                  => date('Y-m-d'),
-        //                         'assessment_answer_id'  => $answers->id,
-        //                         'status'                => 'Create',
-        //                         'updated_by'            => Auth::id(),
-        //                     ]);
-        //                     if (!$log) {
-        //                         DB::rollBack();
-        //                         return response()->json([
-        //                             'status'        => false,
-        //                             'message'       => $log
-        //                         ], 400);
-        //                     }
-        //                 }
-        //                 break;
-        //         }
-        //     } else {
-        //         $assessment = Assessment::create([
-        //             'assessment_date'           => date('Y-m-d'),
-        //             'assessment_question_id'    => $question->id,
-        //             'rating'                    => 0,
-        //             'description'               => $value->answer_id,
-        //             'updated_by'                => Auth::id(),
-        //             'workforce_id'              => Auth::id()
-        //         ]);
-        //         if (!$assessment) {
-        //             DB::rollBack();
-        //             return response()->json([
-        //                 'status'        => false,
-        //                 'message'       => $assessment
-        //             ], 400);
-        //         } else {
-        //             $log = AssessmentLog::create([
-        //                 'workforce_id'          => Auth::id(),
-        //                 'assessment_id'         => $assessment->id,
-        //                 'date'                  => date('Y-m-d'),
-        //                 'status'                => 'Create',
-        //                 'updated_by'            => Auth::id(),
-        //             ]);
-        //             if (!$log) {
-        //                 DB::rollBack();
-        //                 return response()->json([
-        //                     'status'        => false,
-        //                     'message'       => $log
-        //                 ], 400);
-        //             }
-        //         }
-        //     }
-        // }
-        // $calculation = $this->calculation();
-        // if (!$calculation) {
-        //     DB::rollBack();
-        //     return response()->json([
-        //         'status'        => false,
-        //         'message'       => 'Error calculate assessment',
-        //     ], 400);
-        // }
+        $bobot = 0;
+        $formula = Formula::first();
+        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        if($formula){
+            $calculate = $formula->calculate;
+            $assessmentanswers = AssessmentAnswer::all();
+            foreach($assessmentanswers as $assessmentanswer){
+                if($assessmentanswer->question->answer_type == 'checkbox'){
+                    if($request->input('answer_choice_'.$assessmentanswer->question->id)){
+                        foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
+                            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                        }
+                    }
+                }
+                else{
+                   $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                } 
+                $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
+            }
+        }
+        $bobot = eval('return '.$calculate.';');
+        $healthmeter_id = null;
+        foreach($healthmeters as $healthmeter){
+            if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
+                $healthmeter_id = $healthmeter->id;
+            }
+        }
+        $assessmentresult = AssessmentResult::create([
+            'date'              => date('Y-m-d'),
+            'workforce_id'      => $workforce->id,
+            'workforce_group_id'=> $workforce->workforce_group_id,
+            'agency_id'         => $workforce->agency_id,
+            'title_id'          => $workforce->title_id,
+            'site_id'           => $workforce->site_id,
+            'department_id'     => $workforce->department_id,
+            'sub_department_id' => $workforce->sub_department_id,
+            'health_meter_id'   => $healthmeter_id,
+            'value_total'       => $bobot,
+            'updated_by'        => Auth::id()
+        ]);
+        if (!$assessmentresult) {
+            DB::rollBack();
+            return response()->json([
+                'status'        => false,
+                'message'       => $assessmentresult
+            ], 400);
+        }
+        $assessmentbot = AssessmentBot::create([
+            'assessment_result_id' => $assessmentresult->id,
+            'description'          => $request->record,
+        ]);
+        if (!$assessmentbot) {
+            DB::rollBack();
+            return response()->json([
+                'status'        => false,
+                'message'       => $assessmentbot
+            ], 400);
+        }
         DB::commit();
         return response()->json([
             'status'    => true,
@@ -519,103 +395,36 @@ class AssessmentController extends Controller
         $workforce_group_id = $workforce->workforce_group_id;
         $site_id = $workforce->site_id;
         $bobot = 0;
-        $formula = Formula::with(['detail'])->first();
+        $formula = Formula::first();
         $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
         if($formula){
-            foreach($formula->detail as $formuladetail){
-                if($formuladetail->question->answer_type == 'checkbox'){
-                    if($request->input('answer_choice_'.$formuladetail->question->id)){
-                        foreach($request->input('answer_choice_'.$formuladetail->question->id) as $choice){
-                            if($choice == $formuladetail->answer->id){
-                                $bobot += $formuladetail->answer->rating;
-                            }  
+            $calculate = $formula->calculate;
+            $assessmentanswers = AssessmentAnswer::all();
+            foreach($assessmentanswers as $assessmentanswer){
+                if($assessmentanswer->question->answer_type == 'checkbox'){
+                    if($request->input('answer_choice_'.$assessmentanswer->question->id)){
+                        foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
+                            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
                         }
                     }
-                }   
+                }
                 else{
-                    if($request->input('answer_choice_'.$formuladetail->question->id) == $formuladetail->answer->id){
-                        $bobot += $formuladetail->answer->rating;
-                    }
+                   $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
                 } 
+                $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
             }
         }
+        $bobot = eval('return '.$calculate.';');
         $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
         foreach($healthmeters as $healthmeter){
             if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
-                $message = 'Hai '.$workforce->name.' , menurut bot assessment andatermasuk dalam kategori resiko '.$healthmeter->name.'. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+                $message = 'Hai '.$workforce->name.' , menurut bot assessment anda termasuk dalam kategori resiko <b>'.$healthmeter->name.'</b>. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
             }
         }
         return response()->json([
             'status'    => true,
             'message'   => $message,
         ], 200); 
-    }
-
-    public function calculation()
-    {
-        $assessments = Assessment::where('assessment_date', date('Y-m-d'))->where('workforce_id', Auth::id())->get();
-        $workforce = Workforce::find(Auth::id());
-        $question = AssessmentQuestion::where('type', 'Pertanyaan')->count();
-        $value_total = 0;
-        if ($assessments) {
-            foreach ($assessments as $key => $value) {
-                $formula = Formula::with(['detail' => function($q) use ($value){
-                    $q->where('assessment_question_id', $value->assessment_question_id);
-                    $q->where('assessment_answer_id', $value->assessment_answer_id);
-                }])->first();
-                if ($formula) {
-                    switch ($formula->operation) {
-                        case 'add':
-                            $value_total = $value_total + $value->rating;
-                            break;
-
-                        case 'subtract':
-                            $value_total = $value_total - $value->rating;
-                            break;
-                            
-                        case 'multiplay':
-                            $value_total = $value_total * $value->rating;
-                            break;
-                            
-                        case 'divide':
-                            $value_total = $value_total / $value->rating;
-                            break;
-
-                        case 'percentage':
-                            $value_total = $value_total * ($value->rating / 100);
-                            break;
-                        
-                        default:
-                            $value_total = $value_total + $value->rating;
-                            break;
-                    }
-                } else {
-                    $value_total = $value_total + $value->rating;
-                }
-            }
-        } else {
-            return false;
-        }
-        $value_total = $value_total / $question;
-        $health_meter = HealthMeter::where('min', '<=', $value_total)->where('max', '>=', $value_total)->first();
-        $result = AssessmentResult::create([
-            'date'              => date('Y-m-d'),
-            'workforce_id'      => $workforce->id,
-            'workforce_group_id'=> $workforce->workforce_group_id,
-            'agency_id'         => $workforce->agency_id,
-            'title_id'          => $workforce->title_id,
-            'site_id'           => $workforce->site_id,
-            'department_id'     => $workforce->department_id,
-            'sub_department_id' => $workforce->sub_department_id,
-            'health_meter_id'   => $health_meter->id,
-            'value_total'       => $value_total,
-            'updated_by'        => Auth::id()
-        ]);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -626,10 +435,9 @@ class AssessmentController extends Controller
      */
     public function show($id)
     {
-        $assessment_result = AssessmentResult::find($id);
-        $assessment = Assessment::with(['question', 'answer'])->where('assessment_date', $assessment_result->date)->where('workforce_id', $assessment_result->workforce_id)->get();
-        if ($assessment) {
-            return view('admin.assessment.detail', compact('assessment'));
+        $bot = AssessmentBot::where('assessment_result_id',$id)->orderBy('created_at','desc')->first();
+        if ($bot) {
+            return view('admin.assessment.detail', compact('bot'));
         } else {
             abort(404);
         }

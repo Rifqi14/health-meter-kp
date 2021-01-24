@@ -132,7 +132,7 @@ class FormulaController extends Controller
         $calculate = $request->calculate;
         $assessmentanswers = AssessmentAnswer::all();
         foreach($assessmentanswers as $assessmentanswer){
-            $calculate = str_replace('#'.$assessmentanswer->id,$assessmentanswer->rating,$calculate);
+            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
         }
         try{
             eval('return '.$calculate.';');
@@ -242,7 +242,7 @@ class FormulaController extends Controller
         $calculate = $request->calculate;
         $assessmentanswers = AssessmentAnswer::all();
         foreach($assessmentanswers as $assessmentanswer){
-            $calculate = str_replace('#'.$assessmentanswer->id,$assessmentanswer->rating,$calculate);
+            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
         }
         try{
             eval('return '.$calculate.';');
