@@ -88,6 +88,40 @@ class CheckupResultController extends Controller
             'data'              => $data    
         ], 200);
     }
+    public function select(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $name = strtoupper($request->name);
+
+        //Count Data
+        $query = CheckupResult::with(['patient' => function ($q) use ($name) {
+            $q->whereRaw("upper(name) like '%$name%'");
+        }]);
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = CheckupResult::with(['patient' => function ($q) use ($name) {
+            $q->whereRaw("upper(name) like '%$name%'");
+        }]);
+        $query->offset($start);
+        $query->limit($length);
+        $checkupresults = $query->get();
+
+        $data = [];
+        foreach ($checkupresults as $checkupresult) {
+            $checkupresult->no = ++$start;
+            $checkupresult->patientname = $checkupresult->patient->name;
+            $checkupresult->custom = ["<span>$checkupresult->result</span>
+                                <br>
+                                <span><b>$checkupresult->patientname</b></span><span style='float:right'><i> $checkupresult->date</i></span>"];
+            $data[] = $checkupresult;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
 
     /**
      * Show the form for creating a new resource.

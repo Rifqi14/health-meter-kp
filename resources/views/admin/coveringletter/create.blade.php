@@ -2,7 +2,7 @@
 
 @section('title', 'Tambah Surat Pengantar')
 @push('breadcrump')
-<li><a href="{{route('healthmeter.index')}}">Surat Pengantar</a></li>
+<li><a href="{{route('coveringletter.index')}}">Surat Pengantar</a></li>
 <li class="active">Tambah</li>
 @endpush
 @section('stylesheets')

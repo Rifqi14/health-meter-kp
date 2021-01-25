@@ -88,16 +88,18 @@ class GuarantorController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
+        $query = Guarantor::select('guarantors.id','titles.name as title_name','titles.code', 'sites.name as site_name')->whereRaw("upper(titles.name) like '%$name%'");
         $query->leftJoin('titles','titles.id','=','guarantors.title_id');
+        $query->leftJoin('sites', 'sites.id', '=', 'guarantors.site_id');
         if($site_id){
             $query->where('guarantors.site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Guarantor::select('guarantors.id','titles.name','titles.code')->whereRaw("upper(titles.name) like '%$name%'");
+        $query = Guarantor::select('guarantors.id','titles.name as title_name','titles.code', 'sites.name as site_name')->whereRaw("upper(titles.name) like '%$name%'");
         $query->leftJoin('titles','titles.id','=','guarantors.title_id');
+        $query->leftJoin('sites', 'sites.id', '=', 'guarantors.site_id');
         if($site_id){
             $query->where('guarantors.site_id',$site_id);
         }
@@ -108,6 +110,11 @@ class GuarantorController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
+            $result->title = $result->title_name;
+            $result->site = $result->site_name;
+            $result->custom = ["<span>$result->title</span>
+                                <br>
+                                <span><i>$result->site</i></span>"];
             $data[] = $result;
         }
         return response()->json([
