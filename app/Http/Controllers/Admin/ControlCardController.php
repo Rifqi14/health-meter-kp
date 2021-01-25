@@ -302,14 +302,14 @@ class ControlCardController extends Controller
      */
     public function destroy($id)
     {
-        try {
+        try {   
             $controlcard = ControlCard::find($id);
             // dd($controlcard);
             $controlcard->forceDelete();
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'     => false,
-                'message'     => 'Error delete data'.$e->errorInfo[2]
+                'message'     => 'Error delete data'
             ], 400);
         }
         return response()->json([
