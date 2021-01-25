@@ -200,9 +200,8 @@ $(function(){
                             </button>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 ${row.deleted_at ?
-                                `@if(in_array('delete',$actionmenu))
-                                @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
-                                <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
+                                `@if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                                @if(in_array('delete',$actionmenu))<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                                 : 
                                 `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
                                 @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/title')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif

@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style>
 
-.direct-chat-messages {
+  .direct-chat-messages {
     height: 400px !important;
   }
   .direct-chat-text{

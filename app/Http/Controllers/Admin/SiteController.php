@@ -115,9 +115,14 @@ class SiteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.site.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.site.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -164,20 +169,38 @@ class SiteController extends Controller
             'results'     => route('site.index'),
         ], 200);
     }
-
+    public function show(Request $request,$id)
+    {
+        if(in_array('read',$request->actionmenu)){
+            $site = Site::withTrashed()->find($id);
+            if ($site) {
+                return view('admin.site.detail', compact('site'));
+            } else {
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $site = Site::withTrashed()->find($id);
-        if ($site) {
-            return view('admin.site.edit', compact('site'));
-        } else {
-            abort(404);
+        if(in_array('update',$request->actionmenu)){
+            $site = Site::withTrashed()->find($id);
+            if ($site) {
+                return view('admin.site.edit', compact('site'));
+            } else {
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
         }
     }
 
@@ -292,5 +315,106 @@ class SiteController extends Controller
     {
         $request->session()->put('role_id', $request->id);
         return redirect()->back();
+    }
+    public function import(Request $request)
+    {
+        if(in_array('import',$request->actionmenu)){
+            return view('admin.site.import');
+        }
+        else{
+            abort(403);
+        }
+    }
+    public function preview(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' 	    => 'required|mimes:xlsx'
+        ]);
+        $file = $request->file('file');
+        try {
+            $filetype 	= \PHPExcel_IOFactory::identify($file);
+            $objReader = \PHPExcel_IOFactory::createReader($filetype);
+            $objPHPExcel = $objReader->load($file);
+        } catch(\Exception $e) {
+            die('Error loading file "'.pathinfo($file,PATHINFO_BASENAME).'": '.$e->getMessage());
+        }
+        $data 	= [];
+        $no = 1;
+        $sheet = $objPHPExcel->getActiveSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        for ($row = 2; $row <= $highestRow; $row++){
+            $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
+            $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+            $status = $sheet->getCellByColumnAndRow(2, $row)->getValue();
+            if($code){
+                $error = [];
+                $data[] = array(
+                    'index'=>$no,
+                    'code' => trim($code),
+                    'name' => $name,
+                    'status'=>$status=='Y'?1:0,
+                    'error'=>implode($error,'<br>'),
+                    'is_import'=>count($error) == 0?1:0
+                );
+                $no++;
+            }
+        }
+        return response()->json([
+            'status' 	=> true,
+            'data' 	=> $data
+        ], 200);
+    }
+    public function storemass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sites' 	    => 'required'
+        ]);
+
+        if ($validator->fails()) {
+        	return response()->json([
+        		'status' 	=> false,
+        		'message' 	=> $validator->errors()->first()
+        	], 400);
+        }
+        DB::beginTransaction();
+        $sites = json_decode($request->sites);
+        foreach($sites as $site){
+            $cek = Site::whereRaw("upper(code) = '$site->code'")->withTrashed()->first();
+            if(!$cek){
+                $department = Site::create([
+                    'code' 	        => strtoupper($site->code),
+                    'name'          => $site->name,
+                    'updated_by'    => Auth::id()
+                ]);
+                if (!$site) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $site
+                    ], 400);
+                }
+                $site->deleted_at = $site->status?null:date('Y-m-d H:i:s');
+                $site->save();
+            }
+            else{
+                $cek->code      = strtoupper($site->code);
+                $cek->name      = $site->name;
+                $cek->deleted_at= $site->status?null:date('Y-m-d H:i:s');
+                $cek->updated_by= Auth::id();
+                $cek->save();
+                if (!$cek) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $cek
+                    ], 400);
+                }
+            }
+        }
+        DB::commit();
+        return response()->json([
+        	'status' 	=> true,
+        	'results' 	=> route('site.index'),
+        ], 200);
     }
 }

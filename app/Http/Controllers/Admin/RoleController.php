@@ -236,6 +236,10 @@ class RoleController extends Controller
                         'read' => 0,
                         'update' => 0,
                         'delete' => 0,
+                        'import' => 0,
+                        'export' => 0,
+                        'print' => 0,
+                        'sync' => 0,
                     ]);
                 }
             }
@@ -257,11 +261,7 @@ class RoleController extends Controller
                     RoleDashboard::create([
                         'role_id' => $id,
                         'dashboard_id' => $dashboard->id,
-                        'role_access' => 0,
-                        'create' => 0,
-                        'read' => 0,
-                        'update' => 0,
-                        'delete' => 0,
+                        'role_access' => 0
                     ]);
                 }
             }

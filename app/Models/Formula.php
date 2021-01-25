@@ -17,6 +17,6 @@ class Formula extends Model
     }
     public function detail()
     {
-        return $this->hasMany(FormulaDetail::class, 'formula_id');
+        return $this->hasMany(FormulaDetail::class, 'formula_id')->orderBy('order','asc');
     }
 }

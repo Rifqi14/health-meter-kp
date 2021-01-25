@@ -115,9 +115,12 @@ Route::group(['prefix' => 'admin'], function () {
         //Route Site
         Route::get('/site/read', 'Admin\SiteController@read')->name('site.read');
         Route::get('/site/select', 'Admin\SiteController@select')->name('site.select');
+        Route::get('/site/import', 'Admin\SiteController@import')->name('site.import');
         Route::get('/site/restore/{id}', 'Admin\SiteController@restore')->name('site.restore');
         Route::get('/site/delete/{id}', 'Admin\SiteController@delete')->name('site.delete');
-        Route::resource('/site', 'Admin\SiteController')->except(['show']);
+        Route::post('/site/preview', 'Admin\SiteController@preview')->name('site.preview');
+        Route::post('/site/storemass', 'Admin\SiteController@storemass')->name('site.storemass');
+        Route::resource('/site', 'Admin\SiteController');
         //Route User Site
         Route::get('/siteuser/read', 'Admin\SiteUserController@read')->name('siteuser.read');
         Route::get('/siteuser/select', 'Admin\SiteUserController@select')->name('siteuser.select');
@@ -430,10 +433,10 @@ Route::group(['prefix' => 'admin'], function () {
         // Assessment
         Route::get('/assessment/read', 'Admin\AssessmentController@read')->name('assessment.read');
         Route::get('/assessment/select', 'Admin\AssessmentController@select')->name('assessment.select');
+        Route::post('/assessment/check', 'Admin\AssessmentController@check')->name('assessment.check');
         Route::post('/assessment/restore', 'Admin\AssessmentController@restore')->name('assessment.restore');
         Route::post('/assessment/delete', 'Admin\AssessmentController@delete')->name('assessment.delete');
         Route::post('/assessment/question', 'Admin\AssessmentController@question')->name('assessment.question');
-        Route::post('/assessment/information', 'Admin\AssessmentController@information')->name('assessment.information');
         Route::resource('/assessment', 'Admin\AssessmentController');
 
         // Guarantor

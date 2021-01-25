@@ -3,6 +3,58 @@
 @section('title', 'Detail Assessment')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
+<style>
+
+  .direct-chat-messages {
+    height: 400px !important;
+  }
+  .direct-chat-text{
+    margin-right: 20% !important;
+  }
+  .right .direct-chat-text {
+    margin-right: 10px !important;
+    float: right;
+  }
+  .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"], .radio input[type="radio"], .radio-inline input[type="radio"] {
+      position: unset;
+      margin-left: 0;
+  }
+  .dot-typing {
+    position: relative;
+    left: -9999px;
+    width: 8px;
+    height: 8px;
+    border-radius: 5px;
+    background-color: #444;
+    color: #444;
+    box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    animation: dotTyping 1.5s infinite linear;
+  }
+
+  @keyframes dotTyping {
+    0% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    16.667% {
+      box-shadow: 9984px -10px 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    33.333% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    50% {
+      box-shadow: 9984px 0 0 0 #444, 9999px -10px 0 0 #444, 10014px 0 0 0 #444;
+    }
+    66.667% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+    83.333% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px -10px 0 0 #444;
+    }
+    100% {
+      box-shadow: 9984px 0 0 0 #444, 9999px 0 0 0 #444, 10014px 0 0 0 #444;
+    }
+  }
+</style>
 @endsection
 @push('breadcrump')
 <li class="active">Detail Assessment</li>
@@ -10,33 +62,14 @@
 @section('content')
 <div class="row">
   <div class="col-lg-12">
-    <div class="box box-primary">
+    <div class="box box-primary direct-chat direct-chat-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Detail Assessment</h3>
+        <h3 class="box-title">Log Terakhir</h3>
       </div>
       <div class="box-body">
-        <table class="table table-striped table-bordered datatable" style="width:100%">
-          <thead>
-            <tr>
-              <th width="10">#</th>
-              <th width="100">Pertanyaan</th>
-              <th width="100">Jawaban</th>
-              <th width="100">Nilai</th>
-              <th width="100">Deskripsi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @foreach ($assessment as $key => $item)
-            <tr>
-              <td>{{ ++$key }}</td>
-              <td>{{ @$item->question->description }}</td>
-              <td>{{ @$item->answer->description }}</td>
-              <td>{{ @$item->rating }}</td>
-              <td>{{ @$item->description }}</td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
+        <div class="direct-chat-messages">
+          {!!$bot->description!!}
+        </div>
       </div>
       <div class="overlay hidden">
         <i class="fa fa-refresh fa-spin"></i>
@@ -45,7 +78,3 @@
   </div>
 </div>
 @endsection
-
-@push('scripts')
-<script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
-@endpush
