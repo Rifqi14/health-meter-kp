@@ -172,7 +172,8 @@ class ReportWeeklyController extends Controller
 
     public function export(Request $request)
     {
-        $date = $request->date;
+        $start_date = date('Y-m-d', strtotime('-7 days'));
+        $finish_date = date('Y-m-d');
         $site_id = $request->site_id ? $request->site_id : -1;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
         $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
@@ -185,31 +186,29 @@ class ReportWeeklyController extends Controller
 
         $query = Workforce::select(
             'workforces.*',
-            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
         )->with(['department', 'title']);
         $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('total', 'desc');
         $category = $query->get();
 
         // Header Column Excel
-        $sheet->setCellValue('A1', 'Tanggal');
-        $sheet->setCellValue('B1', 'Nama');
-        $sheet->setCellValue('C1', 'Bidang');
-        $sheet->setCellValue('D1', 'Jabatan');
-        $sheet->setCellValue('E1', 'Kategori Resiko ' . @$category_title->name);
+        $sheet->setCellValue('A1', 'Nama');
+        $sheet->setCellValue('B1', 'Bidang');
+        $sheet->setCellValue('C1', 'Jabatan');
+        $sheet->setCellValue('D1', 'Kategori Resiko ' . @$category_title->name);
 
         $row_number = 2;
         // Content Data
         foreach ($category as $key => $value) {
-            $sheet->setCellValue('A'.$row_number, $date);
-            $sheet->setCellValue('B'.$row_number, $value->name);
-            $sheet->setCellValue('C'.$row_number, $value->department ? $value->department->name : '');
-            $sheet->setCellValue('D'.$row_number, $value->title ? $value->title->name : '');
-            $sheet->setCellValue('E'.$row_number, $value->total . ' kali');
+            $sheet->setCellValue('A'.$row_number, $value->name);
+            $sheet->setCellValue('B'.$row_number, $value->department ? $value->department->name : '');
+            $sheet->setCellValue('C'.$row_number, $value->title ? $value->title->name : '');
+            $sheet->setCellValue('D'.$row_number, $value->total . ' kali');
             $row_number++;
         }
 
-        foreach (range('A', 'F') as $column) {
+        foreach (range('A', 'D') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
         $sheet->getPageSetup()->setFitToWidth(1);
