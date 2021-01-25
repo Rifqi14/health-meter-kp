@@ -59,13 +59,13 @@ class ReportWeeklyController extends Controller
 
     public function personnel(Request $request)
     {
-        $date = $request->date;
+        $start_date = date('Y-m-d', strtotime('-7 days'));
+        $finish_date = date('Y-m-d');
         $start = $request->start;
         $length = $request->length;
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $date = $request->date;
         $site_id = $request->site_id ? $request->site_id : -1;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
         $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
@@ -73,14 +73,14 @@ class ReportWeeklyController extends Controller
         // Count data
         $query = Workforce::select(
                                 'workforces.*',
-                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id'') as total")
+                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id'') as total")
                             )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $recordsTotal = $query->count();
 
         // Select pagination
         $query = Workforce::select(
                                 'workforces.*',
-                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
                             )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->offset($start);
         $query->limit($length);
@@ -89,7 +89,7 @@ class ReportWeeklyController extends Controller
         $data = [];
         foreach ($workforces as $key => $workforce) {
             $workforce->no = ++$start;
-            $workforce->start_date = $date;
+            $workforce->total = $workforce->total.' Kali'; 
             $data[] = $workforce;
         }
         return response()->json([
@@ -139,13 +139,14 @@ class ReportWeeklyController extends Controller
 
     public function chartpersonnel(Request $request)
     {
-        $date = $request->date;
+        $start_date = date('Y-m-d', strtotime('-7 days'));
+        $finish_date = date('Y-m-d');
         $site_id = $request->site_id ? $request->site_id : -1;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
         $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
         $query = Workforce::select(
             'workforces.name',
-            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
         );
         $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('total', 'desc');
@@ -162,7 +163,8 @@ class ReportWeeklyController extends Controller
         }
 
         return response()->json([
-            'title'     => 'Kategori ' . $title->name,
+            'title'     => $title?'Kategori ' . $title->name:'Belum Ada Kategori Yang Dipilih',
+            'subtitle'  => date('d F Y',strtotime($start_date)).' sd '.date('d F Y',strtotime($finish_date)),
             'series'    => $series,
             'categories'=> $categories,
         ], 200);
@@ -170,7 +172,8 @@ class ReportWeeklyController extends Controller
 
     public function export(Request $request)
     {
-        $date = $request->date;
+        $start_date = date('Y-m-d', strtotime('-7 days'));
+        $finish_date = date('Y-m-d');
         $site_id = $request->site_id ? $request->site_id : -1;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
         $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
@@ -183,31 +186,29 @@ class ReportWeeklyController extends Controller
 
         $query = Workforce::select(
             'workforces.*',
-            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date = '$date' and ar.health_meter_id = '$health_meter_id') as total")
+            DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
         )->with(['department', 'title']);
         $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
         $query->orderBy('total', 'desc');
         $category = $query->get();
 
         // Header Column Excel
-        $sheet->setCellValue('A1', 'Tanggal');
-        $sheet->setCellValue('B1', 'Nama');
-        $sheet->setCellValue('C1', 'Bidang');
-        $sheet->setCellValue('D1', 'Jabatan');
-        $sheet->setCellValue('E1', 'Kategori Resiko ' . @$category_title->name);
+        $sheet->setCellValue('A1', 'Nama');
+        $sheet->setCellValue('B1', 'Bidang');
+        $sheet->setCellValue('C1', 'Jabatan');
+        $sheet->setCellValue('D1', 'Kategori Resiko ' . @$category_title->name);
 
         $row_number = 2;
         // Content Data
         foreach ($category as $key => $value) {
-            $sheet->setCellValue('A'.$row_number, $date);
-            $sheet->setCellValue('B'.$row_number, $value->name);
-            $sheet->setCellValue('C'.$row_number, $value->department ? $value->department->name : '');
-            $sheet->setCellValue('D'.$row_number, $value->title ? $value->title->name : '');
-            $sheet->setCellValue('E'.$row_number, $value->total . ' kali');
+            $sheet->setCellValue('A'.$row_number, $value->name);
+            $sheet->setCellValue('B'.$row_number, $value->department ? $value->department->name : '');
+            $sheet->setCellValue('C'.$row_number, $value->title ? $value->title->name : '');
+            $sheet->setCellValue('D'.$row_number, $value->total . ' kali');
             $row_number++;
         }
 
-        foreach (range('A', 'F') as $column) {
+        foreach (range('A', 'D') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
         $sheet->getPageSetup()->setFitToWidth(1);
