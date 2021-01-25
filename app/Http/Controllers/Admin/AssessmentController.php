@@ -189,14 +189,14 @@ class AssessmentController extends Controller
                         if($question->answer_type == 'checkbox'){
                             $assessmentanswers = AssessmentAnswer::where('assessment_question_id',$question->id)->get();
                             foreach($assessmentanswers as $assessmentanswer){
-                                $assessments = Assessment::where('assessment_question_id',$question->id)->where('assessment_answer_id',$assessmentanswer->id)->where('assessment_date',$assessmentresult->date)->get();
+                                $assessments = Assessment::with('answer')->where('assessment_question_id',$question->id)->where('assessment_answer_id',$assessmentanswer->id)->where('assessment_date',$assessmentresult->date)->get();
                                 foreach($assessments as $assessment){
                                     $actions[] = $assessment;
                                 }
                             }  
                         }
                         else{
-                            $assessments = Assessment::where('assessment_question_id',$question->id)->where('assessment_date',$assessmentresult->date)->get();
+                            $assessments = Assessment::with('answer')->where('assessment_question_id',$question->id)->where('assessment_date',$assessmentresult->date)->get();
                             foreach($assessments as $assessment){
                                 $actions[] = $assessment;
                             }
