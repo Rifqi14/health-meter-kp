@@ -547,6 +547,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/healthinsurance/read', 'Admin\HealthInsuranceController@read')->name('healthinsurance.read');
         Route::get('/healthinsurance/select', 'Admin\HealthInsuranceController@select')->name('healthinsurance.select');
         Route::resource('/healthinsurance', 'Admin\HealthInsuranceController');
+        // ControlCard
+        // Route::get('/controlcard/read', 'Admin\HealthInsuranceController@read')->name('controlcard.read');
+        // Route::get('/controlcard/select', 'Admin\HealthInsuranceController@select')->name('controlcard.select');
+        Route::resource('/controlcard', 'Admin\ControlCardController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
