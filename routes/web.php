@@ -550,6 +550,20 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/healthinsurance/read', 'Admin\HealthInsuranceController@read')->name('healthinsurance.read');
         Route::get('/healthinsurance/select', 'Admin\HealthInsuranceController@select')->name('healthinsurance.select');
         Route::resource('/healthinsurance', 'Admin\HealthInsuranceController');
+
+        // Report Letter
+        Route::get('/reportletter/chartassessment', 'Admin\ReportLetterController@chartassessment')->name('reportletter.chartassessment');
+        Route::get('/reportletter/readcoverletter', 'Admin\ReportLetterController@readCoverLetter')->name('reportletter.readcoverletter');
+        Route::get('/reportletter/readhealthinsurance', 'Admin\ReportLetterController@readHealthInsurance')->name('reportletter.readhealthinsurance');
+        Route::post('/reportletter/exportletter', 'Admin\ReportLetterController@exportLetter')->name('reportletter.exportletter');
+        Route::post('/reportletter/exportinsurance', 'Admin\ReportLetterController@exportInsurance')->name('reportletter.exportinsurance');
+        Route::resource('/reportletter', 'Admin\ReportLetterController');
+
+        // Report Diagnose
+        Route::get('/reportdiagnose/chartdiagnose', 'Admin\ReportDiagnoseController@chartDiagnose')->name('reportdiagnose.chartdiagnose');
+        Route::get('/reportdiagnose/readdiagnose', 'Admin\ReportDiagnoseController@readDiagnose')->name('reportdiagnose.readdiagnose');
+        Route::post('/reportdiagnose/exportdiagnose', 'Admin\ReportDiagnoseController@exportDiagnose')->name('reportdiagnose.exportdiagnose');
+        Route::resource('/reportdiagnose', 'Admin\ReportDiagnoseController');
         // ControlCard
         Route::get('/controlcard/read', 'Admin\ControlCardController@read')->name('controlcard.read');
         // Route::get('/controlcard/select', 'Admin\HealthInsuranceController@select')->name('controlcard.select');
