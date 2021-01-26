@@ -401,11 +401,11 @@
         });
         break;
         case 'text':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id][0].description}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id]?actions[questions[start].id][0].description:''}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
           chatclass = 'form-inline';
           break;
         case 'number':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id][0].description}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`;
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id]?actions[questions[start].id][0].description:''}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`;
           chatclass = 'form-inline'; 
         break;
     }
@@ -461,11 +461,11 @@
         });
         break;
       case 'text':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="${actions[question_childs[id].id][0].description}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="${actions[question_childs[id].id]?actions[question_childs[id].id][0].description:''}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
           chatclass = 'form-inline'; 
           break;
       case 'number':
-           message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="${actions[question_childs[id].id][0].description}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+           message += `<div class="input-group"><input type="text" name="answer_choice_${actions[question_childs[id].id]?actions[question_childs[id].id][0].description:''}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
            chatclass = 'form-inline'; 
         break;
     }
