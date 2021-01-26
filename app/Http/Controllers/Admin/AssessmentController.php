@@ -133,6 +133,7 @@ class AssessmentController extends Controller
                             ->orderBy('order','asc')
                             ->get();
         $filters = [];
+        $actions = [];
         foreach($questions as $question){
             switch($question->frequency){
                 case 'harian':
@@ -147,9 +148,31 @@ class AssessmentController extends Controller
                     $filters[] = $question;
                     break;
                 case 'bulanan':
+                    $start_date = $question->start_date;
+                    $finish_date = $question->finish_date;
+                    if($start_date && $start_date > date('Y-m-d')){
+                        continue;
+                    }
+                    if($finish_date && $finish_date < date('Y-m-d')){
+                        continue;
+                    }
+                    if($start_date && date('d',strtotime($start_date)) != date('d')){
+                        continue;
+                    }
                     $filters[] = $question;
                     break;
                 case 'tahunan':
+                    $start_date = $question->start_date;
+                    $finish_date = $question->finish_date;
+                    if($start_date && $start_date > date('Y-m-d')){
+                        continue;
+                    }
+                    if($finish_date && $finish_date < date('Y-m-d')){
+                        continue;
+                    }
+                    if($start_date && date('m-d',strtotime($start_date)) != date('m-d')){
+                        continue;
+                    }
                     $filters[] = $question;
                     break;
                 case 'perkejadian':
@@ -161,13 +184,32 @@ class AssessmentController extends Controller
                     if($finish_date && $finish_date < date('Y-m-d')){
                         continue;
                     }
+                    $assessmentresult = AssessmentResult::where('workforce_id',$workforce->id)->orderBy('date','desc')->first();
+                    if($assessmentresult){
+                        if($question->answer_type == 'checkbox'){
+                            $assessmentanswers = AssessmentAnswer::where('assessment_question_id',$question->id)->get();
+                            foreach($assessmentanswers as $assessmentanswer){
+                                $assessments = Assessment::where('assessment_question_id',$question->id)->where('assessment_answer_id',$assessmentanswer->id)->where('assessment_date',$assessmentresult->date)->get();
+                                foreach($assessments as $assessment){
+                                    $actions[] = $assessment;
+                                }
+                            }  
+                        }
+                        else{
+                            $assessments = Assessment::where('assessment_question_id',$question->id)->where('assessment_date',$assessmentresult->date)->get();
+                            foreach($assessments as $assessment){
+                                $actions[] = $assessment;
+                            }
+                        }
+                    }
+                    
                     $filters[] = $question;
                     break;
             }
         }
         $questions = $filters;
         $answers = AssessmentAnswer::all();
-        return view('admin.assessment.create', compact('questions','answers','workforce'));
+        return view('admin.assessment.create', compact('questions','answers','workforce','actions'));
     }
 
     public function information()
