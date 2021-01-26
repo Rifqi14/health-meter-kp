@@ -1,0 +1,22 @@
+[
+    {
+        "code":"resep",
+        "name":"resep",
+        "description":"-"
+    },
+    {
+        "code":"rujukan",
+        "name":"rujukan",
+        "description":"-"
+    },
+    {
+        "code":"formdiagnosa",
+        "name":"formdiagnosa",
+        "description":"-"
+    },
+    {
+        "code":"suratjaminan",
+        "name":"suratjaminan",
+        "description":"-"
+    }
+]

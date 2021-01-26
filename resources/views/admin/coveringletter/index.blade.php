@@ -150,7 +150,7 @@
             },targets: [5]
             },
             { render: function ( data, type, row ) {
-                  return `<span class="text-blue"><b>${row.referraldoctor.name}</b></span/><br>
+                  return `<span class="text-blue"><b>${row.referraldoctor? row.referraldoctor.name : ''}</b></span/><br>
                         <small><i>${row.referralspeciality ? row.referralspeciality.name : ''}</i></small><br>
                         <small>${row.referralpartner ? row.referralpartner.name : ''}</small>`
             },targets: [6]

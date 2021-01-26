@@ -122,14 +122,8 @@ class CoveringLetterController extends Controller
             'doctor_id'             => 'required',
             'doctor_site_id'        => 'required',
             'partner_id'            => 'required',
-            'speciality_id'         => 'required',
-            'referral_doctor_id'    => 'required',
-            'referral_partner_id'   => 'required',
-            'referral_speciality_id'=> 'required',
-            'consultation_id'       => 'required',
-            'medicine_id'           => 'required',
-            'using_rule_id'         => 'required',
-            'amount'                => 'required'
+            'speciality_id'         => 'required'
+           
         ]);
 
         if ($validator->fails()) {
@@ -221,14 +215,8 @@ class CoveringLetterController extends Controller
             'doctor_id'             => 'required',
             'doctor_site_id'        => 'required',
             'partner_id'            => 'required',
-            'speciality_id'         => 'required',
-            'referral_doctor_id'    => 'required',
-            'referral_partner_id'   => 'required',
-            'referral_speciality_id'=> 'required',
-            'consultation_id'       => 'required',
-            'medicine_id'           => 'required',
-            'using_rule_id'         => 'required',
-            'amount'                => 'required'
+            'speciality_id'         => 'required'
+           
         ]);
 
         if ($validator->fails()) {
