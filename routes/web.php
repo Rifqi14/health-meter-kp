@@ -564,6 +564,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/reportdiagnose/readdiagnose', 'Admin\ReportDiagnoseController@readDiagnose')->name('reportdiagnose.readdiagnose');
         Route::post('/reportdiagnose/exportdiagnose', 'Admin\ReportDiagnoseController@exportDiagnose')->name('reportdiagnose.exportdiagnose');
         Route::resource('/reportdiagnose', 'Admin\ReportDiagnoseController');
+        // ControlCard
+        Route::get('/controlcard/read', 'Admin\ControlCardController@read')->name('controlcard.read');
+        // Route::get('/controlcard/select', 'Admin\HealthInsuranceController@select')->name('controlcard.select');
+        Route::resource('/controlcard', 'Admin\ControlCardController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {

@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Laporan Mingguan')
+@section('title', 'Kategori Resiko')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-daterangepicker/css/daterangepicker.css')}}">
@@ -62,14 +62,14 @@
 </style>
 @endsection
 @push('breadcrump')
-<li class="active">Laporan Mingguan</li>
+<li class="active">Kategori Resiko</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-md-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Laporan Mingguan</h3>
+        <h3 class="box-title">Kategori Resiko</h3>
         <div class="pull-right box-tools">
           <a href="#" onclick="exportfile()" class="btn btn-info btn-sm" data-toggle="tooltip" title="Export">
             <i class="fa fa-download"></i>
@@ -83,7 +83,7 @@
       <div class="box-body">
         <div class="row">
           <div class="col-md-12">
-            <div id="chart-personnel" class=" animate" style="height: 160px"></div>
+            <div id="chart-personnel" class=" animate" style="height: 180px"></div>
           </div>
         </div>
         <!-- /.row -->
@@ -91,11 +91,10 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Tanggal</th>
               <th width="200">Nama</th>
-              <th width="100">Bidang</th>
-              <th width="100">Jabatan</th>
-              <th width="200">Kategori Resiko</th>
+              <th width="200">Bidang</th>
+              <th width="200">Jabatan</th>
+              <th width="50">Jumlah</th>
             </tr>
           </thead>
         </table>
@@ -118,21 +117,6 @@
       <div class="modal-body">
         <form id="form-search" autocomplete="off">
           <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="date">Tanggal</label>
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="input-group">
-                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
-                      <span class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="col-md-12">
               <div class="form-group">
                 <label class="control-label" for="site_id">Distrik</label>
@@ -186,21 +170,6 @@
         <form id="form-export" action="{{ route('reportweekly.export') }}" autocomplete="off">
           @csrf
           <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label class="control-label" for="date">Tanggal</label>
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="input-group">
-                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
-                      <span class="input-group-addon">
-                        <i class="fa fa-calendar"></i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="col-md-12">
               <div class="form-group">
                 <label class="control-label" for="site_id">Distrik</label>
@@ -277,6 +246,9 @@
                   title:{
                       text:response.title,
                   },
+                  subtitle:{
+                      text:response.subtitle,
+                  },
                   chart: {
                       type: 'area'
                   },
@@ -338,6 +310,8 @@
               name:term,
               page:page,
               limit:30,
+              data_manager:{{$accesssite}},
+              site_id : {{$siteinfo->id}}
               };
           },
           results: function (data,page) {
@@ -397,6 +371,7 @@
               page:page,
               limit:30,
               site_id: $("#form-search").find('input[name=site_id]').val(),
+              workforce_group_id: $("#form-search").find('input[name=workforce_group_id]').val(),
               };
           },
           results: function (data,page) {
@@ -424,7 +399,7 @@
           info:false,
           lengthChange:true,
           responsive: true,
-          order: [[ 5, "desc" ]],
+          order: [[ 4, "desc" ]],
           ajax: {
               url: "{{route('reportweekly.personnel')}}",
               type: "GET",
@@ -440,20 +415,16 @@
                   orderable: false,targets:[0]
               },
               { className: "text-right", targets: [0] },
-              { className: "text-center", targets: [5] },
+              { className: "text-center", targets: [4] },
               { render:function( data, type, row ) {
                   return row.department ? row.department.name : ''
-                },targets: [3] },
+                },targets: [2] },
               { render:function( data, type, row ) {
                   return row.title ? row.title.name : ''
-                },targets: [4] },
-              { render:function( data, type, row ) {
-                  return row.total + ' kali'
-                },targets: [4] },
+                },targets: [3] },
           ],
           columns: [
               { data: "no" },
-              { data: "start_date" },
               { data: "name" },
               { data: "department_id" },
               { data: "title_id" },

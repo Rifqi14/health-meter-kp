@@ -192,7 +192,6 @@
          }
          if(this.value == 'Informasi Dan Pertanyaan'){
           $('#description').closest('.form-group').show();
-          $('#description_information').closest('.form-group').show();
          }
       }).trigger('change');
       $("#site_id").select2({

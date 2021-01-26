@@ -76,11 +76,18 @@ class ExaminationEvaluationController extends Controller
         $examination_type_id = $request->examination_type_id;
 
         //Count Data
-        $query = ExaminationEvaluation::Where('examination_type_id', $examination_type_id)->whereRaw("upper(result_categories) like '%$name%'");
+        $query = ExaminationEvaluation::whereRaw("upper(result_categories) like '%$name%'");
+        if($examination_type_id)
+        {
+            $query->where('examination_type_id', $examination_type_id);
+        }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = ExaminationEvaluation::Where('examination_type_id', $examination_type_id)->whereRaw("upper(result_categories) like '%$name%'");
+        $query = ExaminationEvaluation::whereRaw("upper(result_categories) like '%$name%'");
+        if ($examination_type_id) {
+            $query->where('examination_type_id', $examination_type_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $medicines = $query->get();

@@ -92,7 +92,18 @@
   var question_childs = [];
   var answers = [];
   var answer_questions = [];
+  var actions = [];
   var start = 0;
+
+  $.each(@json($actions, JSON_PRETTY_PRINT), function(i, message) {  
+    if(!actions[message.assessment_question_id]){
+      actions[message.assessment_question_id] = [];
+      actions[message.assessment_question_id].push(message);
+    }
+    else{
+      actions[message.assessment_question_id].push(message);
+    }
+  });
   $.each(@json($questions, JSON_PRETTY_PRINT), function(i, message) {
     if (message.is_parent == 0) {  
         questions.push(message);
@@ -248,8 +259,31 @@
     switch(questions[start].type){
       case 'Pertanyaan':
             message = questions[start].description;
-            write(message,questions[start].id);
-            user();
+            if(actions[questions[start].id]){
+              switch(questions[start].answer_type){
+                case 'checkbox':
+                        var answerbefore = [];
+                        $.each(actions[questions[start].id],function(){
+                          answerbefore.push(this.answer.description);
+                        })
+                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case 'radio':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].answer.description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'text':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'number':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+              }
+              write(message,questions[start].id);
+            }
+            else{
+              write(message,questions[start].id);
+              user();
+            }
             break;
       case 'Informasi' :
             message = questions[start].description_information;
@@ -258,6 +292,34 @@
               start++;
               loader();
             }, 1000);
+            break;
+        case 'Informasi Dan Pertanyaan' :
+            if(actions[questions[start].id]){
+              switch(questions[start].answer_type){
+                case 'checkbox':
+                        var answerbefore = [];
+                        $.each(actions[questions[start].id],function(){
+                          answerbefore.push(this.answer.description);
+                        })
+                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case 'radio':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].answer.description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'text':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'number':
+                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+              }
+              write(message,questions[start].id);
+            }
+            else{
+              message = questions[start].description;
+              write(message,questions[start].id);
+              user();
+            }
             break;
       default:
             message = questions[start].description;
@@ -282,6 +344,34 @@
               loader();
             }, 1000);
             break;
+        case 'Informasi Dan Pertanyaan' :
+            if(actions[question_childs[id].id]){
+              switch(question_childs[id].answer_type){
+                case 'checkbox':
+                        var answerbefore = [];
+                        $.each(actions[question_childs[id].id],function(){
+                          answerbefore.push(this.answer.description);
+                        })
+                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case 'radio':
+                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].answer.description}"</b> untuk pertanyaan "${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'text':
+                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].description}"</b> untuk pertanyaan "${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+                case  'number':
+                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].description}"</b> untuk pertanyaan <b>"${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      break;
+              }
+              write(message,question_childs[id].id);
+            }
+            else{
+              message = question_childs[id].description;
+              write(message,question_childs[id].id);
+              userchild(id);
+            }
+            break;
       default:
             message = question_childs[id].description;
             write(message,question_childs[id].id);
@@ -299,6 +389,11 @@
       case 'Informasi' :
             message = question_childs[id].description_information;
             writenext(message,question_childs[id].id,next);
+            break;
+      case 'Informasi Dan Pertanyaan' :
+          message = question_childs[id].description;
+            writenext(message,question_childs[id].id,next);
+            userchildreset(id,question_childs[id].id);
             break;
       default:
             message = question_childs[id].description;
@@ -332,31 +427,45 @@
       </div>
     `);
   }
-  function user(){
+  function user(next = 0){
     var message = '';
     var chatclass = '';
+    $('#question_'+questions[start].id).find('.direct-chat-text').html(questions[start].description);
     switch(questions[start].answer_type){
       case 'checkbox':
             $.each(answers[questions[start].id], function(i, answer) {
-              message += `<input type="checkbox" name="answer_choice_${questions[start].id}[]" value="${answer.id}" data-reset="0">
+              var checked = '';
+              $.each(actions[questions[start].id],function(j , action){
+                  if(action.assessment_answer_id == answer.id){
+                    checked = 'checked';
+                  }
+              })
+              message += `<input type="checkbox" name="answer_choice_${questions[start].id}[]" value="${answer.id}" data-reset="0" ${checked}>
                         ${answer.description} <br/>`;   
             });
             message += `<button type="button" class="btn btn-block btn-default btn-sm" onclick="answer(${questions[start].id})"><i class="fa fa-check"></i></button>`;
             chatclass = 'pull-right';
+           
             break;
       case 'radio':
         $.each(answers[questions[start].id], function(i, answer) {
-          message += `<input type="radio" name="answer_choice_${questions[start].id}" value="${answer.id}" onclick="answer(${questions[start].id})" data-reset="0">
+          var checked = '';
+          $.each(actions[questions[start].id],function(j , action){
+              if(action.assessment_answer_id == answer.id){
+                checked = 'checked';
+              }
+          })
+          message += `<input type="radio" name="answer_choice_${questions[start].id}" value="${answer.id}" onclick="answer(${questions[start].id})" data-reset="0" ${next==1?checked:''}>
                     ${answer.description} <br/>`;  
           chatclass = 'pull-right'; 
         });
         break;
         case 'text':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id]?actions[questions[start].id][0].description:''}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
           chatclass = 'form-inline';
           break;
         case 'number':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`;
+          message += `<div class="input-group"><input type="text" name="answer_choice_${questions[start].id}" value="${actions[questions[start].id]?actions[questions[start].id][0].description:''}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${questions[start].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`;
           chatclass = 'form-inline'; 
         break;
     }
@@ -371,19 +480,29 @@
           </div>
         </div>
     `);
-    
+    if(next == 1){
+      answer(questions[start].id);
+    }
     $(".numberfield").inputmask('decimal', {
       rightAlign: true
     });
     $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
   }
-  function userchild(id){
+  function userchild(id,next = 0){
     var message = '';
     var chatclass = '';
+    $('#question_'+question_childs[id].id).find('.direct-chat-text').html(question_childs[id].description);
     switch(question_childs[id].answer_type){
       case 'checkbox':
+      
             $.each(answers[question_childs[id].id], function(i, answer) {
-              message += `<input type="checkbox" name="answer_choice_${question_childs[id].id}[]" value="${answer.id}"  data-reset="0">
+              var checked = '';
+              $.each(actions[question_childs[id].id],function(j , action){
+                  if(action.assessment_answer_id == answer.id){
+                    checked = 'checked';
+                  }
+              })
+              message += `<input type="checkbox" name="answer_choice_${question_childs[id].id}[]" value="${answer.id}"  data-reset="0" ${checked}>
                         ${answer.description} <br/>`;   
             });
             message += `<button type="button" class="btn btn-block btn-default btn-sm" onclick="answer(${question_childs[id].id})"><i class="fa fa-check"></i></button>`;
@@ -391,17 +510,23 @@
             break;
       case 'radio':
         $.each(answers[question_childs[id].id], function(i, answer) {
-          message += `<input type="radio" name="answer_choice_${question_childs[id].id}" value="${answer.id}" onclick="answer(${question_childs[id].id})" data-reset="0">
+          var checked = '';
+          $.each(actions[question_childs[id].id],function(j , action){
+              if(action.assessment_answer_id == answer.id){
+                checked = 'checked';
+              }
+          })
+          message += `<input type="radio" name="answer_choice_${question_childs[id].id}" value="${answer.id}" onclick="answer(${question_childs[id].id})" data-reset="0" ${next==1?checked:''}>
                     ${answer.description} <br/>`; 
           chatclass = 'pull-right';  
         });
         break;
       case 'text':
-          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+          message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="${actions[question_childs[id].id]?actions[question_childs[id].id][0].description:''}" class="form-control" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
           chatclass = 'form-inline'; 
           break;
       case 'number':
-           message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
+           message += `<div class="input-group"><input type="text" name="answer_choice_${question_childs[id].id}" value="${actions[question_childs[id].id]?actions[question_childs[id].id][0].description:''}" class="form-control numberfield" placeholder="........."  data-reset="0"><span class="input-group-addon" onclick="answer(${question_childs[id].id})" style="cursor:pointer"><i class="fa fa-check"></i></span></div>`; 
            chatclass = 'form-inline'; 
         break;
     }
@@ -416,7 +541,9 @@
           </div>
         </div>
       `);
-    
+    if(next == 1){
+      answer(question_childs[id].id)
+    }
     $(".numberfield").inputmask('decimal', {
       rightAlign: true
     });
@@ -640,9 +767,26 @@
     
   }
   function reset(id){
-    $('input[name^=answer_choice_'+id+']').attr('data-reset',1);
-    $('#answer_'+id).show();
-    $('#answerdesc_'+id).hide();
+    if(assessments[id].type == 'Pertanyaan'){
+      if(actions[assessments[id].id]){
+        $.gritter.add({
+            title: 'Warning!',
+            text: 'Jawaban tidak dapat diubah',
+            class_name: 'gritter-warning',
+            time: 1000,
+        });
+      }
+      else{
+        $('input[name^=answer_choice_'+id+']').attr('data-reset',1);
+        $('#answer_'+id).show();
+        $('#answerdesc_'+id).hide();
+      }
+    }
+    else{
+      $('input[name^=answer_choice_'+id+']').attr('data-reset',1);
+      $('#answer_'+id).show();
+      $('#answerdesc_'+id).hide();
+    }
   }
   function finish(e){
     if(e.value == 1){

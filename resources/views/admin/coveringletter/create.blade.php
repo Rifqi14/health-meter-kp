@@ -2,7 +2,7 @@
 
 @section('title', 'Tambah Surat Pengantar')
 @push('breadcrump')
-<li><a href="{{route('healthmeter.index')}}">Surat Pengantar</a></li>
+<li><a href="{{route('coveringletter.index')}}">Surat Pengantar</a></li>
 <li class="active">Tambah</li>
 @endpush
 @section('stylesheets')
@@ -53,6 +53,7 @@
                   name="letter_date">
               </div>
           </div>
+          
           <div class="form-group">
             <label for="workforce_id" class="col-sm-2 control-label">Workforce <b class="text-danger">*</b></label>
             <div class="col-sm-6">
@@ -76,39 +77,39 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="referral_doctor_id" class="col-sm-2 control-label">Dokter Rujukan <b class="text-danger">*</b></label>
+            <label for="referral_doctor_id" class="col-sm-2 control-label">Dokter Rujukan</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="referral_doctor_id" name="referral_doctor_id" placeholder="Pilih Dokter Rujukan" required>
+              <input type="text" class="form-control" id="referral_doctor_id" name="referral_doctor_id" placeholder="Pilih Dokter Rujukan">
               <input type="hidden" class="form-control" id="referral_partner_id" name="referral_partner_id">
               <input type="hidden" class="form-control" id="referral_speciality_id" name="referral_speciality_id">
             </div>
           </div>
           <div class="form-group">
-            <label for="consultation_id" class="col-sm-2 control-label">Konsultasi <b class="text-danger">*</b></label>
+            <label for="consultation_id" class="col-sm-2 control-label">Konsultasi</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="consultation_id" name="consultation_id" placeholder="Pilih Konsultasi" required>
+              <input type="text" class="form-control" id="consultation_id" name="consultation_id" placeholder="Pilih Konsultasi">
             </div>
           </div>
            <div class="form-group">
-            <label for="medicine_id" class="col-sm-2 control-label">Obat <b class="text-danger">*</b></label>
+            <label for="medicine_id" class="col-sm-2 control-label">Obat</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="medicine_id" name="medicine_id" placeholder="Pilih Obat" required>
+              <input type="text" class="form-control" id="medicine_id" name="medicine_id" placeholder="Pilih Obat">
             </div>
           </div>
           <div class="form-group">
-            <label for="using_rule_id" class="col-sm-2 control-label">Aturan Pakai <b class="text-danger">*</b></label>
+            <label for="using_rule_id" class="col-sm-2 control-label">Aturan Pakai</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="using_rule_id" name="using_rule_id" placeholder="Pilih Aturan Pakai" required>
+              <input type="text" class="form-control" id="using_rule_id" name="using_rule_id" placeholder="Pilih Aturan Pakai">
             </div>
           </div>
           <div class="form-group">
-            <label for="amount" class="col-sm-2 control-label">Jumlah <b class="text-danger">*</b></label>
+            <label for="amount" class="col-sm-2 control-label">Jumlah</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="amount" name="amount" placeholder="Jumlah" required>
+              <input type="text" class="form-control" id="amount" name="amount" placeholder="Jumlah">
             </div>
           </div>
           <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Keterangan <b class="text-danger">*</b></label>
+            <label for="description" class="col-sm-2 control-label">Keterangan</label>
               <div class="col-sm-6">
                 <textarea class="form-control summernote" name="description" id="description"></textarea>
               </div>
@@ -134,6 +135,52 @@
         autoclose: true,
         format: 'yyyy-mm-dd'
       })
+      $( "#consultation_id" ).select2({
+        ajax: {
+          url: "{{route('healthconsultation.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              display_name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.complaint}`,
+                doctor_id: item.doctor_id,
+                patient_id: item.patient_id
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#consultation_id", function () {
+
+        // var doctor_id = $('#consultation_id').select2('data').doctor_id;
+        // $('#doctor_id').val(`${doctor_id}`);
+
+        // var patient_id = $('#consultation_id').select2('data').patient_id;
+        // $('#patient_id').val(`${patient_id}`);
+
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+        // $('#workforce_id').select2('val', '');
+        // $('#doctor_id').select2('val', '');
+        // $('#patient_id').select2('val', '');
+      });
       $("#workforce_id").select2({
         ajax: {
           url: "{{route('workforce.select')}}",
@@ -300,40 +347,7 @@
           $('#form').validate().form();
         }
       });
-       $( "#consultation_id" ).select2({
-        ajax: {
-          url: "{{route('healthconsultation.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              display_name:term,
-              page:page,
-              limit:30,
-              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.complaint}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#consultation_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
+       
      
       $("#medicine_id").select2({
         ajax: {

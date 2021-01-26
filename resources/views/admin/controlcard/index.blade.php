@@ -1,22 +1,22 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Surat Pengantar')
+@section('title', 'Kartu Kartu Kontrol')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 @endsection
 @push('breadcrump')
-<li class="active">Surat Pengantar</li>
+<li class="active">Kartu Kartu Kontrol</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Surat Pengantar</h3>
+        <h3 class="box-title">Data Kartu Kartu Kontrol</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
            @if(in_array('create',$actionmenu))
-            <a href="{{route('coveringletter.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
+            <a href="{{route('controlcard.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
               title="Tambah">
               <i class="fa fa-plus"></i>
             </a>
@@ -32,13 +32,12 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Nama Pasien</th>
-              <th width="100">Tanggal</th>
-              <th width="100">Tipe Surat</th>
               <th width="200">Workforce</th>
-              <th width="200">Dokter</th>
-              <th width="200">Dokter Rujukan</th>
-              <th width="50">Status</th>
+              <th width="100">Tanggal</th>
+              <th width="200">Hasil Pemeriksaan</th>
+              <th width="200">Pembuat</th>
+              <th width="100">Terakhir Dirubah</th>
+              <th width="100">Dirubah Oleh</th>
               <th width="10">#</th>
             </tr>
           </thead>
@@ -114,7 +113,7 @@
         responsive: true,
         order: [[ 7, "asc" ]],
         ajax: {
-            url: "{{route('coveringletter.read')}}",
+            url: "{{route('controlcard.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
@@ -128,36 +127,25 @@
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [2,3,7,8] },
+            { className: "text-center", targets: [2,5,6,7] },
 
             { render: function ( data, type, row ) {
                   return `
-                  ${row.patient.name}<br>${row.patientsite.name}`
+                  ${row.nid.name}<br><b>Pasien:</b> ${row.checkupresult.patient.name}`
             },targets: [1]
             },
-             
+             { render: function ( data, type, row ) {
+                  return `${row.checkupresult.result}`
+            },targets: [3]
+            },
             { render: function ( data, type, row ) {
-                  return `<span class="text-blue"><b>${row.workforce.name}</b></span><br>
-                         <small>${row.workforce.nid}</small><br>
-                         `
+                  return `<span>${row.nidmaker.name}</span><br>
+                         <small>${row.sitemaker.name}</small><br>`
             },targets: [4]
             },
             { render: function ( data, type, row ) {
-                  return `<span class="text-blue"><b>${row.doctor.name}</b></span/><br>
-                        <small><i>${row.speciality ? row.speciality.name : ''}</i></small><br>
-                        <small>${row.partner ? row.partner.name : ''}</small><br>
-                         <small>${row.doctorsite ? row.doctorsite.name : ''}</small>`
-            },targets: [5]
-            },
-            { render: function ( data, type, row ) {
-                  return `<span class="text-blue"><b>${row.referraldoctor? row.referraldoctor.name : ''}</b></span/><br>
-                        <small><i>${row.referralspeciality ? row.referralspeciality.name : ''}</i></small><br>
-                        <small>${row.referralpartner ? row.referralpartner.name : ''}</small>`
+                  return `<span class="label bg-blue">${row.updatedby.name}</span>`
             },targets: [6]
-            },
-             { render: function ( data, type, row ) {
-                  return `<span class="label bg-yellow">${row.status}</span>`
-            },targets: [7]
             },
         
             { render: function ( data, type, row ) {
@@ -166,24 +154,23 @@
                             <i class="fa fa-bars"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
-                            @if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/coveringletter')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                            @if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/controlcard')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
                             @if(in_array('delete',$actionmenu))<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>@endif
                             
                         </ul>
                       </div>`
-            },targets: [8]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "patient_id" },
-            { data: "letter_date" },
-            { data: "type" },
-            { data: "workforce_id" },
-            { data: "doctor_id" },
-            { data: "referral_doctor_id" },
-            { data: "status" },
-            { data: "id" },
+            { data: "nid" },
+            { data: "control_date" },
+            { data: "checkup_result_id" },
+            { data: "nid_maker" },
+            { data: "updated_at" },
+            { data: "updated_by" },
+            { data: "id" }
         ]
     });
    
@@ -200,7 +187,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus Surat Pengantar?',
+          title:'Menghapus Kartu Kartu Kontrol?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {
@@ -208,7 +195,7 @@
                               _token: "{{ csrf_token() }}"
                           };
               $.ajax({
-                url: `{{url('admin/coveringletter')}}/${id}`,
+                url: `{{url('admin/controlcard')}}/${id}`,
                 dataType: 'json', 
                 data:data,
                 type:'DELETE',

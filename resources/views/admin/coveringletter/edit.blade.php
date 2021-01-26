@@ -77,39 +77,39 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="referral_doctor_id" class="col-sm-2 control-label">Dokter Rujukan <b class="text-danger">*</b></label>
+            <label for="referral_doctor_id" class="col-sm-2 control-label">Dokter Rujukan</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="referral_doctor_id" name="referral_doctor_id" placeholder="Pilih Dokter Rujukan" required>
+              <input type="text" class="form-control" id="referral_doctor_id" name="referral_doctor_id" placeholder="Pilih Dokter Rujukan">
               <input type="hidden" class="form-control" value="{{$coveringletter->referral_partner_id}}" id="referral_partner_id" name="referral_partner_id">
               <input type="hidden" class="form-control" value="{{$coveringletter->referral_speciality_id}}" id="referral_speciality_id" name="referral_speciality_id">
             </div>
           </div>
           <div class="form-group">
-            <label for="consultation_id" class="col-sm-2 control-label">Konsultasi <b class="text-danger">*</b></label>
+            <label for="consultation_id" class="col-sm-2 control-label">Konsultasi</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="consultation_id" name="consultation_id" placeholder="Pilih Konsultasi" required>
+              <input type="text" class="form-control" id="consultation_id" name="consultation_id" placeholder="Pilih Konsultasi">
             </div>
           </div>
            <div class="form-group">
-            <label for="medicine_id" class="col-sm-2 control-label">Obat <b class="text-danger">*</b></label>
+            <label for="medicine_id" class="col-sm-2 control-label">Obat</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="medicine_id" name="medicine_id" placeholder="Pilih Obat" required>
+              <input type="text" class="form-control" id="medicine_id" name="medicine_id" placeholder="Pilih Obat">
             </div>
           </div>
           <div class="form-group">
-            <label for="using_rule_id" class="col-sm-2 control-label">Aturan Pakai <b class="text-danger">*</b></label>
+            <label for="using_rule_id" class="col-sm-2 control-label">Aturan Pakai</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="using_rule_id" name="using_rule_id" placeholder="Pilih Aturan Pakai" required>
+              <input type="text" class="form-control" id="using_rule_id" name="using_rule_id" placeholder="Pilih Aturan Pakai">
             </div>
           </div>
           <div class="form-group">
-            <label for="amount" class="col-sm-2 control-label">Jumlah <b class="text-danger">*</b></label>
+            <label for="amount" class="col-sm-2 control-label">Jumlah</label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" id="amount" value="{{$coveringletter->amount}}" name="amount" placeholder="Jumlah" required>
+              <input type="text" class="form-control" id="amount" value="{{$coveringletter->amount}}" name="amount" placeholder="Jumlah">
             </div>
           </div>
           <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Keterangan <b class="text-danger">*</b></label>
+            <label for="description" class="col-sm-2 control-label">Keterangan</label>
               <div class="col-sm-6">
                 <textarea class="form-control summernote" name="description" value="{{$coveringletter->description}}" id="description">{{$coveringletter->description}}</textarea>
               </div>
@@ -302,10 +302,13 @@
         },
         allowClear: true,
       });
-      $("#referral_doctor_id").select2('data',{
-        id:{{$coveringletter->referral_doctor_id}},
-        text:'{{$coveringletter->referraldoctor->name}}'
-      }).trigger('change');
+      @if($coveringletter->referral_doctor_id)
+        $("#referral_doctor_id").select2('data',{
+          id:{{$coveringletter->referral_doctor_id}},
+          text:'{{$coveringletter->referraldoctor->name}}'
+        }).trigger('change');
+      @endif
+
       $(document).on("change", "#referral_doctor_id", function () {
           var partner = $('#referral_doctor_id').select2('data').partner;
           var speciality = $('#referral_doctor_id').select2('data').speciality;
@@ -346,10 +349,12 @@
         },
         allowClear: true,
       });
+      @if($coveringletter->consultation_id)
       $("#consultation_id").select2('data',{
         id:{{$coveringletter->consultation_id}},
         text:'{{$coveringletter->consultation->complaint}}'
       }).trigger('change');
+      @endif
       $(document).on("change", "#consultation_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
@@ -385,10 +390,12 @@
         },
         allowClear: true,
       });
+      @if($coveringletter->medicine_id)
       $("#medicine_id").select2('data',{
         id:{{$coveringletter->medicine_id}},
-        text:'{{$coveringletter->medicine->name}}'
+        text:'{{$coveringletter->medicine ? $coveringletter->medicine->name : ''}}'
       }).trigger('change');
+      @endif
       $(document).on("change", "#medicine_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
@@ -424,10 +431,12 @@
         },
         allowClear: true,
       });
+      @if($coveringletter->using_rule_id)
       $("#using_rule_id").select2('data',{
         id:{{$coveringletter->using_rule_id}},
-        text:'{{$coveringletter->usingrule->description}}'
+        text:'{{$coveringletter->usingrule ? $coveringletter->usingrule->name : ''}}'
       }).trigger('change');
+      @endif
 
       $(document).on("change", "#using_rule_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
