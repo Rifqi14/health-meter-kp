@@ -71,7 +71,7 @@ class AdminLoginController extends Controller
                 $host = $workforce->agency->host;
                 $curl = curl_init();
                 $post = [
-                    'username' => $username,
+                    'username' => $request->username,
                     'password' => $request->password
                 ];
                 
