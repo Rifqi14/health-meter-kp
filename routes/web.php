@@ -544,6 +544,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
         //CoveringLetter
         Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
+        Route::get('/coveringletter/{id}/print', 'Admin\CoveringLetterController@print')->name('coveringletter.print');
         Route::resource('/coveringletter', 'Admin\CoveringLetterController');
 
         // CheckupSchedule
