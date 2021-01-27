@@ -71,8 +71,8 @@ class AdminLoginController extends Controller
                 $host = $workforce->agency->host;
                 $curl = curl_init();
                 $post = [
-                    'username' => 'review',
-                    'password' => 'ellipse'
+                    'username' => $username,
+                    'password' => $request->password
                 ];
                 
                 $curl = curl_init($host);
@@ -84,6 +84,7 @@ class AdminLoginController extends Controller
                 $response = curl_exec($curl);
                 switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
                     case 200 :
+                            $response = json_decode($response);
                             if(isset($response->valid)){
                                 $username = $response->nid;
                                 if($username){
@@ -93,11 +94,11 @@ class AdminLoginController extends Controller
                                 }
                                 else
                                 {
-                                    return back()->withErrors(['username' => $response]); 
+                                    return back()->withErrors(['username' => 'These credentials do not match our records.']); 
                                 }	
                             }
                             else{
-                                return back()->withErrors(['username' => $response]);  
+                                return back()->withErrors(['username' => 'These credentials do not match our records.']);  
                             }
                             break;
                     default:
