@@ -94,11 +94,11 @@ class AdminLoginController extends Controller
                                 }
                                 else
                                 {
-                                    return back()->withErrors(['username' => $response]); 
+                                    return back()->withErrors(['username' => 'These credentials do not match our records.']); 
                                 }	
                             }
                             else{
-                                return back()->withErrors(['username' => $response]);  
+                                return back()->withErrors(['username' => 'These credentials do not match our records.']);  
                             }
                             break;
                     default:
