@@ -185,7 +185,7 @@ class WorkforceController extends Controller
         try {
             DB::beginTransaction();
             $workforce = Workforce::create([
-                'nid'               => strtoupper($request->nid),
+                'nid'               => $request->nid,
                 'name'              => $request->name,
                 'workforce_group_id'=> $request->workforce_group_id,
                 'agency_id'         => $request->agency_id,
