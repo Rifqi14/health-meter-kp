@@ -65,11 +65,56 @@ class AdminLoginController extends Controller
                 return redirect()->intended($this->redirectTo);
             }
         }
+        else if($authentication == 'web'){
+            $user = User::whereRaw("upper(username) = '$username'")->first();
+            if($user){
+                $host = $workforce->agency->host;
+                $curl = curl_init();
+                $post = [
+                    'username' => 'review',
+                    'password' => 'ellipse'
+                ];
+                
+                $curl = curl_init($host);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+                curl_setopt($curl, CURLOPT_USERAGENT,'MyAgent/1.0');
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST,'POST');
+                curl_setopt($curl, CURLOPT_TIMEOUT,10);
+                $response = curl_exec($curl);
+                switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+                    case 200 :
+                            if(isset($response->valid)){
+                                $username = $response->nid;
+                                if($username){
+                                    if (Auth::guard("admin")->loginUsingId($user->id)) {
+                                        return redirect()->intended($this->redirectTo);
+                                    }
+                                }
+                                else
+                                {
+                                    return back()->withErrors(['username' => 'These credentials do not match our records.']); 
+                                }	
+                            }
+                            else{
+                                return back()->withErrors(['username' => 'These credentials do not match our records.']);  
+                            }
+                            break;
+                    default:
+                        return back()->withErrors(['username' => 'Error Connection']);  
+                }
+                curl_close($curl);	
+            }
+            else{
+                return back()->withErrors(['username' => 'These credentials do not match our records.']);
+            }
+            
+        }
         else{
             $user = User::whereRaw("upper(username) = '$username'")->first();
             if($user){
-                $ldap['user'] = 'admin'; 
-                $ldap['pass'] = 'Kediri92'; 
+                $ldap['user'] = $request->username; 
+                $ldap['pass'] = $request->password; 
                 $ldap['host'] = $workforce->agency->host; 
                 $ldap['port'] = $workforce->agency->port;
                 $ldap['conn'] = ldap_connect( $ldap['host'], $ldap['port'] );

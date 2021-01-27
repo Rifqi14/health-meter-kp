@@ -49,6 +49,7 @@
                 <select id="type" name="authentication" class="form-control select2" placeholder="Pilih Autentikasi" required>
                   <option value="local">Local</option>
                   <option value="ldap">LDAP</option>
+                  <option value="web">WEB (API)</option>
                 </select>
               </div>
             </div>
@@ -91,6 +92,9 @@
          if(this.value == 'ldap'){
           $('input[name=host]').closest('.form-group').show();
           $('input[name=port]').closest('.form-group').show();
+         }
+         if(this.value == 'web'){
+          $('input[name=host]').closest('.form-group').show();
          }
       });
       $("select[name=authentication]").trigger('change');
