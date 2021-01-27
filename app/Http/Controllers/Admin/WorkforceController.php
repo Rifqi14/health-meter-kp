@@ -304,9 +304,9 @@ class WorkforceController extends Controller
         }
 
         $workforce = Workforce::withTrashed()->find($id);
-        if ($workforce->nid != strtoupper($request->nid)) {
+        if ($workforce->nid != $request->nid) {
             $user = User::where('workforce_id', $workforce->id)->first();
-            $user->username = strtoupper($request->nid);
+            $user->username = $request->nid;
             $user->save();
             if (!$user) {
                 DB::rollback();
@@ -338,7 +338,7 @@ class WorkforceController extends Controller
                 ], 400);
             }
         }
-        $workforce->nid                 = strtoupper($request->nid);
+        $workforce->nid                 = $request->nid;
         $workforce->name                = $request->name;
         $workforce->workforce_group_id  = $request->workforce_group_id;
         $workforce->agency_id           = $request->agency_id;
