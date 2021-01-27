@@ -176,15 +176,6 @@
                 },targets: [2]
             },
             { render: function ( data, type, row ) {
-                if(row.authentication == 'ldap'){
-                  return `${row.host}:${row.port}`
-                }
-                else{
-                  return ``;
-                }
-            },targets: [4]
-            },
-            { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
             },targets: [6]
             },
