@@ -54,7 +54,7 @@ class AdminLoginController extends Controller
             'password' => 'required|string',
         ]);
         $authentication = 'local';
-        $username = $request->username;
+        $username = strtoupper($request->username);
         $workforce = Workforce::with('agency')->whereRaw("upper(nid) = '$username'")->first();
         if(!$workforce){
             return back()->withErrors(['username' => 'These credentials do not match our records.']);
