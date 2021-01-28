@@ -110,18 +110,25 @@ class WorkforceController extends Controller
         $name = strtoupper($request->name);
         $nid = strtoupper($request->nid);
         $site_id = $request->site_id;
+        $title_id = $request->title_id;
 
         //Count Data
-        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("(upper(name) like '%$name%' or upper(nid) like '%$name%')")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
+        }
+        if($title_id){
+            $query->where('title_id',$title_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("(upper(name) like '%$name%' or upper(nid) like '%$name%')")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
+        }
+        if($title_id){
+            $query->where('title_id',$title_id);
         }
         $query->orderBy('name', 'asc');
         $query->offset($start);
