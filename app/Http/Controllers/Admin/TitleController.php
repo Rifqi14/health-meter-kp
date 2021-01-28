@@ -575,8 +575,8 @@ class TitleController extends Controller
                             if(!$cek){
                                 $insert = Title::create([
                                     'code' 	    => strtoupper($code),
-                                    'name'      => $title->DESKRIPSI?$title->DESKRIPSI:'',
-                                    'shortname' => $title->SHORT_DESKRIPSI,
+                                    'name'      => trim($title->DESKRIPSI?$title->DESKRIPSI:''),
+                                    'shortname' => trim($title->SHORT_DESKRIPSI),
                                     'site_id'   => $site->id,
                                     'updated_by'=> Auth::id()
                                 ]);
@@ -592,8 +592,8 @@ class TitleController extends Controller
                             }
                             else{
                                 $cek->code      = strtoupper($code);
-                                $cek->name      = $title->DESKRIPSI?$title->DESKRIPSI:'';
-                                $cek->shortname = $title->SHORT_DESKRIPSI;
+                                $cek->name      = trim($title->DESKRIPSI?$title->DESKRIPSI:'');
+                                $cek->shortname = trim($title->SHORT_DESKRIPSI);
                                 $cek->site_id   = $site->id;
                                 $cek->deleted_at= $title->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
                                 $cek->updated_by= Auth::id();
