@@ -27,24 +27,24 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="position_code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
+              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="position_code" name="position_code" placeholder="Kode"
-                  value="{{ $guarantor->position_code }}" required>
+                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik"
+                  required>
               </div>
             </div>
             <div class="form-group">
-              <label for="nid" class="col-sm-2 control-label">NID <b class="text-danger">*</b></label>
+              <label for="title_id" class="col-sm-2 control-label">Jabatan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="nid" name="nid" placeholder="NID"
-                  value="{{ $guarantor->nid }}" required>
+                <input type="text" class="form-control" id="title_id" name="title_id" data-placeholder="Pilih Jabatan"
+                  required>
               </div>
             </div>
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <label for="workforce_id" class="col-sm-2 control-label">Workforce <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Unit"
-                  value="{{ $guarantor->site_id }}" required>
+                <input type="text" class="form-control" id="workforce_id" name="workforce_id" data-placeholder="Pilih Workforce"
+                  required>
               </div>
             </div>
           </div>
@@ -62,7 +62,7 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $( "#site_id" ).select2({
+    $( "#site_id" ).select2({
         ajax: {
           url: "{{route('site.select')}}",
           type:'GET',
@@ -72,6 +72,8 @@
               name:term,
               page:page,
               limit:30,
+              data_manager:{{$accesssite}},
+              site_id : {{$siteinfo->id}}
             };
           },
           results: function (data,page) {
@@ -91,6 +93,74 @@
         allowClear: true,
       });
       $(document).on("change", "#site_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#title_id" ).select2({
+        ajax: {
+          url: "{{route('title.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name} - ${item.code}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#title_id", function () {
+        if (!$.isEmptyObject($('#form').validate().submitted)) {
+          $('#form').validate().form();
+        }
+      });
+      $( "#workforce_id" ).select2({
+        ajax: {
+          url: "{{route('workforce.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+            return {
+              name:term,
+              page:page,
+              limit:30,
+              title_id:$('#title_id').val()==''?-1:$('#title_id').val()
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+              option.push({
+                id:item.id,  
+                text: `${item.name} - ${item.nid}`
+              });
+            });
+            return {
+              results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
+      $(document).on("change", "#workforce_id", function () {
         if (!$.isEmptyObject($('#form').validate().submitted)) {
           $('#form').validate().form();
         }
@@ -159,8 +229,14 @@
           })		
         }
       });
-      @if(isset($guarantor->site_id))
+      @if(isset($guarantor->site))
       $("#site_id").select2('data',{id:{{$guarantor->site->id}},text:'{{$guarantor->site->name}}'}).trigger('change');
+      @endif
+      @if(isset($guarantor->title))
+      $("#title_id").select2('data',{id:{{$guarantor->title->id}},text:'{{$guarantor->title->name}}'}).trigger('change');
+      @endif
+      @if(isset($guarantor->workforce))
+      $("#workforce_id").select2('data',{id:{{$guarantor->workforce->id}},text:'{{$guarantor->workforce->name}}'}).trigger('change');
       @endif
   });
 </script>

@@ -13,18 +13,18 @@ class Guarantor extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'updated_by')->withTrashed();
+        return $this->belongsTo(User::class, 'updated_by');
     }
     public function site()
     {
-        return $this->belongsTo(Site::class, 'site_id')->withTrashed();
+        return $this->belongsTo(Site::class, 'site_id');
     }
     public function title()
     {
-        return $this->belongsTo(Title::class, 'title_id')->withTrashed();
+        return $this->belongsTo(Title::class, 'title_id');
     }
     public function workforce()
     {
-        return $this->belongsTo(Workforce::class, 'workforce_id')->withTrashed();
+        return $this->belongsTo(Workforce::class, 'workforce_id');
     }
 }
