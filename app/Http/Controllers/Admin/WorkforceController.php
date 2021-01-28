@@ -469,18 +469,20 @@ class WorkforceController extends Controller
                     ]);
                     foreach($response->returned_object as $workforce){
                         $site = Site::whereRaw("upper(code) = '$workforce->KODE_DISTRIK'")->first();
+                        $title = Title::whereRaw("upper(code) = '$workforce->KODE_JABATAN'")->first();
                         if($site){
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
                                 $insert = Workforce::create([
-                                    'nid' 	        => strtoupper($workforce->NID),
-                                    'name'          => $workforce->NID,
-                                    'site_id' => $site->id,
-                                    'workforce_group_id' => 1,
-                                    'agency_id'     => 1,
-                                    'start_date'     => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
-                                    'finish_date'     => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
-                                    'updated_by'    => Auth::id()
+                                    'nid' 	                => strtoupper($workforce->NID),
+                                    'name'                  => $workforce->NID,
+                                    'site_id'               => $site->id,
+                                    'workforce_group_id'    => 1,
+                                    'agency_id'             => 1,
+                                    'title_id'              => $title?$title->id:null,
+                                    'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
+                                    'finish_date'           => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
+                                    'updated_by'            => Auth::id()
                                 ]);
                                 if (!$insert) {
                                     DB::rollback();
@@ -509,9 +511,12 @@ class WorkforceController extends Controller
                                 ]);
                             }
                             else{
-                                $cek->site_id = $site->id;
-                                $cek->deleted_at= $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
-                                $cek->updated_by= Auth::id();
+                                $cek->site_id       = $site->id;
+                                $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
+                                $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
+                                $cek->title_id      = $title?$title->id:null;
+                                $cek->deleted_at    = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $cek->updated_by    = Auth::id();
                                 $cek->save();
                                 if (!$cek) {
                                     DB::rollback();
