@@ -459,7 +459,7 @@ class DepartmentController extends Controller
                                 DB::rollback();
                                 return response()->json([
                                     'status'    => false,
-                                    'message'   => $department
+                                    'message'   => $insert
                                 ], 400);
                             }
                             $insert->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
