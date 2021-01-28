@@ -433,4 +433,70 @@ class DepartmentController extends Controller
         	'results' 	=> route('department.index'),
         ], 200);
     }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/divbid/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Department::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $department){
+                        $cek = Department::whereRaw("upper(code) = '$department->code'")->get();
+                        if(!$cek->count()){
+                            $department = Department::create([
+                                'code' 	        => strtoupper($department->KODE),
+                                'name'          => $department->DESKRIPSI,
+                                'updated_by'    => Auth::id()
+                            ]);
+                            if (!$department) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status'    => false,
+                                    'message'   => $department
+                                ], 400);
+                            }
+                            $department->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $department->save();
+                        }
+                        else{
+                            Department::whereRaw("upper(code) = '$department->code'")->update([
+                                'name'          => $department->DESKRIPSI,
+                                'deleted_at'    => $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
+                                'update_by'     => Auth::id()
+                            ]);
+                        }  
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data department'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
+    }
 }

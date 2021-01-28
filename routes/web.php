@@ -52,6 +52,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/department/read', 'Admin\DepartmentController@read')->name('department.read');
         Route::get('/department/select', 'Admin\DepartmentController@select')->name('department.select');
         Route::get('/department/import', 'Admin\DepartmentController@import')->name('department.import');
+        Route::get('/department/sync', 'Admin\DepartmentController@sync')->name('department.sync');
         Route::get('/department/restore/{id}', 'Admin\DepartmentController@restore')->name('department.restore');
         Route::get('/department/delete/{id}', 'Admin\DepartmentController@delete')->name('department.delete');
         Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
