@@ -459,7 +459,7 @@ class GuarantorController extends Controller
                         $workforce_nid = trim($guarantor->NID);
                         $site = Site::whereRaw("upper(code) = '$site_code'")->first();
                         $title = Title::whereRaw("upper(code) = '$title_code'")->first();
-                        $workforce = Worforce::whereRaw("upper(nid) = '$workforce_nid'")->first();
+                        $workforce = Workforce::whereRaw("upper(nid) = '$workforce_nid'")->first();
                         if($site && $title){
                             $cek = Guarantor::withTrashed()->where('site_id',$site->id)->where('title_id',$title->id)->first();
                             if(!$cek){
