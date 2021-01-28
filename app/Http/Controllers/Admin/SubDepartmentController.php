@@ -461,7 +461,7 @@ class SubDepartmentController extends Controller
                                     'message'   => $insert
                                 ], 400);
                             }
-                            $insert->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->deleted_at = $subdepartment->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
                             $insert->save();
                         }
                         else{
