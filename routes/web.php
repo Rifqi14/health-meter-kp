@@ -550,6 +550,7 @@ Route::group(['prefix' => 'admin'], function () {
         // CheckupSchedule
         Route::get('/healthinsurance/read', 'Admin\HealthInsuranceController@read')->name('healthinsurance.read');
         Route::get('/healthinsurance/select', 'Admin\HealthInsuranceController@select')->name('healthinsurance.select');
+        Route::get('/healthinsurance/{id}/print', 'Admin\HealthInsuranceController@print')->name('healthinsurance.print');
         Route::resource('/healthinsurance', 'Admin\HealthInsuranceController');
 
         // Report Letter

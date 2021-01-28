@@ -51,4 +51,8 @@ class HealthInsurance extends Model
     {
         return $this->belongsTo(Inpatient::class, 'inpatient_id');
     }
+    public function guarantor()
+    {
+        return $this->belongsTo(Guarantor::class, 'guarantor_id');
+    }
 }
