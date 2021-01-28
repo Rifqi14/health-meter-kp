@@ -10,6 +10,8 @@ use App\Models\Patient;
 use App\Models\Site;
 use App\Models\Title;
 use App\Models\Grade;
+use App\Models\Department;
+use App\Models\SubDepartment;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
@@ -474,6 +476,7 @@ class WorkforceController extends Controller
                         $title = Title::whereRaw("upper(code) = '$workforce->KODE_JABATAN'")->first();
                         $grade = Grade::whereRaw("upper(code) = '$workforce->KODE_JENJANGJABATAN'")->first();
                         if($site){
+                            $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
                                 $insert = Workforce::create([
@@ -482,7 +485,8 @@ class WorkforceController extends Controller
                                     'site_id'               => $site->id,
                                     'workforce_group_id'    => 1,
                                     'agency_id'             => 1,
-                                    'grade_id'              => $grade?$grade->id:null,
+                                    'department_id'         => $department?$department->id:null,
+                                    'title_id'              => $title?$title->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
                                     'finish_date'           => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
@@ -518,6 +522,7 @@ class WorkforceController extends Controller
                                 $cek->site_id       = $site->id;
                                 $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
                                 $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
+                                $cek->department_id = $department?$department->id:null;
                                 $cek->grade_id      = $grade?$grade->id:null;
                                 $cek->title_id      = $title?$title->id:null;
                                 $cek->deleted_at    = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
