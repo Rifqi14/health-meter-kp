@@ -213,7 +213,7 @@
             { className: "text-right", targets: [0,4] },
             { className: "text-center", targets: [5,6] },
             { render:function( data, type, row ) {
-              return `${row.site.name}`
+              return `${row.site?row.site.name:'-'}`
             },targets: [1] },
             { render: function ( data, type, row ) {
                   return `<p>${row.name + '<br>' + row.code}</p>`
