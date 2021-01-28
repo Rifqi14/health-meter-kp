@@ -23,4 +23,8 @@ class Guarantor extends Model
     {
         return $this->belongsTo(Title::class, 'title_id');
     }
+    public function workforce()
+    {
+        return $this->belongsTo(Workforce::class, 'workforce_id');
+    }
 }
