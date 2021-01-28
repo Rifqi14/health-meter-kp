@@ -434,20 +434,20 @@ class SiteController extends Controller
                     foreach($response->returned_object as $site){
                         $cek = Site::whereRaw("upper(code) = '$site->KODE'")->withTrashed()->first();
                         if(!$cek){
-                            $site = Site::create([
+                            $insert = Site::create([
                                 'code' 	        => strtoupper($site->KODE),
                                 'name'          => $site->DESKRIPSI,
                                 'updated_by'    => Auth::id()
                             ]);
-                            if (!$site) {
+                            if (!$insert) {
                                 DB::rollback();
                                 return response()->json([
                                     'status' => false,
-                                    'message'     => $site
+                                    'message'     => $insert
                                 ], 400);
                             }
-                            $site->deleted_at = $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
-                            $site->save();
+                            $insert->deleted_at = $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->save();
                         }
                         else{
                             $cek->code      = strtoupper($site->KODE);

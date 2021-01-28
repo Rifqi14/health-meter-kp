@@ -25,6 +25,11 @@
                         <i class="fa fa-upload"></i>
                     </a>
                     @endif
+                    @if(in_array('sync',$actionmenu))
+                    <a href="#" onclick="sync()" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Syncronize">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -99,8 +104,45 @@
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script src="{{asset('assets/js/plugins/bootbox/bootbox.min.js')}}"></script>
 <script type="text/javascript">
-    function filter(){
+function filter(){
     $('#add-filter').modal('show');
+}
+function sync(){
+    $.ajax({
+        url: `{{route('grade.sync')}}`,
+        dataType: 'json', 
+        beforeSend:function(){
+            $('.overlay').removeClass('hidden');
+        }
+    }).done(function(response){
+        if(response.status){
+            $('.overlay').addClass('hidden');
+            $.gritter.add({
+                title: 'Success!',
+                text: response.message,
+                class_name: 'gritter-success',
+                time: 1000,
+            });
+            dataTable.ajax.reload( null, false );
+        }
+        else{
+            $.gritter.add({
+                title: 'Warning!',
+                text: response.message,
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+        }
+    }).fail(function(response){
+        var response = response.responseJSON;
+        $('.overlay').addClass('hidden');
+        $.gritter.add({
+            title: 'Error!',
+            text: response.message,
+            class_name: 'gritter-error',
+            time: 1000,
+        });
+    });
 }
 $(function(){
     dataTable = $('.datatable').DataTable( {
