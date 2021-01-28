@@ -64,6 +64,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/title/employee', 'Admin\TitleController@employee')->name('title.employee');
         Route::get('/title/select', 'Admin\TitleController@select')->name('title.select');
         Route::get('/title/import', 'Admin\TitleController@import')->name('title.import');
+        Route::get('/title/sync', 'Admin\TitleController@sync')->name('title.sync');
         Route::get('/title/restore/{id}', 'Admin\TitleController@restore')->name('title.restore');
         Route::get('/title/delete/{id}', 'Admin\TitleController@delete')->name('title.delete');
         Route::post('/title/preview', 'Admin\TitleController@preview')->name('title.preview');
