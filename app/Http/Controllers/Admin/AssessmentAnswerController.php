@@ -90,7 +90,9 @@ class AssessmentAnswerController extends Controller
         $data = [];
         foreach ($results as $result) {
             $result->no = ++$start;
-            $data[] = $result;
+            if($result->question){
+                $data[] = $result;
+            }
         }
         return response()->json([
             'total' => $recordsTotal,

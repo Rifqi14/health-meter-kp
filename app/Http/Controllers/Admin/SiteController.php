@@ -417,4 +417,55 @@ class SiteController extends Controller
         	'results' 	=> route('site.index'),
         ], 200);
     }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/distrik/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        $response = curl_exec($curl);
+        return response()->json([
+        	'status' 	=> true,
+        	'results' 	=> $response,
+        ], 200);
+        curl_close($curl);	
+        // $sites = json_decode($request->sites);
+        // foreach($sites as $site){
+        //     $cek = Site::whereRaw("upper(code) = '$site->code'")->withTrashed()->first();
+        //     if(!$cek){
+        //         $department = Site::create([
+        //             'code' 	        => strtoupper($site->code),
+        //             'name'          => $site->name,
+        //             'updated_by'    => Auth::id()
+        //         ]);
+        //         if (!$site) {
+        //             DB::rollback();
+        //             return response()->json([
+        //                 'status' => false,
+        //                 'message'     => $site
+        //             ], 400);
+        //         }
+        //         $site->deleted_at = $site->status?null:date('Y-m-d H:i:s');
+        //         $site->save();
+        //     }
+        //     else{
+        //         $cek->code      = strtoupper($site->code);
+        //         $cek->name      = $site->name;
+        //         $cek->deleted_at= $site->status?null:date('Y-m-d H:i:s');
+        //         $cek->updated_by= Auth::id();
+        //         $cek->save();
+        //         if (!$cek) {
+        //             DB::rollback();
+        //             return response()->json([
+        //                 'status' => false,
+        //                 'message'     => $cek
+        //             ], 400);
+        //         }
+        //     }
+        // }
+        // DB::commit();
+        // return response()->json([
+        // 	'status' 	=> true,
+        // 	'results' 	=> route('site.index'),
+        // ], 200);
+    }
 }
