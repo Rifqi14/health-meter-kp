@@ -42,6 +42,18 @@
                 <p class="form-control-static">{{$guarantor->workforce->name}}</p>
               </div>
             </div>
+            <div class="form-group">
+              <label for="position_code" class="col-sm-2 control-label">Status PH</label>
+              <div class="col-sm-6">
+                <p class="form-control-static">
+                  @if($guarantor->executor)
+                    <span class="label label-success">Ya</span>
+                  @else
+                  <span class="label label-warning">Tidak</span>
+                  @endif
+                </p>
+              </div>
+            </div>
           </div>
         </form>
       </div>

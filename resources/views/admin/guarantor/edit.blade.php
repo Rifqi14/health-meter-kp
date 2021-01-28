@@ -47,6 +47,14 @@
                   required>
               </div>
             </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" style="padding-top: 1px" for="executor">Status PH</label>
+              <div class="col-sm-4">
+                <label><input class="form-control" type="checkbox" name="executor" @if ($guarantor->executor)
+                        checked
+                        @endif> <i></i></label>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -62,6 +70,10 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+    $('input[name=executor]').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+      });
     $( "#site_id" ).select2({
         ajax: {
           url: "{{route('site.select')}}",

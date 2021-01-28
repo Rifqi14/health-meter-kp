@@ -446,6 +446,8 @@ Route::group(['prefix' => 'admin'], function () {
         // Guarantor
         Route::get('/guarantor/read', 'Admin\GuarantorController@read')->name('guarantor.read');
         Route::get('/guarantor/select', 'Admin\GuarantorController@select')->name('guarantor.select');
+        Route::get('/guarantor/import', 'Admin\GuarantorController@import')->name('guarantor.import');
+        Route::get('/guarantor/sync', 'Admin\GuarantorController@sync')->name('guarantor.sync');
         Route::get('/guarantor/restore/{id}', 'Admin\GuarantorController@restore')->name('guarantor.restore');
         Route::get('/guarantor/delete/{id}', 'Admin\GuarantorController@delete')->name('guarantor.delete');
         Route::resource('/guarantor', 'Admin\GuarantorController');
@@ -488,6 +490,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/workforce/restore/{id}', 'Admin\WorkforceController@restore')->name('workforce.restore');
         Route::get('/workforce/delete/{id}', 'Admin\WorkforceController@delete')->name('workforce.delete');
         Route::get('/workforce/import', 'Admin\WorkforceController@import')->name('workforce.import');
+        Route::get('/workforce/sync', 'Admin\WorkforceController@sync')->name('workforce.sync');
         Route::post('/workforce/preview', 'Admin\WorkforceController@preview')->name('workforce.preview');
         Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
         Route::resource('/workforce', 'Admin\WorkforceController');
