@@ -475,6 +475,7 @@ class WorkforceController extends Controller
                                 $insert = Workforce::create([
                                     'nid' 	        => strtoupper($workforce->NID),
                                     'name'          => $workforce->NID,
+                                    'site_id' => $site->id,
                                     'workforce_group_id' => 1,
                                     'agency_id'     => 1,
                                     'start_date'     => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
@@ -508,6 +509,7 @@ class WorkforceController extends Controller
                                 ]);
                             }
                             else{
+                                $cek->site_id = $site->id;
                                 $cek->deleted_at= $title->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
                                 $cek->updated_by= Auth::id();
                                 $cek->save();
