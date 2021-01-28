@@ -126,7 +126,8 @@
             return {
               name:term,
               page:page,
-              limit:30
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
             };
           },
           results: function (data,page) {

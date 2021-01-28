@@ -139,7 +139,7 @@ class SubDepartmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:sub_departments',
+            'code'          => 'required',
             'name'          => 'required',
             'site_id'       => 'required',
         ]);
@@ -149,6 +149,13 @@ class SubDepartmentController extends Controller
                 'status'     => false,
                 'message'     => $validator->errors()->first()
             ], 400);
+        }
+        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
         }
         $subdepartment = SubDepartment::create([
             'site_id'       => $request->site_id,
@@ -221,7 +228,7 @@ class SubDepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:sub_departments,code,'.$id,
+            'code'          => 'required',
             'site_id'       => 'required',
             'name'          => 'required',
         ]);
@@ -232,7 +239,13 @@ class SubDepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-
+        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->where('id','<>',$id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
+        }
         $subdepartment = SubDepartment::withTrashed()->find($id);
         $subdepartment->site_id = $request->site_id;
         $subdepartment->code = strtoupper($request->code);
@@ -379,7 +392,7 @@ class SubDepartmentController extends Controller
         DB::beginTransaction();
         $subdepartments = json_decode($request->subdepartments);
         foreach($subdepartments as $subdepartment){
-            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->withTrashed()->first();
+            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->where('site_id',$subdepartment->site_id)->withTrashed()->first();
             if(!$cek){
                 $subdepartment = SubDepartment::create([
                     'code' 	        => strtoupper($subdepartment->code),

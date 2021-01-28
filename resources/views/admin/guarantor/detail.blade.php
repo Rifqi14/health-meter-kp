@@ -36,6 +36,12 @@
                 <p class="form-control-static">{{$guarantor->title->name}}</p>
               </div>
             </div>
+            <div class="form-group">
+              <label for="position_code" class="col-sm-2 control-label">Workforce</label>
+              <div class="col-sm-6">
+                <p class="form-control-static">{{$guarantor->workforce->name}}</p>
+              </div>
+            </div>
           </div>
         </form>
       </div>

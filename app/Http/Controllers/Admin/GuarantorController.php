@@ -128,9 +128,14 @@ class GuarantorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.guarantor.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.guarantor.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -143,7 +148,8 @@ class GuarantorController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title_id'  => 'required',
-            'site_id'   => 'required'
+            'site_id'   => 'required',
+            'workforce_id'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -155,6 +161,7 @@ class GuarantorController extends Controller
         $guarantor = Guarantor::create([
             'site_id'       => $request->site_id,
             'title_id'      => $request->title_id,
+            'workforce_id'      => $request->workforce_id,
             'updated_by'    => Auth::id()
         ]);
         if (!$guarantor) {
@@ -175,13 +182,18 @@ class GuarantorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        $guarantor = Guarantor::with(['site','user'])->withTrashed()->find($id);
-        if ($guarantor) {
-            return view('admin.guarantor.detail', compact('guarantor'));
-        } else {
-            abort(404);
+        if(in_array('read',$request->actionmenu)){
+            $guarantor = Guarantor::with(['site','user'])->withTrashed()->find($id);
+            if ($guarantor) {
+                return view('admin.guarantor.detail', compact('guarantor'));
+            } else {
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
         }
     }
 
@@ -191,13 +203,18 @@ class GuarantorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $guarantor = Guarantor::withTrashed()->find($id);
-        if ($guarantor) {
-            return view('admin.guarantor.edit', compact('guarantor'));
-        } else {
-            abort(404);
+        if(in_array('update',$request->actionmenu)){
+            $guarantor = Guarantor::withTrashed()->find($id);
+            if ($guarantor) {
+                return view('admin.guarantor.edit', compact('guarantor'));
+            } else {
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
         }
     }
 
@@ -211,9 +228,9 @@ class GuarantorController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'position_code'     => 'required|unique:guarantors,position_code,'.$id,
-            'nid' 	            => 'required',
-            'site_id'           => 'required'
+            'title_id'  => 'required',
+            'site_id'   => 'required',
+            'workforce_id'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -224,9 +241,9 @@ class GuarantorController extends Controller
         }
 
         $guarantor = Guarantor::find($id);
-        $guarantor->position_code   = $request->position_code;
-        $guarantor->nid             = $request->nid;
+        $guarantor->title_id        = $request->title_id;
         $guarantor->site_id         = $request->site_id;
+        $guarantor->workforce_id    = $request->workforce_id;
         $guarantor->updated_by      = Auth::id();
         $guarantor->save();
 

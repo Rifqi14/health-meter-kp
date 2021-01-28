@@ -110,18 +110,25 @@ class WorkforceController extends Controller
         $name = strtoupper($request->name);
         $nid = strtoupper($request->nid);
         $site_id = $request->site_id;
+        $title_id = $request->title_id;
 
         //Count Data
-        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("(upper(name) like '%$name%' or upper(nid) like '%$name%')")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
+        }
+        if($title_id){
+            $query->where('title_id',$title_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Workforce::whereRaw("upper(name) like '%$name%' or upper(nid) like '%$name%'")->whereRaw("upper(nid) like '%$nid%'");
+        $query = Workforce::whereRaw("(upper(name) like '%$name%' or upper(nid) like '%$name%')")->whereRaw("upper(nid) like '%$nid%'");
         if($site_id){
             $query->where('site_id',$site_id);
+        }
+        if($title_id){
+            $query->where('title_id',$title_id);
         }
         $query->orderBy('name', 'asc');
         $query->offset($start);
@@ -185,7 +192,7 @@ class WorkforceController extends Controller
         try {
             DB::beginTransaction();
             $workforce = Workforce::create([
-                'nid'               => strtoupper($request->nid),
+                'nid'               => $request->nid,
                 'name'              => $request->name,
                 'workforce_group_id'=> $request->workforce_group_id,
                 'agency_id'         => $request->agency_id,
@@ -304,9 +311,9 @@ class WorkforceController extends Controller
         }
 
         $workforce = Workforce::withTrashed()->find($id);
-        if ($workforce->nid != strtoupper($request->nid)) {
+        if ($workforce->nid != $request->nid) {
             $user = User::where('workforce_id', $workforce->id)->first();
-            $user->username = strtoupper($request->nid);
+            $user->username = $request->nid;
             $user->save();
             if (!$user) {
                 DB::rollback();
@@ -338,7 +345,7 @@ class WorkforceController extends Controller
                 ], 400);
             }
         }
-        $workforce->nid                 = strtoupper($request->nid);
+        $workforce->nid                 = $request->nid;
         $workforce->name                = $request->name;
         $workforce->workforce_group_id  = $request->workforce_group_id;
         $workforce->agency_id           = $request->agency_id;

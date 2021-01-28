@@ -260,25 +260,8 @@
       case 'Pertanyaan':
             message = questions[start].description;
             if(actions[questions[start].id]){
-              switch(questions[start].answer_type){
-                case 'checkbox':
-                        var answerbefore = [];
-                        $.each(actions[questions[start].id],function(){
-                          answerbefore.push(this.answer.description);
-                        })
-                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
-                      break;
-                case 'radio':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].answer.description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
-                      break;
-                case  'text':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
-                      break;
-                case  'number':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
-                      break;
-              }
               write(message,questions[start].id);
+              user(1);
             }
             else{
               write(message,questions[start].id);
@@ -295,25 +278,35 @@
             break;
         case 'Informasi Dan Pertanyaan' :
             if(actions[questions[start].id]){
+              message = questions[start].description_information;
               switch(questions[start].answer_type){
                 case 'checkbox':
                         var answerbefore = [];
                         $.each(actions[questions[start].id],function(){
                           answerbefore.push(this.answer.description);
                         })
-                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                        message = message.replace('[answer]',`<b>${answerbefore.join(',')}</b>`);
+                        message = message.replace('[question]',`<b>${questions[start].description}</b>`);
+                        message = message.replace('[update]',`<a onclick="reset(${questions[start].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case 'radio':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].answer.description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[questions[start].id][0].answer.description}</b>`);
+                      message = message.replace('[question]',`<b>${questions[start].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${questions[start].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case  'text':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan "${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[questions[start].id][0].description}</b>`);
+                      message = message.replace('[question]',`<b>${questions[start].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${questions[start].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case  'number':
-                      message = `Anda menjawab <b>"${actions[questions[start].id][0].description}"</b> untuk pertanyaan <b>"${questions[start].description}"</b>? Klik <a onclick="user()" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="user(1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[questions[start].id][0].description}</b>`);
+                      message = message.replace('[question]',`<b>${questions[start].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${questions[start].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
               }
               write(message,questions[start].id);
+              user(1);
             }
             else{
               message = questions[start].description;
@@ -333,8 +326,14 @@
     switch(question_childs[id].type){
       case 'Pertanyaan':
             message = question_childs[id].description;
-            write(message,question_childs[id].id);
-            userchild(id);
+            if(actions[questions[start].id]){
+              write(message,question_childs[id].id);
+              userchild(id,1);
+            }
+            else{
+              write(message,question_childs[id].id);
+              userchild(id);
+            }
             break;
       case 'Informasi' :
             message = question_childs[id].description_information;
@@ -346,25 +345,35 @@
             break;
         case 'Informasi Dan Pertanyaan' :
             if(actions[question_childs[id].id]){
+              message = question_childs[id].description_information;
               switch(question_childs[id].answer_type){
                 case 'checkbox':
                         var answerbefore = [];
                         $.each(actions[question_childs[id].id],function(){
                           answerbefore.push(this.answer.description);
                         })
-                        message = `Anda menjawab <b>"${answerbefore.join(',')}"</b> untuk pertanyaan <b>"${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                        message = message.replace('[answer]',`<b>${answerbefore.join(',')}</b>`);
+                        message = message.replace('[question]',`<b>${question_childs[id].description}</b>`);
+                        message = message.replace('[update]',`<a onclick="reset(${question_childs[id].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case 'radio':
-                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].answer.description}"</b> untuk pertanyaan "${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[question_childs[id].id][0].answer.description}</b>`);
+                      message = message.replace('[question]',`<b>${question_childs[id].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${question_childs[id].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case  'text':
-                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].description}"</b> untuk pertanyaan "${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[question_childs[id].id][0].description}</b>`);
+                      message = message.replace('[question]',`<b>${question_childs[id].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${question_childs[id].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
                 case  'number':
-                      message = `Anda menjawab <b>"${actions[question_childs[id].id][0].description}"</b> untuk pertanyaan <b>"${question_childs[id].description}"</b>? Klik <a onclick="userchild(${id})" style="cursor:pointer">[Disini]</a> untuk memperbarui data. Atau klik <a onclick="userchild(${id},1)" style="cursor:pointer">[Disini]</a> untuk melanjutkan pertanyaan.`;
+                      message = message.replace('[answer]',`<b>${actions[question_childs[id].id][0].description}</b>`);
+                      message = message.replace('[question]',`<b>${question_childs[id].description}</b>`);
+                      message = message.replace('[update]',`<a onclick="reset(${question_childs[id].id})" style="cursor:pointer">[Disini]</a>`);
                       break;
               }
               write(message,question_childs[id].id);
+              userchild(id,1);
             }
             else{
               message = question_childs[id].description;
@@ -380,25 +389,27 @@
   }
   function botchildreset(id,next){
     var message = '';
-    switch(question_childs[id].type){
-      case 'Pertanyaan':
+    if(!$('#question_'+question_childs[id].id).length){
+      switch(question_childs[id].type){
+        case 'Pertanyaan':
+              message = question_childs[id].description;
+              writenext(message,question_childs[id].id,next);
+              userchildreset(id,question_childs[id].id);
+              break;
+        case 'Informasi' :
+              message = question_childs[id].description_information;
+              writenext(message,question_childs[id].id,next);
+              break;
+        case 'Informasi Dan Pertanyaan' :
             message = question_childs[id].description;
-            writenext(message,question_childs[id].id,next);
-            userchildreset(id,question_childs[id].id);
-            break;
-      case 'Informasi' :
-            message = question_childs[id].description_information;
-            writenext(message,question_childs[id].id,next);
-            break;
-      case 'Informasi Dan Pertanyaan' :
-          message = question_childs[id].description;
-            writenext(message,question_childs[id].id,next);
-            userchildreset(id,question_childs[id].id);
-            break;
-      default:
-            message = question_childs[id].description;
-            writenext(message,question_childs[id].id,next);
-            
+              writenext(message,question_childs[id].id,next);
+              userchildreset(id,question_childs[id].id);
+              break;
+        default:
+              message = question_childs[id].description;
+              writenext(message,question_childs[id].id,next);
+              
+      }
     }
   }
   function write(message,id){
@@ -430,7 +441,6 @@
   function user(next = 0){
     var message = '';
     var chatclass = '';
-    $('#question_'+questions[start].id).find('.direct-chat-text').html(questions[start].description);
     switch(questions[start].answer_type){
       case 'checkbox':
             $.each(answers[questions[start].id], function(i, answer) {
@@ -481,7 +491,7 @@
         </div>
     `);
     if(next == 1){
-      answer(questions[start].id);
+      answer(questions[start].id,1);
     }
     $(".numberfield").inputmask('decimal', {
       rightAlign: true
@@ -491,7 +501,6 @@
   function userchild(id,next = 0){
     var message = '';
     var chatclass = '';
-    $('#question_'+question_childs[id].id).find('.direct-chat-text').html(question_childs[id].description);
     switch(question_childs[id].answer_type){
       case 'checkbox':
       
@@ -542,7 +551,7 @@
         </div>
       `);
     if(next == 1){
-      answer(question_childs[id].id)
+      answer(question_childs[id].id,1)
     }
     $(".numberfield").inputmask('decimal', {
       rightAlign: true
@@ -593,7 +602,7 @@
       rightAlign: true
     });
   }
-  function answer(id){
+  function answer(id,next = 0){
     var isreset = 0;
     switch(assessments[id].answer_type){
       case 'checkbox':
@@ -661,6 +670,9 @@
             </div>
           </div>
         `);
+        if(next == 1){
+          $('#answerdesc_'+id).hide();
+        }
         if(question_childs[answeruser]){
             botchild(answeruser);
         }

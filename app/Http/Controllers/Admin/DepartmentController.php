@@ -137,7 +137,7 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:departments',
+            'code'      => 'required',
             'name'      => 'required',
             'site_id'      => 'required',
         ]);
@@ -147,6 +147,13 @@ class DepartmentController extends Controller
                 'status' 	=> false,
         		'message' 	=> $validator->errors()->first()
         	], 400);
+        }
+        $exist = Department::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
         }
         $department = Department::create([
             'code' 	    => strtoupper($request->code),
@@ -220,7 +227,7 @@ class DepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'      => 'required|unique:departments,code,'.$id,
+            'code'      => 'required',
             'name' 	    => 'required',
             'site_id' 	    => 'required',
         ]);
@@ -231,7 +238,13 @@ class DepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-
+        $exist = Department::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->where('id','<>',$id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
+        }
         $department = Department::find($id);
         $department->site_id    = $request->site_id;
         $department->code       = $request->code;
@@ -380,7 +393,7 @@ class DepartmentController extends Controller
         DB::beginTransaction();
         $departments = json_decode($request->departments);
         foreach($departments as $department){
-            $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->first();
+            $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->where('site_id',$department->site_id)->first();
             if(!$cek){
                 $department = Department::create([
                     'code' 	        => strtoupper($department->code),

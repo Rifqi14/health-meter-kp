@@ -156,8 +156,7 @@ class TitleController extends Controller
         $name = strtoupper($request->name);
         $site_id = $request->site_id;
         //Count Data
-        $query = DB::table('titles');
-        $query->select('titles.*');
+        $query = Title::select('titles.*');
         $query->whereRaw("upper(name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
@@ -165,8 +164,7 @@ class TitleController extends Controller
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = DB::table('titles');
-        $query->select('titles.*');
+        $query = Title::select('titles.*');
         $query->whereRaw("upper(name) like '%$name%'");
         if($site_id){
             $query->where('site_id',$site_id);
