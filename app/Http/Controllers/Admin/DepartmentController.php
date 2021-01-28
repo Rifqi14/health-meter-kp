@@ -448,7 +448,7 @@ class DepartmentController extends Controller
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $department){
-                        $cek = Department::whereRaw("upper(code) = '$department->code'")->get();
+                        $cek = Department::whereRaw("upper(code) = '$department->KODE'")->get();
                         if(!$cek->count()){
                             $department = Department::create([
                                 'code' 	        => strtoupper($department->KODE),
@@ -466,9 +466,9 @@ class DepartmentController extends Controller
                             $department->save();
                         }
                         else{
-                            Department::whereRaw("upper(code) = '$department->code'")->update([
+                            Department::whereRaw("upper(code) = '$department->KODE'")->update([
                                 'name'          => $department->DESKRIPSI,
-                                'deleted_at'    => $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
+                                'deleted_at'    => $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
                                 'update_by'     => Auth::id()
                             ]);
                         }  
