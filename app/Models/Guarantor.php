@@ -13,7 +13,7 @@ class Guarantor extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class, 'updated_by')s;
     }
     public function site()
     {
