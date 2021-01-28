@@ -381,7 +381,7 @@ class SiteController extends Controller
         foreach($sites as $site){
             $cek = Site::whereRaw("upper(code) = '$site->code'")->withTrashed()->first();
             if(!$cek){
-                $department = Site::create([
+                $site = Site::create([
                     'code' 	        => strtoupper($site->code),
                     'name'          => $site->name,
                     'updated_by'    => Auth::id()
@@ -422,50 +422,72 @@ class SiteController extends Controller
         DB::beginTransaction();
         $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/distrik/?apikey=539581c464b44701a297a04a782ce4a9';
         $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
-        return response()->json([
-        	'status' 	=> true,
-        	'results' 	=> $response,
-        ], 200);
-        curl_close($curl);	
-        // $sites = json_decode($request->sites);
-        // foreach($sites as $site){
-        //     $cek = Site::whereRaw("upper(code) = '$site->code'")->withTrashed()->first();
-        //     if(!$cek){
-        //         $department = Site::create([
-        //             'code' 	        => strtoupper($site->code),
-        //             'name'          => $site->name,
-        //             'updated_by'    => Auth::id()
-        //         ]);
-        //         if (!$site) {
-        //             DB::rollback();
-        //             return response()->json([
-        //                 'status' => false,
-        //                 'message'     => $site
-        //             ], 400);
-        //         }
-        //         $site->deleted_at = $site->status?null:date('Y-m-d H:i:s');
-        //         $site->save();
-        //     }
-        //     else{
-        //         $cek->code      = strtoupper($site->code);
-        //         $cek->name      = $site->name;
-        //         $cek->deleted_at= $site->status?null:date('Y-m-d H:i:s');
-        //         $cek->updated_by= Auth::id();
-        //         $cek->save();
-        //         if (!$cek) {
-        //             DB::rollback();
-        //             return response()->json([
-        //                 'status' => false,
-        //                 'message'     => $cek
-        //             ], 400);
-        //         }
-        //     }
-        // }
-        // DB::commit();
-        // return response()->json([
-        // 	'status' 	=> true,
-        // 	'results' 	=> route('site.index'),
-        // ], 200);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Site::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $site){
+                        $cek = Site::whereRaw("upper(code) = '$site->KODE'")->withTrashed()->first();
+                        if(!$cek){
+                            $site = Site::create([
+                                'code' 	        => strtoupper($site->KODE),
+                                'name'          => $site->DESKRIPSI,
+                                'updated_by'    => Auth::id()
+                            ]);
+                            if (!$site) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $site
+                                ], 400);
+                            }
+                            $site->deleted_at = $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $site->save();
+                        }
+                        else{
+                            $cek->code      = strtoupper($site->KODE);
+                            $cek->name      = $site->DESKRIPSI;
+                            $cek->deleted_at= $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $cek->updated_by= Auth::id();
+                            $cek->save();
+                            if (!$cek) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $cek
+                                ], 400);
+                            }
+                        }  
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data distrik'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }
