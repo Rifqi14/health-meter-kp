@@ -454,6 +454,7 @@ class WorkforceController extends Controller
     }
     public function sync(Request $request)
     {
+        ini_set('max_execution_time', 0);
         DB::beginTransaction();
         $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/workforce/?apikey=539581c464b44701a297a04a782ce4a9';
         $curl = curl_init($host);
