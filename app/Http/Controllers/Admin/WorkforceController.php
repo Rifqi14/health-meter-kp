@@ -464,7 +464,7 @@ class WorkforceController extends Controller
             case 200 :
                 $response = json_decode($response);
                 if(isset($response->returned_object) && count($response->returned_object) > 0){
-                    Workforce::where('nid','<>','webmaster')->update([
+                    Workforce::where('nid','<>','WEBMASTER')->update([
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $workforce){
@@ -527,7 +527,7 @@ class WorkforceController extends Controller
                     DB::commit();
                     return response()->json([
                         'status' 	=> true,
-                        'message'   => 'Success syncronize data sub department'
+                        'message'   => 'Success syncronize data workforce'
                     ], 200);
                 }
                 else{
