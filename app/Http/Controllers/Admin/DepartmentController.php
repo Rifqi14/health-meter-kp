@@ -395,21 +395,21 @@ class DepartmentController extends Controller
         foreach($departments as $department){
             $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->where('site_id',$department->site_id)->first();
             if(!$cek){
-                $department = Department::create([
+                $insert = Department::create([
                     'code' 	        => strtoupper($department->code),
                     'name'          => $department->name,
                     'site_id'       => $department->site_id,
                     'updated_by'    => Auth::id()
                 ]);
-                if (!$department) {
+                if (!$insert) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $department
+                        'message'     => $insert
                     ], 400);
                 }
-                $department->deleted_at = $department->status?null:date('Y-m-d H:i:s');
-                $department->save();
+                $insert->deleted_at = $department->status?null:date('Y-m-d H:i:s');
+                $insert->save();
             }
             else{
                 $cek->code      = strtoupper($department->code);
@@ -448,22 +448,22 @@ class DepartmentController extends Controller
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $department){
-                        $cek = Department::whereRaw("upper(code) = '$department->KODE'")->get();
+                        $cek = Department::whereRaw("upper(code) = '$department->KODE'")->withTrashed()->get();
                         if(!$cek->count()){
-                            $department = Department::create([
+                            $insert = Department::create([
                                 'code' 	        => strtoupper($department->KODE),
                                 'name'          => $department->DESKRIPSI,
                                 'updated_by'    => Auth::id()
                             ]);
-                            if (!$department) {
+                            if (!$insert) {
                                 DB::rollback();
                                 return response()->json([
                                     'status'    => false,
                                     'message'   => $department
                                 ], 400);
                             }
-                            $department->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
-                            $department->save();
+                            $insert->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->save();
                         }
                         else{
                             Department::whereRaw("upper(code) = '$department->KODE'")->update([
