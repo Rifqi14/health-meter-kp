@@ -482,7 +482,7 @@ class GuarantorController extends Controller
                             }
                             else{
                                 $cek->workforce_id= $workforce?$workforce->id:null;
-                                $cek->deleted_at= $guarantor->status?null:date('Y-m-d H:i:s');
+                                $cek->deleted_at= $guarantor->STATUS_AKTIF?null:date('Y-m-d H:i:s');
                                 $cek->updated_by= Auth::id();
                                 $cek->save();
                                 if (!$cek) {
