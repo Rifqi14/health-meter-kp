@@ -50,6 +50,7 @@
  * Adjust Select2 input heights to match the Bootstrap default.
  */
 .select2-container .select2-choice {
+  min-height:34px;
   height: auto;
   line-height: 1.42857;
 }
