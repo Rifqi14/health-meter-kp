@@ -116,6 +116,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/site/read', 'Admin\SiteController@read')->name('site.read');
         Route::get('/site/select', 'Admin\SiteController@select')->name('site.select');
         Route::get('/site/import', 'Admin\SiteController@import')->name('site.import');
+        Route::get('/site/sync', 'Admin\SiteController@sync')->name('site.sync');
         Route::get('/site/restore/{id}', 'Admin\SiteController@restore')->name('site.restore');
         Route::get('/site/delete/{id}', 'Admin\SiteController@delete')->name('site.delete');
         Route::post('/site/preview', 'Admin\SiteController@preview')->name('site.preview');
