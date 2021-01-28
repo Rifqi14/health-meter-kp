@@ -510,7 +510,7 @@ class WorkforceController extends Controller
                             }
                             else{
                                 $cek->site_id = $site->id;
-                                $cek->deleted_at= $title->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $cek->deleted_at= $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
                                 $cek->updated_by= Auth::id();
                                 $cek->save();
                                 if (!$cek) {
