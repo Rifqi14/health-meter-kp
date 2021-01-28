@@ -467,7 +467,7 @@ class WorkforceController extends Controller
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $workforce){
-                        $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+                        $site = Site::whereRaw("upper(code) = '$workforce->KODE_DISTRIK'")->first();
                         if($site){
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
@@ -476,6 +476,8 @@ class WorkforceController extends Controller
                                     'name'          => $workforce->NID,
                                     'workforce_group_id' => 1,
                                     'agency_id'     => 1,
+                                    'start_date'     => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
+                                    'finish_date'     => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
                                     'updated_by'    => Auth::id()
                                 ]);
                                 if (!$insert) {
