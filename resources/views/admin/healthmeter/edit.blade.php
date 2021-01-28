@@ -47,17 +47,6 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <select id="name" name="name" class="form-control select2" placeholder="Pilih Kategori" required>
-                <option value=""></option>
-                <option value="RENDAH" @if($healthmeter->name == 'RENDAH') selected @endif>RENDAH</option>
-                <option value="SEDANG" @if($healthmeter->name == 'SEDANG') selected @endif>SEDANG</option>
-                <option value="TINGGI" @if($healthmeter->name == 'TINGGI') selected @endif>TINGGI</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
             <label for="min" class="col-sm-2 control-label">Min <b class="text-danger">*</b></label>
             <div class="col-sm-6">
               <input type="text" class="form-control numberfield" id="min" name="min" placeholder="Min"
@@ -69,6 +58,18 @@
             <div class="col-sm-6">
               <input type="text" class="form-control numberfield" id="max" name="max" placeholder="Max"
                 value="{{$healthmeter->max}}" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" id="name" name="name" placeholder="Kategori" value="{{$healthmeter->name}}" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="color" class="col-sm-2 control-label">Warna <b class="text-danger">*</b></label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control my-colorpicker1" id="color" name="color" placeholder="Warna" value="{{$healthmeter->color}}" required>
             </div>
           </div>
           <div class="form-group">
@@ -248,10 +249,10 @@
       });
 
       
-      @if ($healthmeter->site_id)
+      @if ($healthmeter->site)
       $("#site_id").select2('data',{id:{{$healthmeter->site->id}},text:'{{$healthmeter->site->name}}'}).trigger('change');
       @endif
-      @if ($healthmeter->workforce_group_id)
+      @if ($healthmeter->workforcegroup)
       $("#workforce_group_id").select2('data',{id:{{$healthmeter->workforcegroup->id}},text:'{{$healthmeter->workforcegroup->name}}'}).trigger('change');
       @endif
   });

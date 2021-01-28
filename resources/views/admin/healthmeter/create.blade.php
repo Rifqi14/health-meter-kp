@@ -57,12 +57,7 @@
           <div class="form-group">
             <label for="name" class="col-sm-2 control-label">Kategori <b class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <select id="name" name="name" class="form-control select2" placeholder="Pilih Kategori" required>
-                <option value=""></option>
-                <option value="RENDAH">RENDAH</option>
-                <option value="SEDANG">SEDANG</option>
-                <option value="TINGGI">TINGGI</option>
-              </select>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Kategori" required>
             </div>
           </div>
           
