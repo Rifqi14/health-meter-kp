@@ -462,7 +462,7 @@ class AssessmentController extends Controller
         $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui'.' Bobot anda adalah '.$bobot;
         foreach($healthmeters as $healthmeter){
             if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
-                $message = 'Hai '.$workforce->name.' , menurut bot assessment anda termasuk dalam kategori resiko <b>'.$healthmeter->name.'</b>. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+                $message = 'Hai '.$workforce->name.' , menurut bot assessment anda termasuk dalam kategori resiko <b>'.$healthmeter->name.'</b>. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui'.' Bobot anda adalah '.$bobot;
             }
         }
         return response()->json([
