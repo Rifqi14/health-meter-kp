@@ -392,7 +392,7 @@ class SubDepartmentController extends Controller
         DB::beginTransaction();
         $subdepartments = json_decode($request->subdepartments);
         foreach($subdepartments as $subdepartment){
-            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->withTrashed()->first();
+            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->where('site_id',$subdepartment->site_id)->withTrashed()->first();
             if(!$cek){
                 $subdepartment = SubDepartment::create([
                     'code' 	        => strtoupper($subdepartment->code),

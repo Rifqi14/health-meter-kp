@@ -393,7 +393,7 @@ class DepartmentController extends Controller
         DB::beginTransaction();
         $departments = json_decode($request->departments);
         foreach($departments as $department){
-            $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->first();
+            $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->where('site_id',$department->site_id)->first();
             if(!$cek){
                 $department = Department::create([
                     'code' 	        => strtoupper($department->code),
