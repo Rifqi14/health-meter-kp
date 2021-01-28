@@ -128,9 +128,14 @@ class GuarantorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.guarantor.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.guarantor.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -143,7 +148,8 @@ class GuarantorController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'title_id'  => 'required',
-            'site_id'   => 'required'
+            'site_id'   => 'required',
+            'workforce_id'   => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -155,6 +161,7 @@ class GuarantorController extends Controller
         $guarantor = Guarantor::create([
             'site_id'       => $request->site_id,
             'title_id'      => $request->title_id,
+            'workforce_id'      => $request->workforce_id,
             'updated_by'    => Auth::id()
         ]);
         if (!$guarantor) {
