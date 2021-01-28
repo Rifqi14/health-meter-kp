@@ -477,6 +477,7 @@ class WorkforceController extends Controller
                         $grade = Grade::whereRaw("upper(code) = '$workforce->KODE_JENJANGJABATAN'")->first();
                         if($site){
                             $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
+                            $subdepartment = SubDepartment::whereRaw("upper(code) = '$workforce->KODE_SUBDIVBID'")->where('site_id',$site->id)->first();
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
                                 $insert = Workforce::create([
@@ -486,6 +487,7 @@ class WorkforceController extends Controller
                                     'workforce_group_id'    => 1,
                                     'agency_id'             => 1,
                                     'department_id'         => $department?$department->id:null,
+                                    'subdepartment_id'         => $subdepartment?$subdepartment->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
@@ -523,6 +525,7 @@ class WorkforceController extends Controller
                                 $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
                                 $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
                                 $cek->department_id = $department?$department->id:null;
+                                $cek->subdepartment_id = $subdepartment?$subdepartment->id:null;
                                 $cek->grade_id      = $grade?$grade->id:null;
                                 $cek->title_id      = $title?$title->id:null;
                                 $cek->deleted_at    = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
