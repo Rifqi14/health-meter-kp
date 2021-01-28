@@ -464,7 +464,7 @@ class WorkforceController extends Controller
             case 200 :
                 $response = json_decode($response);
                 if(isset($response->returned_object) && count($response->returned_object) > 0){
-                    Workforce::query()->update([
+                    Workforce::whereNotIn('nid','webmaster')->update([
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $workforce){
