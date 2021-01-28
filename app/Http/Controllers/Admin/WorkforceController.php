@@ -8,6 +8,7 @@ use App\Models\SiteUser;
 use App\Models\Workforce;
 use App\Models\Patient;
 use App\Models\Site;
+use App\Models\Title;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
