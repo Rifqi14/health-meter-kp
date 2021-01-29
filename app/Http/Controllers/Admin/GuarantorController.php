@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Guarantor;
+use App\Models\Site;
+use App\Models\Title;
+use App\Models\Workforce;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class GuarantorController extends Controller
@@ -162,6 +166,7 @@ class GuarantorController extends Controller
             'site_id'       => $request->site_id,
             'title_id'      => $request->title_id,
             'workforce_id'      => $request->workforce_id,
+            'executor'     => $request->executor?1:0,
             'updated_by'    => Auth::id()
         ]);
         if (!$guarantor) {
@@ -244,6 +249,7 @@ class GuarantorController extends Controller
         $guarantor->title_id        = $request->title_id;
         $guarantor->site_id         = $request->site_id;
         $guarantor->workforce_id    = $request->workforce_id;
+        $guarantor->executor    = $request->executor?1:0;
         $guarantor->updated_by      = Auth::id();
         $guarantor->save();
 
@@ -314,5 +320,205 @@ class GuarantorController extends Controller
             'status'    => true,
             'message'   => 'Success delete data'
         ], 200);
+    }
+    public function import(Request $request)
+    {
+        if(in_array('import',$request->actionmenu)){
+            return view('admin.guarantor.import');
+        }
+        else{
+            abort(403);
+        }
+    }
+    public function preview(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' 	    => 'required|mimes:xlsx'
+        ]);
+        $file = $request->file('file');
+        try {
+            $filetype 	= \PHPExcel_IOFactory::identify($file);
+            $objReader = \PHPExcel_IOFactory::createReader($filetype);
+            $objPHPExcel = $objReader->load($file);
+        } catch(\Exception $e) {
+            die('Error loading file "'.pathinfo($file,PATHINFO_BASENAME).'": '.$e->getMessage());
+        }
+        $data 	= [];
+        $no = 1;
+        $sheet = $objPHPExcel->getActiveSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        for ($row = 2; $row <= $highestRow; $row++){
+            $site_code = strtoupper($sheet->getCellByColumnAndRow(0, $row)->getValue());
+            $title_code = strtoupper($sheet->getCellByColumnAndRow(1, $row)->getValue());
+            $executor = $sheet->getCellByColumnAndRow(2, $row)->getValue();
+            $workforce_nid = strtoupper($sheet->getCellByColumnAndRow(3, $row)->getValue());
+            $status = $sheet->getCellByColumnAndRow(4, $row)->getValue();
+            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+            $title = Title::whereRaw("upper(code) = '$title_code'")->first();
+            $workforce = Workforce::whereRaw("upper(nid) = '$workforce_nid'")->first();
+            if($code){
+                $error = [];
+                if(!$site){
+                    array_push($error,'Distrik Tidak Ditemukan');
+                }
+                if(!$title){
+                    array_push($error,'Jabatan Tidak Ditemukan');
+                }
+                $data[] = array(
+                    'index'=>$no,
+                    'site_name'=>$site?$site->name:null,
+                    'site_id'=>$site?$site->id:null,
+                    'title_name'=>$title?$title->name:null,
+                    'title_id'=>$title?$title->id:null,
+                    'workforce_name'=>$workforce?$workforce->name:null,
+                    'workforce_id'=>$workforce?$workforce->id:null,
+                    'executor'=>$executor?1:0,
+                    'status'=>$status=='Y'?1:0,
+                    'error'=>implode($error,'<br>'),
+                    'is_import'=>count($error) == 0?1:0
+                );
+                $no++;
+            }
+        }
+        return response()->json([
+            'status' 	=> true,
+            'data' 	=> $data
+        ], 200);
+    }
+
+    public function storemass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'guarantors' 	    => 'required'
+        ]);
+
+        if ($validator->fails()) {
+        	return response()->json([
+        		'status' 	=> false,
+        		'message' 	=> $validator->errors()->first()
+        	], 400);
+        }
+        DB::beginTransaction();
+        $guarantors = json_decode($request->guarantors);
+        foreach($guarantors as $guarantor){
+            $cek = Guarantor::withTrashed()->where('site_id',$guarantor->site_id)->where('workforce_id',$guarantor->workforce_id)->where('title_id',$guarantor->title_id)->first();
+            if(!$cek){
+                $insert = Guarantor::create([
+                    'site_id'       => $guarantor->site_id,
+                    'title_id'      => $guarantor->title_id,
+                    'workforce_id'  => $guarantor->workforce_id,
+                    'executor'      => $guarantor->executor,
+                    'updated_by'    => Auth::id()
+                ]);
+                if (!$insert) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $insert
+                    ], 400);
+                }
+                $insert->deleted_at = $guarantor->status?null:date('Y-m-d H:i:s');
+                $insert->save();
+            }
+            else{
+                $cek->deleted_at= $guarantor->status?null:date('Y-m-d H:i:s');
+                $cek->updated_by= Auth::id();
+                $cek->save();
+                if (!$cek) {
+                    DB::rollback();
+                    return response()->json([
+                        'status' => false,
+                        'message'     => $cek
+                    ], 400);
+                }
+            }
+        }
+        DB::commit();
+        return response()->json([
+        	'status' 	=> true,
+        	'results' 	=> route('guarantor.index'),
+        ], 200);
+    }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/atasan/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Guarantor::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $guarantor){
+                        $site_code = trim($guarantor->DISTRIK_KODE);
+                        $title_code = trim($guarantor->POSITION_ID);
+                        $workforce_nid = trim($guarantor->NID);
+                        $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+                        $title = Title::whereRaw("upper(code) = '$title_code'")->first();
+                        $workforce = Workforce::whereRaw("upper(nid) = '$workforce_nid'")->first();
+                        if($site && $title){
+                            $cek = Guarantor::withTrashed()->where('site_id',$site->id)->where('title_id',$title->id)->first();
+                            if(!$cek){
+                                $insert = Guarantor::create([
+                                    'site_id'       => $site->id,
+                                    'title_id'      => $title->id,
+                                    'workforce_id'  => $workforce?$workforce->id:null,
+                                    'executor'      => $guarantor->STATUS_JABATAN?1:0,
+                                    'updated_by'    => Auth::id()
+                                ]);
+                                if (!$insert) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status'    => false,
+                                        'message'   => $insert
+                                    ], 400);
+                                }
+                                $insert->deleted_at = $guarantor->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $insert->save();
+                            }
+                            else{
+                                $cek->workforce_id= $workforce?$workforce->id:null;
+                                $cek->deleted_at= $guarantor->STATUS_AKTIF?null:date('Y-m-d H:i:s');
+                                $cek->updated_by= Auth::id();
+                                $cek->save();
+                                if (!$cek) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status' => false,
+                                        'message'     => $cek
+                                    ], 400);
+                                }  
+                            }  
+                        }
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data department'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }

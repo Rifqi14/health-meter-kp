@@ -68,4 +68,9 @@ class Workforce extends Model
     {
         return $this->hasMany(Workforce::class, 'second_approval_id');
     }
+
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

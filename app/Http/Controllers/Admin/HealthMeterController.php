@@ -118,9 +118,14 @@ class HealthMeterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.healthmeter.create');
+        if(in_array('create',$request->actionmenu)){
+            return view('admin.healthmeter.create');
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -135,6 +140,7 @@ class HealthMeterController extends Controller
             'name'              => 'required',
             'min'               => 'required',
             'max'               => 'required',
+            'color'     => 'required',
             'recomendation'     => 'required',
             'site_id'           => 'required',
             'workforce_group_id'=> 'required'
@@ -151,7 +157,7 @@ class HealthMeterController extends Controller
             'name' 	            => $request->name,
             'min' 	            => $request->min,
 			'max'               => $request->max,
-            'color' 	        => '#ffffff',
+            'color' 	        => $request->color,
             'recomendation'     => $request->recomendation,
             'site_id'           => $request->site_id,
             'workforce_group_id'=> $request->workforce_group_id,
@@ -175,9 +181,20 @@ class HealthMeterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$id)
     {
-        //
+        if(in_array('read',$request->actionmenu)){
+            $healthmeter = HealthMeter::with(['site', 'workforcegroup'])->find($id);
+            if($healthmeter){
+                return view('admin.healthmeter.detail',compact('healthmeter'));
+            }
+            else{
+                abort(404);
+            }
+        }
+        else{
+            abort(403);
+        }
     }
 
     /**
@@ -186,14 +203,19 @@ class HealthMeterController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
-        $healthmeter = HealthMeter::with(['site', 'workforcegroup'])->find($id);
-        if($healthmeter){
-            return view('admin.healthmeter.edit',compact('healthmeter'));
+        if(in_array('update',$request->actionmenu)){
+            $healthmeter = HealthMeter::with(['site', 'workforcegroup'])->find($id);
+            if($healthmeter){
+                return view('admin.healthmeter.edit',compact('healthmeter'));
+            }
+            else{
+                abort(404);
+            }
         }
         else{
-            abort(404);
+            abort(403);
         }
     }
 
@@ -212,6 +234,7 @@ class HealthMeterController extends Controller
             'name'              => 'required',
             'min'               => 'required',
             'max'               => 'required',
+            'color'             => 'required',
             'recomendation'     => 'required'
         ]);
 
@@ -226,6 +249,7 @@ class HealthMeterController extends Controller
         $healthmeter->name          = $request->name;
         $healthmeter->min           = $request->min;
         $healthmeter->max           = $request->max;
+        $healthmeter->color         = $request->color;
         $healthmeter->recomendation = $request->recomendation;
         $healthmeter->site_id       = $request->site_id;
         $healthmeter->workforce_group_id = $request->workforce_group_id;

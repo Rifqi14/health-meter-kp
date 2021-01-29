@@ -7,6 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\SiteUser;
 use App\Models\Workforce;
 use App\Models\Patient;
+use App\Models\Site;
+use App\Models\Title;
+use App\Models\Grade;
+use App\Models\Department;
+use App\Models\SubDepartment;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
@@ -450,5 +455,120 @@ class WorkforceController extends Controller
             'status'    => true,
             'message'   => 'Success delete data'
         ], 200);
+    }
+    public function sync(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/workforce/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Workforce::where('nid','<>','WEBMASTER')->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $workforce){
+                        $site = Site::whereRaw("upper(code) = '$workforce->KODE_DISTRIK'")->first();
+                        $title = Title::whereRaw("upper(code) = '$workforce->KODE_JABATAN'")->first();
+                        $grade = Grade::whereRaw("upper(code) = '$workforce->KODE_JENJANGJABATAN'")->first();
+                        if($site){
+                            $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
+                            $subdepartment = SubDepartment::whereRaw("upper(code) = '$workforce->KODE_SUBDIVBID'")->where('site_id',$site->id)->first();
+                            $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
+                            if(!$cek){
+                                $insert = Workforce::create([
+                                    'nid' 	                => strtoupper($workforce->NID),
+                                    'name'                  => $workforce->NAMA,
+                                    'site_id'               => $site->id,
+                                    'workforce_group_id'    => 1,
+                                    'agency_id'             => 1,
+                                    'department_id'         => $department?$department->id:null,
+                                    'sub_department_id'     => $subdepartment?$subdepartment->id:null,
+                                    'title_id'              => $title?$title->id:null,
+                                    'title_id'              => $title?$title->id:null,
+                                    'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
+                                    'finish_date'           => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
+                                    'updated_by'            => Auth::id()
+                                ]);
+                                if (!$insert) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status'    => false,
+                                        'message'   => $insert
+                                    ], 400);
+                                }
+                                $insert->deleted_at = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $insert->save();
+                                $user = User::create([
+                                    'name'          => $workforce->NAMA,
+                                    'email'         => $workforce->NID.'@ptpjb.com',
+                                    'username'      => $workforce->NID,
+                                    'password'      => Hash::make(123456),
+                                    'status'        => 1,
+                                    'workforce_id'  => $insert->id
+                                ]);
+                                $patient = Patient::create([
+                                    'name'          => $workforce->NID,
+                                    'status'        => 'Pegawai',
+                                    'birth_date'    => date('Y-m-d'),
+                                    'site_id'       => $site->id,
+                                    'updated_by'    => Auth::id(),
+                                    'workforce_id'  => $insert->id
+                                ]);
+                            }
+                            else{
+                                $cek->site_id       = $site->id;
+                                $cek->name          = $workforce->NAMA;
+                                $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
+                                $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
+                                $cek->department_id = $department?$department->id:null;
+                                $cek->sub_department_id = $subdepartment?$subdepartment->id:null;
+                                $cek->grade_id      = $grade?$grade->id:null;
+                                $cek->title_id      = $title?$title->id:null;
+                                $cek->deleted_at    = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $cek->updated_by    = Auth::id();
+                                $cek->save();
+                                if (!$cek) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status' => false,
+                                        'message'     => $cek
+                                    ], 400);
+                                }
+                                $user = User::where('username',$cek->nid)->first();
+                                $user->name = $workforce->NAMA;
+                                $user->save();
+                            }  
+                        }
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data workforce'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }

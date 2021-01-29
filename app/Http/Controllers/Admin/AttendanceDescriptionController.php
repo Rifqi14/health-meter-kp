@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\View;
 class AttendanceDescriptionController extends Controller
 {
     function __construct() {
-        View::share('menu_active', url('admin/attendance'));
+        View::share('menu_active', url('admin/attendancedescription'));
         $this->middleware('accessmenu', ['except' => 'select']);
     }
     /**
@@ -23,7 +23,7 @@ class AttendanceDescriptionController extends Controller
      */
     public function index()
     {
-        return view('admin.attendance.index');
+        return view('admin.attendancedescription.index');
     }
 
     public function read(Request $request)
@@ -100,7 +100,7 @@ class AttendanceDescriptionController extends Controller
      */
     public function create()
     {
-        return view('admin.attendance.create');
+        return view('admin.attendancedescription.create');
     }
 
     /**
@@ -137,7 +137,7 @@ class AttendanceDescriptionController extends Controller
         }
         return response()->json([
             'status'    => true,
-            'results'   => route('attendance.index'),
+            'results'   => route('attendancedescription.index'),
         ], 200);
     }
 
@@ -151,7 +151,7 @@ class AttendanceDescriptionController extends Controller
     {
         $attendance = AttendanceDescription::withTrashed()->find($id);
         if ($attendance) {
-            return view('admin.attendance.detail', compact('attendance'));
+            return view('admin.attendancedescription.detail', compact('attendance'));
         } else {
             abort(404);
         }
@@ -167,7 +167,7 @@ class AttendanceDescriptionController extends Controller
     {
         $attendance = AttendanceDescription::withTrashed()->find($id);
         if ($attendance) {
-            return view('admin.attendance.edit', compact('attendance'));
+            return view('admin.attendancedescription.edit', compact('attendance'));
         } else {
             abort(404);
         }
@@ -208,7 +208,7 @@ class AttendanceDescriptionController extends Controller
         }
         return response()->json([
         	'status' 	=> true,
-        	'results' 	=> route('attendance.index'),
+        	'results' 	=> route('attendancedescription.index'),
         ], 200);
     }
 

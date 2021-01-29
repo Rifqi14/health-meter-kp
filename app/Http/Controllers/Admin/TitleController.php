@@ -492,23 +492,22 @@ class TitleController extends Controller
         foreach($titles as $title){
             $cek = Title::whereRaw("upper(code) = '$title->code'")->withTrashed()->first();
             if(!$cek){
-                $title = Title::create([
+                $insert = Title::create([
                     'code' 	    => strtoupper($title->code),
                     'name'      => $title->name,
                     'shortname' => $title->shortname,
                     'site_id'   => $title->site_id,
-                    'deleted_at'=> $title->status?null:date('Y-m-d H:i:s'),
                     'updated_by'=> Auth::id()
                 ]);
-                if (!$title) {
+                if (!$insert) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $title
+                        'message'     => $insert
                     ], 400);
                 }
-                $title->deleted_at = $title->status?null:date('Y-m-d H:i:s');
-                $title->save();
+                $insert->deleted_at = $title->status?null:date('Y-m-d H:i:s');
+                $insert->save();
             }
             else{
                 $cek->code      = strtoupper($title->code);
@@ -551,5 +550,89 @@ class TitleController extends Controller
             'status'     => true,
             'message' => 'Success delete data'
         ], 200);
+    }
+
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/jabatan/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Title::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $title){
+                        $code = trim($title->POSITION_ID);
+                        $site_code = trim($title->DISTRIK_KODE);
+                        $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+                        if($site){
+                            $cek = Title::whereRaw("upper(code) = '$code'")->withTrashed()->first();
+                            if(!$cek){
+                                $insert = Title::create([
+                                    'code' 	    => strtoupper($code),
+                                    'name'      => trim($title->DESKRIPSI?$title->DESKRIPSI:'-'),
+                                    'shortname' => trim($title->SHORT_DESKRIPSI),
+                                    'site_id'   => $site->id,
+                                    'updated_by'=> Auth::id()
+                                ]);
+                                if (!$insert) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status' => false,
+                                        'message'     => $insert
+                                    ], 400);
+                                }
+                                $insert->deleted_at = $title->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $insert->save();
+                            }
+                            else{
+                                $cek->code      = strtoupper($code);
+                                $cek->name      = trim($title->DESKRIPSI?$title->DESKRIPSI:'-');
+                                $cek->shortname = trim($title->SHORT_DESKRIPSI);
+                                $cek->site_id   = $site->id;
+                                $cek->deleted_at= $title->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                                $cek->updated_by= Auth::id();
+                                $cek->save();
+                                if (!$cek) {
+                                    DB::rollback();
+                                    return response()->json([
+                                        'status' => false,
+                                        'message'     => $cek
+                                    ], 400);
+                                }
+                            }
+                        }
+                          
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data title'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }

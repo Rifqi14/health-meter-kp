@@ -22,14 +22,12 @@
         <h3 class="box-title">Silahkan perbarui informasi di bawah ini.</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('config.update')}}" enctype="multipart/form-data" method="post"
-          accept-charset="utf-8">
+        <form id="form" action="{{route('config.update')}}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
           {{ csrf_field() }}
           <input type="hidden" name="_method" value="put">
           <div class="well well-sm">
@@ -37,13 +35,11 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="app_name">Nama Aplikasi</label>
-                  <input type="text" name="app_name" value="{{config('configs.app_name')}}" class="form-control"
-                    id="app_name" required />
+                  <input type="text" name="app_name" value="{{config('configs.app_name')}}" class="form-control" id="app_name" required />
                 </div>
                 <div class="form-group">
                   <label for="app_name">Copyright</label>
-                  <input type="text" name="app_copyright" value="{{config('configs.company_name')}}"
-                    class="form-control" id="app_copyright" required />
+                  <input type="text" name="app_copyright" value="{{config('configs.company_name')}}" class="form-control" id="app_copyright" required />
                 </div>
               </div>
               <div class="col-md-6">
@@ -59,29 +55,25 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="company_name">Nama Perusahaan</label>
-                  <input type="text" name="company_name" value="{{config('configs.company_name')}}" class="form-control"
-                    id="company_name" required />
+                  <input type="text" name="company_name" value="{{config('configs.company_name')}}" class="form-control" id="company_name" required />
                 </div>
                 <div class="form-group">
                   <label for="company_email">Email Perusahaan</label>
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                    <input type="email" name="company_email" value="{{config('configs.company_email')}}"
-                      class="form-control" id="company_email" required />
+                    <input type="email" name="company_email" value="{{config('configs.company_email')}}" class="form-control" id="company_email" required />
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="company_phone">Telepon Perusahaan</label>
                   <div class="input-group">
                     <span class="input-group-addon"><i class="fa fa-phone"></i></span>
-                    <input type="text" name="company_phone" value="{{config('configs.company_phone')}}"
-                      class="form-control" id="company_phone" required />
+                    <input type="text" name="company_phone" value="{{config('configs.company_phone')}}" class="form-control" id="company_phone" required />
                   </div>
                 </div>
                 <div class="form-group">
                   <label for="company_address">Alamat</label>
-                  <textarea class="form-control" id="company_address" name="company_address" placeholder="Alamat"
-                    required>{{config('configs.company_address')}}</textarea>
+                  <textarea class="form-control" id="company_address" name="company_address" placeholder="Alamat" required>{{config('configs.company_address')}}</textarea>
                 </div>
               </div>
               <div class="col-md-6">
@@ -91,14 +83,27 @@
                 </div>
                 <div class="form-group">
                   <label for="company_latitude">Latitude</label>
-                  <input type="text" name="company_latitude" value="{{config('configs.company_latitude',-7.217416)}}"
-                    class="form-control" id="company_latitude" />
+                  <input type="text" name="company_latitude" value="{{config('configs.company_latitude',-7.217416)}}" class="form-control" id="company_latitude" />
                 </div>
                 <div class="form-group">
                   <label for="company_longitude">Longitude</label>
-                  <input type="text" name="company_longitude"
-                    value="{{config('configs.company_longitude',112.72990470000002)}}" class="form-control"
-                    id="company_longitude" />
+                  <input type="text" name="company_longitude" value="{{config('configs.company_longitude',112.72990470000002)}}" class="form-control" id="company_longitude" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="well well-sm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="bot_icon">BOT Icon </label>
+                  <input type="file" class="form-control" name="bot_icon" id="bot_icon" accept="image/*" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="bot_username">BOT Username </label>
+                  <input type="text" name="bot_username" value="{{config('configs.bot_username')}}" class="form-control" id="bot_username" required />
                 </div>
               </div>
             </div>
@@ -118,8 +123,7 @@
 "></script>
 <script src="{{asset('adminlte/component/bootstrap-fileinput/js/fileinput.min.js')}}"></script>
 <script src="{{asset('adminlte/component/bootstrap-fileinput/themes/explorer/theme.min.js')}}"></script>
-<script type="text/javascript"
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDk0A3uPdfOld8ZG1ibIZRaEktd-2Kv33E"></script>
 <script>
   var map, geocoder, marker, infowindow;
   $(document).ready(function(){
@@ -146,6 +150,20 @@
           initialPreviewFileType: 'image',
           initialPreviewConfig: [
           {caption: "{{config('configs.app_logo')}}", downloadUrl: "{{asset(config('configs.app_logo'))}}", size:"{{ File::size(public_path(config('configs.app_logo')))}}",url: false}
+          ],
+          theme:'explorer'
+      });
+    $("#bot_icon").fileinput({
+      browseClass: "btn btn-default",
+          showRemove: false,
+          showUpload: false,
+          allowedFileExtensions: ["png", "jpeg", "jpg"],
+          dropZoneEnabled: false,
+          initialPreview: '<img src="{{asset(config('configs.bot_icon'))}}" class="kv-preview-data file-preview-image">',
+          initialPreviewAsData: false,
+          initialPreviewFileType: 'image',
+          initialPreviewConfig: [
+          {caption: "{{config('configs.bot_icon')}}", downloadUrl: "{{asset(config('configs.bot_icon'))}}", size:"{{ File::size(public_path(config('configs.bot_icon')))}}",url: false}
           ],
           theme:'explorer'
       });

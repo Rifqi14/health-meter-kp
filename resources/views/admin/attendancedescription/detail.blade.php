@@ -1,44 +1,37 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Presensi Kehadiran')
+@section('title', 'Detail Keterangan Kehadiran')
 @push('breadcrump')
-<li><a href="{{route('attendance.index')}}">Kehadiran</a></li>
-<li class="active">Presensi</li>
+<li><a href="{{route('attendancedescription.index')}}">Keterangan Kehadiran</a></li>
+<li class="active">Detail</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Presensi Kehadiran</h3>
+        <h3 class="box-title">Detail Keterangan Kehadiran</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
           <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('attendance.store')}}" class="form-horizontal" method="post" autocomplete="off">
+        <form id="form" action="{{route('attendancedescription.update', ['id' => $attendance->id])}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
+          @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="workforce_id" class="col-sm-2 control-label">Workforce <b class="text-danger">*</b></label>
+              <label for="code" class="col-sm-2 control-label">Kode</label>
               <div class="col-sm-6">
-                <input type="hidden" class="form-control" id="workforce_id" name="workforce_id" value="{{ $workforce->id }}" readonly>
-                <input type="text" class="form-control" id="workforce_name" name="workforce_name" value="{{ $workforce->name }}" readonly>
+                <p class="form-control-static">{{ $attendance->code }}</p>
               </div>
             </div>
             <div class="form-group">
-              <label for="date" class="col-sm-2 control-label">Tanggal <b class="text-danger">*</b></label>
+              <label for="description" class="col-sm-2 control-label">Deskripsi</label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="date" name="date" value="{{ date('d-m-Y') }}" readonly>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="attendance_description_id" class="col-sm-2 control-label">Tanggal <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="attendance_description_id" name="attendance_description_id" data-placeholder="Pilih Keterangan Kehadiran Anda" required>
+                <p class="form-control-static">{{ $attendance->description }}</p>
               </div>
             </div>
           </div>
@@ -56,42 +49,6 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-      $('.select2').select2({
-        allowClear:true
-      });
-      $("#attendance_description_id").select2({
-        ajax: {
-            url: "{{route('attendancedescription.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.description}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#attendance_description_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',
