@@ -31,7 +31,7 @@
                     </a>
                     @endif
                      @if(in_array('export',$actionmenu))
-                    <a href="#" onclick="exporttitle()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Syncronize">
+                    <a href="#" onclick="exporttitle()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Export">
                         <i class="fa fa-download"></i>
                     </a>
                     @endif

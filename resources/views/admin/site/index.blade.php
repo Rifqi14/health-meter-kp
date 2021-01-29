@@ -26,7 +26,7 @@
                     </a>
                     @endif
                     @if(in_array('export',$actionmenu))
-                    <a href="#" onclick="exportsite()" class="btn btn-danger btn-sm text-white"><i class="fa fa-download"></i></a>
+                    <a href="#" onclick="exportsite()" class="btn btn-danger btn-sm text-white" data-toggle="tooltip" title="Export"><i class="fa fa-download"></i></a>
                     @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
