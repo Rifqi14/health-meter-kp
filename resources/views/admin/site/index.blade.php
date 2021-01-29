@@ -25,6 +25,11 @@
                         <i class="fa fa-upload"></i>
                     </a>
                     @endif
+                    @if(in_array('sync',$actionmenu))
+                    <a href="#" onclick="sync()" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Syncronize">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                    @endif
                     @if(in_array('export',$actionmenu))
                     <a href="#" onclick="exportsite()" class="btn btn-danger btn-sm text-white" data-toggle="tooltip" title="Export"><i class="fa fa-download"></i></a>
                     @endif
@@ -106,6 +111,43 @@
     function filter(){
     $('#add-filter').modal('show');
 }
+function sync(){
+      $.ajax({
+          url: `{{route('site.sync')}}`,
+          dataType: 'json', 
+          beforeSend:function(){
+              $('.overlay').removeClass('hidden');
+          }
+      }).done(function(response){
+          if(response.status){
+              $('.overlay').addClass('hidden');
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+              dataTable.ajax.reload( null, false );
+          }
+          else{
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('.overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      });
+  }
 $(function(){
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
