@@ -176,7 +176,7 @@
                     <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
                     <div class="direct-chat-text pull-right">
                       <input type="radio" value="1" onclick="finish(this)">
-                      Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                      Ya <br/><input type="radio" value="0" onclick="finish(this)"> Muat Ulang
                     </div>
                   </div>
               `);
@@ -200,7 +200,7 @@
                   <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
                   <div class="direct-chat-text pull-right">
                     <input type="radio" value="1" onclick="reload(this)">
-                    Ya <br/><input type="radio" value="0" onclick="reload(this)"> Tidak
+                    Ya <br/><input type="radio" value="0" onclick="reload(this)"> Muat Ulang
                   </div>
                 </div>`);
               }
@@ -227,7 +227,7 @@
                 <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
                 <div class="direct-chat-text pull-right">
                   <input type="radio" value="1" onclick="reload(this)">
-                  Ya <br/><input type="radio" value="0" onclick="reload(this)"> Tidak
+                  Ya <br/><input type="radio" value="0" onclick="reload(this)"> Muat Ulang
                 </div>
               </div>`);
 
@@ -821,7 +821,7 @@
             </div>
             <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
             <div class="direct-chat-text">
-               Terimakasih data Assessment Kesehatan anda sedang disimpan.
+               Terimakasih data assessment kesehatan anda sedang disimpan.
             </div>
           </div>
         `);
@@ -1044,7 +1044,7 @@
                 <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
                 <div class="direct-chat-text pull-right">
                   <input type="radio" value="1" onclick="finish(this)">
-                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Muat Ulang
                 </div>
               </div>`);
 
