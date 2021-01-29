@@ -1,27 +1,23 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Kehadiran')
+@section('title', 'Keterangan Kehadiran')
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
-<link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-daterangepicker/css/daterangepicker.css')}}">
-<link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 @endsection
 @push('breadcrump')
-<li class="active">Kehadiran</li>
+<li class="active">Keterangan Kehadiran</li>
 @endpush
 @section('content')
 <div class="row">
   <div class="col-lg-12">
     <div class="box box-primary">
       <div class="box-header">
-        <h3 class="box-title">Data Kehadiran</h3>
+        <h3 class="box-title">Data Keterangan Kehadiran</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          @if (in_array('create', $actionmenu))
-          <a href="{{route('attendance.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
+          <a href="{{route('attendancedescription.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
-          @endif
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -29,26 +25,16 @@
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        @if (!$assessment)
-        <div class="alert alert-warning">
-          <h4><i class="fa fa-warning"></i> Anda Belum Mengisi Assessment Hari Ini</h4>
-          <p>Silahkan Klik Link <a href="{{route('assessment.create')}}">Disini</a> Untuk Mengisi Assessment
-          </p>
-        </div>
-        @elseif ($assessment && !$attendance)
-        <div class="alert alert-warning">
-          <h4><i class="fa fa-warning"></i> Anda telah mengisi assessment tapi belum melakukan presensi kehadiran</h4>
-          <p>Silahkan Klik Link <a href="{{ route('attendance.create') }}"><b>Disini</b></a> Untuk Mengisi Kehadiran</p>
-        </div>
-        @endif
         <table class="table table-striped table-bordered datatable" style="width:100%">
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="200">Tanggal</th>
-              <th width="200">Deskripsi Kehadiran</th>
-              <th width="100">Dibuat</th>
+              <th width="200">Kode</th>
+              <th width="200">Nama</th>
               <th width="100">Terakhir Dirubah</th>
+              <th width="100">Dirubah Oleh</th>
+              <th width="100">Status</th>
+              <th width="10">#</th>
             </tr>
           </thead>
         </table>
@@ -73,19 +59,17 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="attendance_description_id">Nama</label>
-                <input type="text" name="attendance_description_id" class="form-control" data-placeholder="Pilih Keterangan Kehadiran" id="attendance_description_id">
+                <label class="control-label" for="name">Nama</label>
+                <input type="text" name="name" class="form-control" placeholder="Nama">
               </div>
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="date">Tanggal</label>
-                <div class="input-group">
-                  <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal Masuk">
-                  <span class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
-                  </span>
-                </div>
+                <label for="name" class="control-label">Arsip Kelompok</label>
+                <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
+                  <option value="">Non-Arsip</option>
+                  <option value="1">Arsip</option>
+                </select>
               </div>
             </div>
           </div>
@@ -101,62 +85,12 @@
 
 @push('scripts')
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
-<script src="{{asset('adminlte/component/moment/moment.min.js')}}"></script>
-<script src="{{asset('adminlte/component/bootstrap-daterangepicker/js/daterangepicker.js')}}"></script>
-<script src="{{asset('adminlte/component/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}"></script>
 <script src="{{asset('assets/js/plugins/bootbox/bootbox.min.js')}}"></script>
 <script type="text/javascript">
   function filter(){
     $('#add-filter').modal('show');
   }
   $(function(){
-    @if ($errors->any())
-    $.gritter.add({
-        title: 'Warning!',
-        text: `{{ $errors->first() }}`,
-        class_name: 'gritter-warning',
-        time: 1000,
-    });
-    @endif
-    // Select2
-    $("#attendance_description_id").select2({
-      ajax: {
-          url: "{{route('attendancedescription.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-          return {
-              name:term,
-              page:page,
-              limit:30,
-          };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                  id:item.id,  
-                  text: `${item.description}`,
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-          },
-      },
-      allowClear: true,
-    });
-    $(document).on("change", "#attendance_description_id", function () {
-      if (!$.isEmptyObject($('#form').validate().submitted)) {
-        $('#form').validate().form();
-      }
-    });
-    //date
-    $('.date-picker').datepicker({
-        autoclose: true,
-        format: 'yyyy-mm-dd'
-    })
     $(".select2").select2();
     $('#form-search').submit(function(e){
       e.preventDefault();
@@ -171,16 +105,15 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 1, "desc" ]],
+        order: [[ 6, "asc" ]],
         ajax: {
-            url: "{{route('attendance.read')}}",
+            url: "{{route('attendancedescription.read')}}",
             type: "GET",
             data:function(data){
-              var attendance_description_id = $('#form-search').find('input[name=attendance_description_id]').val();
-              var date = $('#form-search').find('input[name=date]').val();
-              data.attendance_description_id = attendance_description_id;
-              data.date = date;
-              data.workforce_id = {{ Auth::user()->workforce->id }};
+              var name = $('#form-search').find('input[name=name]').val();
+              var category = $('#form-search').find('select[name=category]').val();
+              data.name = name;
+              data.category = category;
             }
         },
         columnDefs:[
@@ -188,18 +121,48 @@
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [1] },
+            { className: "text-center", targets: [4,5,6] },
             { render: function ( data, type, row ) {
-                  return `<span class="label bg-blue">${row.description ? row.description.description : ''}</span>`
-            },targets: [2]
+                  return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
+            },targets: [4]
             },
+            { render: function ( data, type, row ) {
+              if (row.deleted_at) {
+                bg = 'bg-red', teks = 'Non-Aktif';
+              } else {
+                bg = 'bg-green', teks = 'Aktif';
+              }
+              return `<span class="label ${bg}">${teks}</span>`
+            },targets: [5]
+            },
+            { render: function ( data, type, row ) {
+              return `<div class="dropdown">
+                        <button class="btn  btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            ${row.deleted_at ?
+                            `<li><a class="dropdown-item" href="{{url('admin/attendancedescription')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
+                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            : 
+                            `<li><a class="dropdown-item" href="{{url('admin/attendancedescription')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/attendancedescription')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
+                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            }
+                        </ul>
+                      </div>`
+            },targets: [6]
+            }
         ],
         columns: [
             { data: "no" },
-            { data: "date" },
-            { data: "attendance_description_id" },
-            { data: "created_at" },
+            { data: "code" },
+            { data: "description" },
             { data: "updated_at" },
+            { data: "updated_by" },
+            { data: "deleted_at" },
+            { data: "id" },
         ]
     });
     $(document).on('click','.archive',function(){
@@ -215,7 +178,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengarsipkan Kehadiran?',
+          title:'Mengarsipkan Keterangan Kehadiran?',
           message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -274,7 +237,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengembalikan Kehadiran?',
+          title:'Mengembalikan Keterangan Kehadiran?',
           message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -336,7 +299,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus Kehadiran?',
+          title:'Menghapus Keterangan Kehadiran?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {

@@ -424,11 +424,11 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/assessmentanswer', 'Admin\AssessmentAnswerController');
 
         // Attendance Description
-        Route::get('/attendance/read', 'Admin\AttendanceDescriptionController@read')->name('attendance.read');
-        Route::get('/attendance/select', 'Admin\AttendanceDescriptionController@select')->name('attendance.select');
-        Route::post('/attendance/restore', 'Admin\AttendanceDescriptionController@restore')->name('attendance.restore');
-        Route::post('/attendance/delete', 'Admin\AttendanceDescriptionController@delete')->name('attendance.delete');
-        Route::resource('/attendance', 'Admin\AttendanceDescriptionController');
+        Route::get('/attendancedescription/read', 'Admin\AttendanceDescriptionController@read')->name('attendancedescription.read');
+        Route::get('/attendancedescription/select', 'Admin\AttendanceDescriptionController@select')->name('attendancedescription.select');
+        Route::post('/attendancedescription/restore', 'Admin\AttendanceDescriptionController@restore')->name('attendancedescription.restore');
+        Route::post('/attendancedescription/delete', 'Admin\AttendanceDescriptionController@delete')->name('attendancedescription.delete');
+        Route::resource('/attendancedescription', 'Admin\AttendanceDescriptionController');
 
         // Assessment
         Route::get('/assessment/read', 'Admin\AssessmentController@read')->name('assessment.read');
@@ -568,6 +568,11 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/controlcard/read', 'Admin\ControlCardController@read')->name('controlcard.read');
         // Route::get('/controlcard/select', 'Admin\HealthInsuranceController@select')->name('controlcard.select');
         Route::resource('/controlcard', 'Admin\ControlCardController');
+
+        // Attendance
+        Route::get('/attendance/read', 'Admin\AttendanceController@read')->name('attendance.read');
+        Route::get('/attendance/select', 'Admin\AttendanceController@select')->name('attendance.select');
+        Route::resource('/attendance', 'Admin\AttendanceController');
     });
 });
 Route::group(['prefix' => '{site}', 'middleware' => 'page.site'], function () {
