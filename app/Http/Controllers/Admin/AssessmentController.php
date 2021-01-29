@@ -461,10 +461,13 @@ class AssessmentController extends Controller
             }
         }
         $bobot = eval('return '.$calculate.';');
-        $message = 'Hai '.$workforce->name.' , menurut bot assessment anda tidak termasuk dalam kategori resiko manapun. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+        $message = 'Hasil assessment anda tidak ada dalam kategori.</br>
+        Simpan data Assessment Kesehatan?  </br>
+        Ya/Muat Ulang';
         foreach($healthmeters as $healthmeter){
             if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
-                $message = 'Hai '.$workforce->name.' , menurut bot assessment anda termasuk dalam kategori resiko <b>'.$healthmeter->name.'</b>. Apakah anda setuju data akan dikirim ke server? Pilih (ya) jika menyetujui';
+                $message = 'Hasil assessment anda tidak ada dalam kategori <b>'.$healthmeter->name.'</b>. </br> Info tindak lanjut '.$healthmeter->recomendation.'..</br>Simpan data Assessment Kesehatan?  </br>
+                Ya/Muat Ulang';
             }
         }
         return response()->json([

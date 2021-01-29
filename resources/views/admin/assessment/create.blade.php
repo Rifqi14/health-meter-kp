@@ -821,7 +821,7 @@
             </div>
             <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
             <div class="direct-chat-text">
-               Terimakasih semua jawaban anda akan dikirim ke server.
+               Terimakasih data Assessment Kesehatan anda sedang disimpan.
             </div>
           </div>
         `);
