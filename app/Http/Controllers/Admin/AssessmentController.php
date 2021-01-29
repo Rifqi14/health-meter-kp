@@ -377,12 +377,16 @@ class AssessmentController extends Controller
                     if($assessmentanswer->question->answer_type == 'checkbox'){
                         if($request->input('answer_choice_'.$assessmentanswer->question->id)){
                             foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
-                                $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                                if($choice == $assessmentanswer->id){
+                                    $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                                }
                             }
                         }
                     }
                     else{
-                       $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                        if($request->input('answer_choice_'.$assessmentanswer->question->id) == $assessmentanswer->id){
+                            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                        }
                     } 
                     $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
                 }
