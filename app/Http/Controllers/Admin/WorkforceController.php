@@ -539,7 +539,7 @@ class WorkforceController extends Controller
                                         'message'     => $cek
                                     ], 400);
                                 }
-                                $user = User::where('username',$cek->nid);
+                                $user = User::where('username',$cek->nid)->first();
                                 $user->name = $workforce->NAMA;
                                 $user->save();
                             }  
