@@ -41,26 +41,14 @@ class HealthMeterController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = HealthMeter::with(['site', 'workforcegroup','user'])->whereRaw("upper(name) like '%$name%'");
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
-        }
+        $query = HealthMeter::with(['user'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = HealthMeter::with(['site', 'workforcegroup','user'])->whereRaw("upper(name) like '%$name%'");
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
-        }
+        $query = HealthMeter::with(['user'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
@@ -142,8 +130,6 @@ class HealthMeterController extends Controller
             'max'               => 'required',
             'color'     => 'required',
             'recomendation'     => 'required',
-            'site_id'           => 'required',
-            'workforce_group_id'=> 'required'
         ]);
 
         if ($validator->fails()) {
@@ -159,8 +145,6 @@ class HealthMeterController extends Controller
 			'max'               => $request->max,
             'color' 	        => $request->color,
             'recomendation'     => $request->recomendation,
-            'site_id'           => $request->site_id,
-            'workforce_group_id'=> $request->workforce_group_id,
             'updated_by'        => Auth::id()
         ]);
         if (!$healthmeter) {
@@ -229,8 +213,6 @@ class HealthMeterController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'site_id'           => 'required',
-            'workforce_group_id'=> 'required',
             'name'              => 'required',
             'min'               => 'required',
             'max'               => 'required',
@@ -251,8 +233,6 @@ class HealthMeterController extends Controller
         $healthmeter->max           = $request->max;
         $healthmeter->color         = $request->color;
         $healthmeter->recomendation = $request->recomendation;
-        $healthmeter->site_id       = $request->site_id;
-        $healthmeter->workforce_group_id = $request->workforce_group_id;
         $healthmeter->save();
 
         if (!$healthmeter) {

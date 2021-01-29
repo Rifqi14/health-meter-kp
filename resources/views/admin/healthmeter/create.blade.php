@@ -17,31 +17,14 @@
         <h3 class="box-title">Tambah Kategori Resiko</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-              class="fa fa-reply"></i></a>
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('healthmeter.store')}}" class="form-horizontal" method="post"
-          autocomplete="off">
+        <form id="form" action="{{route('healthmeter.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
-          <div class="form-group">
-            <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" id="site_id" name="site_id" placeholder="Pilih Distrik" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
-                class="text-danger">*</b></label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" id="workforce_group_id" name="workforce_group_id"
-                placeholder="Pilih Kelompok Workforce" required>
-            </div>
-          </div>
           <div class="form-group">
             <label for="min" class="col-sm-2 control-label">Min <b class="text-danger">*</b></label>
             <div class="col-sm-6">
@@ -69,8 +52,7 @@
           <div class="form-group">
             <label for="recomendation" class="col-sm-2 control-label">Tindak lanjut <b class="text-danger">*</b></label>
             <div class="col-sm-6">
-              <textarea class="form-control" id="recomendation" name="recomendation"
-                placeholder="Tindak lanjut" required></textarea>
+              <textarea class="form-control" id="recomendation" name="recomendation" placeholder="Tindak lanjut" required></textarea>
             </div>
           </div>
         </form>
@@ -92,74 +74,6 @@
       $('.my-colorpicker1').colorpicker();
       $('.select2').select2({
         allowClear:true
-      });
-      $("#site_id").select2({
-        ajax: {
-          url: "{{route('site.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-              data_manager:{{$accesssite}},
-              site_id : {{$siteinfo->id}}
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
-      $("#workforce_group_id").select2({
-        ajax: {
-          url: "{{route('workforcegroup.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-            return {
-              name:term,
-              page:page,
-              limit:30,
-            };
-          },
-          results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-              option.push({
-                id:item.id,  
-                text: `${item.name}`
-              });
-            });
-            return {
-              results: option, more: more,
-            };
-          },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#workforce_group_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
       });
       $(".numberfield").inputmask('decimal', {
         rightAlign: false

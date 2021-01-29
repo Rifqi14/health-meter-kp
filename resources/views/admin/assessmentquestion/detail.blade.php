@@ -288,7 +288,6 @@
                         <i class="fa fa-bars"></i>
                     </button>
                       <ul class="dropdown-menu dropdown-menu-right">
-                        <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
                         <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>
                       </ul></div>`
                     },

@@ -31,8 +31,6 @@
                     <thead>
                         <tr>
                             <th width="10">#</th>
-                            <th width="100">Distrik</th>
-                            <th width="150">Kelompok Workforce</th>
                             <th width="100">Kategori</th>
                             <th width="50">Min</th>
                             <th width="50">Max</th>
@@ -70,12 +68,6 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                              <label class="control-label" for="site">Distrik</label>
-                              <input type="text" name="site" id="site" class="form-control" placeholder="Distrik">
-                            </div>
-                          </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
                                 <label for="name" class="control-label">Arsip Kelompok</label>
                                 <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
                                     <option value="">Non-Arsip</option>
@@ -108,36 +100,6 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
-    $("#site").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -146,38 +108,27 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 9, "asc" ]],
+        order: [[ 7, "asc" ]],
         ajax: {
             url: "{{route('healthmeter.read')}}",
             type: "GET",
             data:function(data){
                 var name = $('#form-search').find('input[name=name]').val();
                 var category = $('#form-search').find('select[name=category]').val();
-                var site = $('#form-search').find('input[name=site]').val();
                 data.name = name;
                 data.category = category;
-                data.site = site;
                 data.data_manager = {{$accesssite}};
-                data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
-                orderable: false,targets:[0,1,2,7]
+                orderable: false,targets:[0,5,6]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [4,5,6,8,9] },
-            { render: function ( data, type, row ) {
-                return `${row.site.name}`
-            },targets: [1]
-            },
-            { render: function ( data, type, row ) {
-                return `${row.workforcegroup.name}`
-            },targets: [2]
-            },
+            { className: "text-center", targets: [2,3,4,6,7] },
             { render: function (data, type, row) {
                 return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            }, targets: [7] },
+            }, targets: [5] },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
                 bg = 'bg-red', teks = 'Non-Aktif';
@@ -185,7 +136,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [8]
+            },targets: [6]
             },
             { render: function ( data, type, row ) {
                 return `<div class="dropdown">
@@ -203,13 +154,11 @@
                             }
                         </ul>
                       </div>`
-            },targets: [9]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "site_id" },
-            { data: "workforce_group_id" },
             { data: "name" },
             { data: "min" },
             { data: "max" },
