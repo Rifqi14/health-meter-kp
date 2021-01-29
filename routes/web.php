@@ -56,6 +56,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/department/delete/{id}', 'Admin\DepartmentController@delete')->name('department.delete');
         Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
         Route::post('/department/storemass', 'Admin\DepartmentController@storemass')->name('department.storemass');
+        Route::post('/department/export', 'Admin\DepartmentController@export')->name('department.export');
         Route::resource('/department', 'Admin\DepartmentController');
         //Route Title
         Route::get('/title/read', 'Admin\TitleController@read')->name('title.read');
@@ -120,6 +121,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/site/delete/{id}', 'Admin\SiteController@delete')->name('site.delete');
         Route::post('/site/preview', 'Admin\SiteController@preview')->name('site.preview');
         Route::post('/site/storemass', 'Admin\SiteController@storemass')->name('site.storemass');
+        Route::post('/site/download', 'Admin\SiteController@download')->name('site.download');
         Route::resource('/site', 'Admin\SiteController');
         //Route User Site
         Route::get('/siteuser/read', 'Admin\SiteUserController@read')->name('siteuser.read');

@@ -28,6 +28,9 @@
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
+                    <a href="{{route('department.export')}}" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
+                        <i class="fa fa-download"></i>
+                    </a>
                 </div>
                 <!-- /. tools -->
             </div>

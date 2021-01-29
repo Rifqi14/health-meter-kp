@@ -27,6 +27,10 @@ class DepartmentController extends Controller
     {
         return view('admin.department.index');
     }
+    public function export()
+    {
+        echo('aaaaa');
+    }
     public function read(Request $request)
     {
         $start = $request->start;

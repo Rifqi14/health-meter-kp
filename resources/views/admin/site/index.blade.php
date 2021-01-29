@@ -28,6 +28,11 @@
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
+                     @if(in_array('export',$actionmenu))
+                     <a href="{{route('site.download')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Export">
+                        <i class="fa fa-download"></i>
+                    </a>
+                    @endif
                 </div>
                 <!-- /. tools -->
             </div>
@@ -355,6 +360,7 @@ $(function(){
           }
         });
     })
-})
+});
+
 </script>
 @endpush
