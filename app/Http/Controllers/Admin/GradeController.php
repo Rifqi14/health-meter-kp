@@ -462,4 +462,54 @@ class GradeController extends Controller
                 ], 200);
         }
     }
+    public function export()
+    {
+        // dd('aaaaaaa');
+        $object = new \PHPExcel();
+        $object->getProperties()->setCreator('PJB');
+        $object->setActiveSheetIndex(0);
+        $sheet = $object->getActiveSheet();
+
+        $query = Grade::select('grades.*');
+        $grades = $query->get();
+
+        // Header Columne Excel
+        $sheet->setCellValue('A1', 'Kode');
+        $sheet->setCellValue('B1', 'Deskripsi');
+        $sheet->setCellValue('C1', 'Status Aktif');
+
+        $row_number = 2;
+
+        foreach ($grades as $grade) {
+
+            $sheet->setCellValue('A' . $row_number, $grade->code);
+            $sheet->setCellValue('B' . $row_number, $grade->name);
+            $sheet->setCellValue('C' . $row_number, $grade->deleted_at ? 'N' : 'Y');
+
+            $row_number++;
+        }
+        foreach (range('A', 'C') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $objWriter = \PHPExcel_IOFactory::createWriter($object, 'Excel2007');
+        ob_start();
+        $objWriter->save('php://output');
+        $export = ob_get_contents();
+        ob_end_clean();
+        header('Content-Type: application/json');
+        if ($grades->count() > 0) {
+            return response()->json([
+                'status'     => true,
+                'name'       => 'data-grade-' . date('d-m-Y') . '.xlsx',
+                'message'    => "Sukses Download Jenjang Jabatan Data",
+                'file'       => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($export)
+            ], 200);
+        } else {
+            return response()->json([
+                'status'     => false,
+                'message'    => "Data not found",
+            ], 400);
+        }
+    }
 }

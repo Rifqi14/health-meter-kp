@@ -635,4 +635,59 @@ class TitleController extends Controller
                 ], 200);
         }
     }
+    public function export()
+    {
+        // dd('aaaaaaa');
+        $object = new \PHPExcel();
+        $object->getProperties()->setCreator('PJB');
+        $object->setActiveSheetIndex(0);
+        $sheet = $object->getActiveSheet();
+
+        $query = Title::select('titles.*', 'sites.code as site_code');
+        $query->leftJoin('sites', 'sites.id', '=', 'titles.site_id');
+        $titles = $query->get();
+
+        // Header Columne Excel
+        $sheet->setCellValue('A1', 'Kode');
+        $sheet->setCellValue('B1', 'Short Deskripsi');
+        $sheet->setCellValue('C1', 'Deskripsi');
+        $sheet->setCellValue('D1', 'Distrik');
+        $sheet->setCellValue('E1', 'Status');
+
+        $row_number = 2;
+
+        foreach ($titles as $title) {
+
+            $sheet->setCellValue('A' . $row_number, $title->code);
+            $sheet->setCellValue('B' . $row_number, $title->shortname);
+            $sheet->setCellValue('C' . $row_number, $title->name);
+            $sheet->setCellValue('D' . $row_number, $title->site_code);
+            $sheet->setCellValue('E' . $row_number, $title->deleted_at ? 'N' : 'Y');
+
+            $row_number++;
+        }
+        foreach (range('A', 'E') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $objWriter = \PHPExcel_IOFactory::createWriter($object, 'Excel2007');
+        ob_start();
+        $objWriter->save('php://output');
+        $export = ob_get_contents();
+        ob_end_clean();
+        header('Content-Type: application/json');
+        if ($titles->count() > 0) {
+            return response()->json([
+                'status'     => true,
+                'name'       => 'data-title-' . date('d-m-Y') . '.xlsx',
+                'message'    => "Sukses Download Jabatan Data",
+                'file'       => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($export)
+            ], 200);
+        } else {
+            return response()->json([
+                'status'     => false,
+                'message'    => "Data not found",
+            ], 400);
+        }
+    }
 }

@@ -30,6 +30,11 @@
                         <i class="fa fa-refresh"></i>
                     </a>
                     @endif
+                    @if(in_array('export',$actionmenu))
+                    <a href="#" onclick="exportgrade()" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Syncronize">
+                        <i class="fa fa-download"></i>
+                    </a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
@@ -38,6 +43,7 @@
             </div>
             <div class="box-body">
                 <table class="table table-striped table-bordered datatable" style="width:100%">
+        
                     <thead>
                         <tr>
                             <th width="10">#</th>
@@ -397,5 +403,50 @@ $(function(){
         });
     })
 })
+function exportgrade() {
+    var data = {_token: "{{ csrf_token() }}"}
+    $.ajax({
+        url: "{{ route('grade.export') }}",
+        type: 'POST',
+        dataType: 'JSON',
+        data: data,
+        beforeSend:function(){
+            $('.overlay').removeClass('d-none');
+        }
+    }).done(function(response){
+        if(response.status){
+        $('.overlay').addClass('d-none');
+        $.gritter.add({
+            title: 'Success!',
+            text: response.message,
+            class_name: 'gritter-success',
+            time: 1000,
+        });
+        let download = document.createElement("a");
+        download.href = response.file;
+        document.body.appendChild(download);
+        download.download = response.name;
+        download.click();
+        download.remove();
+        }
+        else{
+        $.gritter.add({
+            title: 'Warning!',
+            text: response.message,
+            class_name: 'gritter-warning',
+            time: 1000,
+        });
+        }
+    }).fail(function(response){
+        var response = response.responseJSON;
+        $('.overlay').addClass('d-none');
+        $.gritter.add({
+            title: 'Error!',
+            text: response.message,
+            class_name: 'gritter-error',
+            time: 1000,
+        });
+    });
+}
 </script>
 @endpush
