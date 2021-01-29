@@ -109,10 +109,6 @@ class SiteController extends Controller
     {
         return view('admin.site.index');
     }
-    public function download()
-    {
-        echo('aaaaa');
-    }
     /**
      * Show the form for creating a new resource.
      *
