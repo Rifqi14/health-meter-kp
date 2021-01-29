@@ -482,12 +482,12 @@ class WorkforceController extends Controller
                             if(!$cek){
                                 $insert = Workforce::create([
                                     'nid' 	                => strtoupper($workforce->NID),
-                                    'name'                  => $workforce->NID,
+                                    'name'                  => $workforce->NAMA,
                                     'site_id'               => $site->id,
                                     'workforce_group_id'    => 1,
                                     'agency_id'             => 1,
                                     'department_id'         => $department?$department->id:null,
-                                    'sub_department_id'         => $subdepartment?$subdepartment->id:null,
+                                    'sub_department_id'     => $subdepartment?$subdepartment->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
@@ -506,7 +506,7 @@ class WorkforceController extends Controller
                                 $user = User::create([
                                     'name'          => $workforce->NID,
                                     'email'         => $workforce->NID.'@ptpjb.com',
-                                    'username'      => $workforce->NID,
+                                    'username'      => $workforce->NAMA,
                                     'password'      => Hash::make(123456),
                                     'status'        => 1,
                                     'workforce_id'  => $insert->id
@@ -522,6 +522,7 @@ class WorkforceController extends Controller
                             }
                             else{
                                 $cek->site_id       = $site->id;
+                                $cek->name          = $workforce->NAMA;
                                 $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
                                 $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
                                 $cek->department_id = $department?$department->id:null;
@@ -538,6 +539,9 @@ class WorkforceController extends Controller
                                         'message'     => $cek
                                     ], 400);
                                 }
+                                $user = User::where('username',$cek->nid);
+                                $user->name = $workforce->NAMA;
+                                $user->save();
                             }  
                         }
                     }
