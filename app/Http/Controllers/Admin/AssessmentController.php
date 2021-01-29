@@ -469,7 +469,7 @@ class AssessmentController extends Controller
         Simpan data Assessment Kesehatan?';
         foreach($healthmeters as $healthmeter){
             if($bobot >= $healthmeter->min && $bobot <= $healthmeter->max){
-                $message = 'Hasil assessment anda termasuk dalam kategori <b>'.$healthmeter->name.'</b>. </br> Info tindak lanjut <b>'.$healthmeter->recomendation.'</b>..</br>Simpan data Assessment Kesehatan?  </br> Bobot anda'.$bobot;
+                $message = 'Hasil assessment anda termasuk dalam kategori <b>'.$healthmeter->name.'</b>. </br> Info tindak lanjut <b>'.$healthmeter->recomendation.'</b>..</br>Simpan data Assessment Kesehatan?';
             }
         }
         return response()->json([
