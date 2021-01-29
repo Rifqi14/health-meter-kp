@@ -140,6 +140,7 @@ class HealthMeterController extends Controller
             'name'              => 'required',
             'min'               => 'required',
             'max'               => 'required',
+            'color'     => 'required',
             'recomendation'     => 'required',
             'site_id'           => 'required',
             'workforce_group_id'=> 'required'
@@ -233,6 +234,7 @@ class HealthMeterController extends Controller
             'name'              => 'required',
             'min'               => 'required',
             'max'               => 'required',
+            'color'             => 'required',
             'recomendation'     => 'required'
         ]);
 
