@@ -60,7 +60,12 @@
               <input type="text" class="form-control" id="name" name="name" placeholder="Kategori" required>
             </div>
           </div>
-          
+          <div class="form-group">
+            <label for="color" class="col-sm-2 control-label">Warna <b class="text-danger">*</b></label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control my-colorpicker1" id="color" name="color" placeholder="Warna" required>
+            </div>
+          </div>
           <div class="form-group">
             <label for="recomendation" class="col-sm-2 control-label">Tindak lanjut <b class="text-danger">*</b></label>
             <div class="col-sm-6">
