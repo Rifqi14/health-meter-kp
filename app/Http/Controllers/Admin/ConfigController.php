@@ -22,7 +22,7 @@ class ConfigController extends Controller
     public function update(Request $request)
     {
         $fields = [
-            'app_name','app_copyright','app_logo','company_name','company_email','company_phone','company_address','company_latitude','company_longitude'
+            'app_name','app_copyright','app_logo','company_name','company_email','company_phone','company_address','company_latitude','company_longitude', 'bot_icon', 'bot_username'
         ];
         $validator = Validator::make($request->all(), [
             'app_name' 	=> 'required',
@@ -31,7 +31,9 @@ class ConfigController extends Controller
             'company_name' => 'required',
             'company_email' => 'required|email',
             'company_phone' => 'required',
-            'company_address' => 'required'
+            'company_address' => 'required',
+            'bot_icon'      => 'required',
+            'bot_username'  => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -54,6 +56,26 @@ class ConfigController extends Controller
                     $config = Config::find($config->id);
                     $config->value = 'assets/config/logo.png';
                     $config->save();
+                    break;
+                case 'bot_icon':
+                    $bot_icon = $request->file('bot_icon');
+                    if ($bot_icon) {
+                        if (file_exists('assets/config/bot_icon.png')) {
+                            unlink('assets/config/bot_icon.png');
+                        }
+                        $bot_icon->move('assets/config/', 'bot_icon.png');
+                    }
+                    $config = Config::where('option', $field)->first();
+                    if ($config) {
+                        $config = Config::find($config->id);
+                        $config->value = 'assets/config/bot_icon.png';
+                        $config->save();
+                    } else {
+                        $config = Config::create([
+                            'option'    => $field,
+                            'value'     => 'assets/config/bot_icon.png'
+                        ]);
+                    }
                     break;
                 default:
                 $config = Config::where('option',$field)->first();

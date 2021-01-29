@@ -21,8 +21,7 @@
             <div class="box-header">
                 <h3 class="box-title">Detail Pertanyaan Assessment</h3>
                 <div class="pull-right box-tools">
-                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-                            class="fa fa-reply"></i></a>
+                    <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
                 </div>
             </div>
             <div class="box-body box-profile">
@@ -34,8 +33,7 @@
                         <b>Frekuensi</b> <span class="pull-right">{{$frequency[$question->frequency]}}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>Waktu</b> <span
-                            class="pull-right">{{$question->start_date . ' s/d ' . $question->finish_date}}</span>
+                        <b>Waktu</b> <span class="pull-right">{{$question->start_date . ' s/d ' . $question->finish_date}}</span>
                     </li>
                 </ul>
                 <b>Deskripsi</b><br><span>{{$question->description}}</span>
@@ -54,12 +52,12 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="subcategory">
                     <div class="overlay-wrapper">
-                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i
-                                class="fa fa-plus"></i></a>
+                        <a class="btn btn-primary pull-right btn-sm" href="#" onclick="adddetail()"><i class="fa fa-plus"></i></a>
                         <table class="table table-bordered table-striped" id="table-subcategory" style="width: 100%">
                             <thead>
                                 <tr>
                                     <th style="text-align:center" width="10">#</th>
+                                    <th width="50">Urutan</th>
                                     <th width="300">Deskripsi</th>
                                     <th width="50">Bobot</th>
                                     <th width="10">#</th>
@@ -77,6 +75,7 @@
                             <thead>
                                 <tr>
                                     <th style="text-align:center" width="10">#</th>
+                                    <th width="50">Urutan</th>
                                     <th width="300">Deskripsi</th>
                                     <th width="50">Bobot</th>
                                     <th width="10">#</th>
@@ -89,8 +88,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-    aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-detail" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -107,9 +105,16 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="control-label" for="order">Urutan</label>
+                                <input type="number" name="order" class="form-control" placeholder="Urutan" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="control-label" for="description">Deskripsi</label>
-                                <input type="text" name="description" class="form-control" placeholder="Deskripsi"
-                                    required>
+                                <input type="text" name="description" class="form-control" placeholder="Deskripsi" required>
                             </div>
                         </div>
                     </div>
@@ -117,8 +122,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="rating">Bobot</label>
-                                <input type="text" name="rating" class="form-control numberfield" placeholder="Bobot"
-                                    required>
+                                <input type="text" name="rating" class="form-control numberfield" placeholder="Bobot" required>
                             </div>
                         </div>
                     </div>
@@ -126,16 +130,14 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="receipt_header">Informasi</label>
-                                <textarea class="form-control summernote" name="information"
-                                    id="information"></textarea>
+                                <textarea class="form-control summernote" name="information" id="information"></textarea>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i
-                        class="fa fa-save"></i></button>
+                <button form="form" type="submit" class="btn btn-primary btn-sm" title="Simpan"><i class="fa fa-save"></i></button>
             </div>
         </div>
     </div>
@@ -196,7 +198,7 @@
             lengthChange: false,
             responsive: true,
             order: [
-                [3, "asc"]
+                [1, "asc"]
             ],
             ajax: {
                 url: "{{url('admin/assessmentanswer/read')}}",
@@ -211,11 +213,11 @@
                 },
                 {
                     className: "text-right",
-                    targets: [0, 2]
+                    targets: [0,1,3]
                 },
                 {
                     className: "text-center",
-                    targets: [3]
+                    targets: [4]
                 },
                 {
                     render: function (data, type, row) {
@@ -228,11 +230,14 @@
                         <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>
                       </ul></div>`
                     },
-                    targets: [3]
+                    targets: [4]
                 }
             ],
             columns: [{
                     data: "no"
+                },
+                {
+                    data: "order"
                 },
                 {
                     data: "description"
@@ -254,7 +259,7 @@
             lengthChange: false,
             responsive: true,
             order: [
-                [3, "asc"]
+                [1, "asc"]
             ],
             ajax: {
                 url: "{{url('admin/assessmentanswer/read')}}",
@@ -270,11 +275,11 @@
                 },
                 {
                     className: "text-right",
-                    targets: [0, 2]
+                    targets: [0,1,3]
                 },
                 {
                     className: "text-center",
-                    targets: [3]
+                    targets: [4]
                 },
                 {
                     render: function (data, type, row) {
@@ -287,11 +292,14 @@
                         <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>
                       </ul></div>`
                     },
-                    targets: [3]
+                    targets: [4]
                 }
             ],
             columns: [{
                     data: "no"
+                },
+                {
+                    data: "order"
                 },
                 {
                     data: "description"

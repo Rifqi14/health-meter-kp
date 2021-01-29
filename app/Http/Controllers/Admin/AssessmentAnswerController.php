@@ -122,6 +122,7 @@ class AssessmentAnswerController extends Controller
             'assessment_question_id'    => 'required',
             'description'               => 'required',
             'rating'                    => 'required',
+            'order'                     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -134,6 +135,7 @@ class AssessmentAnswerController extends Controller
         try {
             $answer = AssessmentAnswer::create([
                 'assessment_question_id'    => $request->assessment_question_id,
+                'order'                     => $request->order,
                 'answer_type'               => '',
                 'description'               => $request->description,
                 'rating'                    => $request->rating,
@@ -191,6 +193,7 @@ class AssessmentAnswerController extends Controller
             'assessment_question_id'    => 'required',
             'description'               => 'required',
             'rating'                    => 'required',
+            'order'                     => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -201,6 +204,7 @@ class AssessmentAnswerController extends Controller
         }
 
         $answer = AssessmentAnswer::withTrashed()->find($id);
+        $answer->order                  = $request->order;
         $answer->assessment_question_id = $request->assessment_question_id;
         $answer->description            = $request->description;
         $answer->rating                 = $request->rating;
