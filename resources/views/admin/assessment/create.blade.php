@@ -8,7 +8,10 @@
 @section('stylesheets')
 <link rel="stylesheet" href="{{asset('adminlte/component/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}">
 <style>
-
+  .direct-chat-img {
+      object-fit: contain;
+      border:1px #d2d6de solid;
+  }
   .direct-chat-messages {
     height: 400px !important;
   }
@@ -143,9 +146,9 @@
             $('.direct-chat-messages').append(`
                 <div class="direct-chat-msg loader">
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                   </div>
-                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                   <div class="direct-chat-text">
                     <div style="padding:5px 0 5px 15px">
                       <div class="dot-typing"></div>
@@ -160,9 +163,9 @@
                   $('.direct-chat-messages').append(`
                   <div class="direct-chat-msg loader">
                     <div class="direct-chat-info clearfix">
-                      <span class="direct-chat-name pull-left">Bot Assessment</span>
+                      <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                     </div>
-                    <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                    <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                     <div class="direct-chat-text">
                       ${response.message} 
                       </div>
@@ -184,11 +187,11 @@
                 $('.direct-chat-messages').append(`
                   <div class="direct-chat-msg error">
                     <div class="direct-chat-info clearfix">
-                      <span class="direct-chat-name pull-left">Bot Assessment</span>
+                      <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                     </div>
-                    <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                    <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                     <div class="direct-chat-text">
-                      Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                      Maaf {{config('configs.bot_username')}} sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
                       </div>
                   </div>
                 `);
@@ -211,11 +214,11 @@
             $('.direct-chat-messages').append(`
                 <div class="direct-chat-msg error" >
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                   </div>
-                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                   <div class="direct-chat-text">
-                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                    Maaf {{config('configs.bot_username')}} sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
                     </div>
                 </div>
               `);
@@ -238,9 +241,9 @@
     $('.direct-chat-messages').append(`
       <div class="direct-chat-msg loader">
         <div class="direct-chat-info clearfix">
-          <span class="direct-chat-name pull-left">Bot Assessment</span>
+          <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
         </div>
-        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
         <div class="direct-chat-text">
           <div style="padding:5px 0 5px 15px">
             <div class="dot-typing"></div>
@@ -416,9 +419,9 @@
     $('.direct-chat-messages').append(`
       <div class="direct-chat-msg question" id="question_${id}">
         <div class="direct-chat-info clearfix">
-          <span class="direct-chat-name pull-left">Bot Assessment</span>
+          <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
         </div>
-        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
         <div class="direct-chat-text">
           ${message}
         </div>
@@ -429,9 +432,9 @@
     $('#answerdesc_'+next).after(`
       <div class="direct-chat-msg question" id="question_${id}">
         <div class="direct-chat-info clearfix">
-          <span class="direct-chat-name pull-left">Bot Assessment</span>
+          <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
         </div>
-        <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+        <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
         <div class="direct-chat-text">
           ${message}
         </div>
@@ -817,9 +820,9 @@
       $('.direct-chat-messages').append(`
           <div class="direct-chat-msg loader">
             <div class="direct-chat-info clearfix">
-              <span class="direct-chat-name pull-left">Bot Assessment</span>
+              <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
             </div>
-            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
             <div class="direct-chat-text">
                Terimakasih data assessment kesehatan anda sedang disimpan.
             </div>
@@ -843,9 +846,9 @@
       $('.direct-chat-messages').append(`
           <div class="direct-chat-msg loader">
             <div class="direct-chat-info clearfix">
-              <span class="direct-chat-name pull-left">Bot Assessment</span>
+              <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
             </div>
-            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
             <div class="direct-chat-text">
                Pertanyaan akan diatur ulang beberapa detik lagi.
             </div>
@@ -892,9 +895,9 @@
       $('.direct-chat-messages').append(`
           <div class="direct-chat-msg loader">
             <div class="direct-chat-info clearfix">
-              <span class="direct-chat-name pull-left">Bot Assessment</span>
+              <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
             </div>
-            <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+            <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
             <div class="direct-chat-text">
                Pertanyaan akan diatur ulang beberapa detik lagi.
             </div>
@@ -999,11 +1002,11 @@
                 $('.direct-chat-messages').append(`
                 <div class="direct-chat-msg error" >
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                   </div>
-                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                   <div class="direct-chat-text">
-                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
+                    Maaf {{config('configs.bot_username')}} sedang mengalami gangguan :( <br/> Apakah anda mau melanjutkan pengisian ?
                     </div>
                 </div>
               `);
@@ -1028,11 +1031,11 @@
             $('.direct-chat-messages').append(`
                 <div class="direct-chat-msg error" >
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">Bot Assessment</span>
+                    <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
                   </div>
-                  <img class="direct-chat-img" src="{{asset('assets/bot.png')}}" alt="Assessment Bot">
+                  <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
                   <div class="direct-chat-text">
-                    Maaf bot assessment sedang mengalami gangguan :( <br/> Apakah anda mau mengirimkan lagi ?
+                    Maaf {{config('configs.bot_username')}} sedang mengalami gangguan :( <br/> Apakah anda mau mengirimkan lagi ?
                     </div>
                 </div>
               `);
