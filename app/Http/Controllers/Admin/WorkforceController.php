@@ -504,9 +504,9 @@ class WorkforceController extends Controller
                                 $insert->deleted_at = $workforce->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
                                 $insert->save();
                                 $user = User::create([
-                                    'name'          => $workforce->NID,
+                                    'name'          => $workforce->NAMA,
                                     'email'         => $workforce->NID.'@ptpjb.com',
-                                    'username'      => $workforce->NAMA,
+                                    'username'      => $workforce->NID,
                                     'password'      => Hash::make(123456),
                                     'status'        => 1,
                                     'workforce_id'  => $insert->id
