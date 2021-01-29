@@ -1015,7 +1015,7 @@
                 <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
                 <div class="direct-chat-text pull-right">
                   <input type="radio" value="1" onclick="finish(this)">
-                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Tidak
+                  Ya <br/><input type="radio" value="0" onclick="finish(this)"> Muat Ulang
                 </div>
               </div>`);
 
