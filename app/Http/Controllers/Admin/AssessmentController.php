@@ -368,7 +368,7 @@ class AssessmentController extends Controller
         }
         $bobot = 0;
         $formula = Formula::first();
-        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        $healthmeters = HealthMeter::get();
         if($formula){
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();
@@ -444,7 +444,7 @@ class AssessmentController extends Controller
         $site_id = $workforce->site_id;
         $bobot = 0;
         $formula = Formula::first();
-        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        $healthmeters = HealthMeter::get();
         if($formula){
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();
