@@ -30,6 +30,7 @@ return [
     ],
     'coveringletter_type' => [
         'Resep'   => "Resep",
-        'Rujukan' => "Rujukan"
+        'Rujukan' => "Rujukan",
+        'Diagnosa' => "Diagnosa"
     ],
 ];

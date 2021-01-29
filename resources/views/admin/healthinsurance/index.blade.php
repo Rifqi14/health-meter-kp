@@ -348,7 +348,9 @@ $(function(){
                             `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/healthinsurance')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
                             @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/healthinsurance')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
                             @if(in_array('delete',$actionmenu))
-                            <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-trash"></i> Delete</a></li>@endif`
+                            <li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-trash"></i> Delete</a></li>@endif
+                            <li><a class="dropdown-item" href="{{url('admin/healthinsurance')}}/${row.id}/print"><i class="glyphicon glyphicon-print "></i> Print</a></li>`
+                            
                             }
                         </ul>
                       </div>`

@@ -381,20 +381,20 @@ class SiteController extends Controller
         foreach($sites as $site){
             $cek = Site::whereRaw("upper(code) = '$site->code'")->withTrashed()->first();
             if(!$cek){
-                $department = Site::create([
+                $insert = Site::create([
                     'code' 	        => strtoupper($site->code),
                     'name'          => $site->name,
                     'updated_by'    => Auth::id()
                 ]);
-                if (!$site) {
+                if (!$insert) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $site
+                        'message'     => $insert
                     ], 400);
                 }
-                $site->deleted_at = $site->status?null:date('Y-m-d H:i:s');
-                $site->save();
+                $insert->deleted_at = $site->status?null:date('Y-m-d H:i:s');
+                $insert->save();
             }
             else{
                 $cek->code      = strtoupper($site->code);
@@ -416,5 +416,78 @@ class SiteController extends Controller
         	'status' 	=> true,
         	'results' 	=> route('site.index'),
         ], 200);
+    }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/distrik/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Site::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $site){
+                        $cek = Site::whereRaw("upper(code) = '$site->KODE'")->withTrashed()->first();
+                        if(!$cek){
+                            $insert = Site::create([
+                                'code' 	        => strtoupper($site->KODE),
+                                'name'          => $site->DESKRIPSI,
+                                'updated_by'    => Auth::id()
+                            ]);
+                            if (!$insert) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $insert
+                                ], 400);
+                            }
+                            $insert->deleted_at = $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->save();
+                        }
+                        else{
+                            $cek->code      = strtoupper($site->KODE);
+                            $cek->name      = $site->DESKRIPSI;
+                            $cek->deleted_at= $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $cek->updated_by= Auth::id();
+                            $cek->save();
+                            if (!$cek) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $cek
+                                ], 400);
+                            }
+                        }  
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data distrik'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }

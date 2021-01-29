@@ -25,6 +25,11 @@
               <i class="fa fa-upload"></i>
           </a>
           @endif
+          @if(in_array('sync',$actionmenu))
+          <a href="#" onclick="sync()" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Syncronize">
+              <i class="fa fa-refresh"></i>
+          </a>
+          @endif
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -103,6 +108,44 @@
   function filter(){
     $('#add-filter').modal('show');
   }
+
+  function sync(){
+      $.ajax({
+          url: `{{route('subdepartment.sync')}}`,
+          dataType: 'json', 
+          beforeSend:function(){
+              $('.overlay').removeClass('hidden');
+          }
+      }).done(function(response){
+          if(response.status){
+              $('.overlay').addClass('hidden');
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+              dataTable.ajax.reload( null, false );
+          }
+          else{
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('.overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      });
+  }
   $(function(){
     $(".select2").select2();
     $("#site").select2({
@@ -170,7 +213,7 @@
             { className: "text-right", targets: [0,4] },
             { className: "text-center", targets: [5,6] },
             { render:function( data, type, row ) {
-              return `${row.site.name}`
+              return `${row.site?row.site.name:'-'}`
             },targets: [1] },
             { render: function ( data, type, row ) {
                   return `<p>${row.name + '<br>' + row.code}</p>`

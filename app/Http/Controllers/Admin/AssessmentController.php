@@ -373,17 +373,19 @@ class AssessmentController extends Controller
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();
             foreach($assessmentanswers as $assessmentanswer){
-                if($assessmentanswer->question->answer_type == 'checkbox'){
-                    if($request->input('answer_choice_'.$assessmentanswer->question->id)){
-                        foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
-                            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                if($assessmentanswer->question){
+                    if($assessmentanswer->question->answer_type == 'checkbox'){
+                        if($request->input('answer_choice_'.$assessmentanswer->question->id)){
+                            foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
+                                $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                            }
                         }
                     }
+                    else{
+                       $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                    } 
+                    $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
                 }
-                else{
-                   $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
-                } 
-                $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
             }
         }
         $bobot = eval('return '.$calculate.';');
@@ -443,17 +445,19 @@ class AssessmentController extends Controller
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();
             foreach($assessmentanswers as $assessmentanswer){
-                if($assessmentanswer->question->answer_type == 'checkbox'){
-                    if($request->input('answer_choice_'.$assessmentanswer->question->id)){
-                        foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
-                            $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                if($assessmentanswer->question){
+                    if($assessmentanswer->question->answer_type == 'checkbox'){
+                        if($request->input('answer_choice_'.$assessmentanswer->question->id)){
+                            foreach($request->input('answer_choice_'.$assessmentanswer->question->id) as $choice){
+                                $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                            }
                         }
                     }
+                    else{
+                       $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
+                    } 
+                    $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
                 }
-                else{
-                   $calculate = str_replace('#'.$assessmentanswer->id.'#',$assessmentanswer->rating,$calculate);
-                } 
-                $calculate = str_replace('#'.$assessmentanswer->id.'#',0,$calculate);
             }
         }
         $bobot = eval('return '.$calculate.';');

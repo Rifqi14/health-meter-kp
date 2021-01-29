@@ -226,6 +226,29 @@ class HealthInsuranceController extends Controller
             abort(404);
         }
     }
+    public function print($id)
+    {
+        $insurance = HealthInsurance::with([
+            'workforce',
+            'workforce.site',
+            'patient',
+            'patient.site',
+            'lettermaker',
+            'lettermaker.site',
+            'authorizer',
+            'authorizer.site',
+            'authorizer.title',
+            'inpatient',
+            'updatedby',
+            'guarantor'])->find($id);
+        if ($insurance) {
+            $insurance->print_status = 1;
+            $insurance->save();
+            return view('admin.healthinsurance.print', compact('insurance'));
+        } else {
+            abort(404);
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.

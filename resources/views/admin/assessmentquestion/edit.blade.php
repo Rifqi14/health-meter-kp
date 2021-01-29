@@ -74,6 +74,7 @@
               <div class="col-sm-6">
                 <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Informasi"
                   name="description_information" required>{{ $question->description_information }}</textarea>
+                  <p class="text-danger">Tambahkan tag berikut <b>[question] , [answer] , [update]</b>. Hanya untuk tipe Informasi Dan Pertanyaan</p>
               </div>
             </div>
             <div class="form-group">
@@ -192,6 +193,7 @@
          }
          if(this.value == 'Informasi Dan Pertanyaan'){
           $('#description').closest('.form-group').show();
+          $('#description_information').closest('.form-group').show();
          }
       }).trigger('change');
       $('.select2').select2();

@@ -151,8 +151,8 @@ class AgencyController extends Controller
             'code'          => $site->code.strtoupper($request->code),
             'name'          => $request->name,
             'authentication'=> $request->authentication,
-            'host'          => $request->authentication == 'ldap'?$request->host:null,
-            'port'          => $request->authentication == 'ldap'?$request->port:null,
+            'host'          => $request->host,
+            'port'          => $request->port,
             'updated_by'    => Auth::id(),
             'site_id'       => $request->site_id,
         ]);
@@ -226,8 +226,8 @@ class AgencyController extends Controller
         //$agency->code           = $request->code;
         $agency->name           = $request->name;
         $agency->authentication = $request->authentication;
-        $agency->host           = $request->authentication == 'ldap'?$request->host:null;
-        $agency->port           = $request->authentication == 'ldap'?$request->port:null;
+        $agency->host           = $request->host;
+        $agency->port           = $request->port;
         $agency->updated_by      = Auth::id();
         $agency->save();
 

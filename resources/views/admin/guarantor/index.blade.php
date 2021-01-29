@@ -15,9 +15,21 @@
         <h3 class="box-title">Data Penanggung Jawab</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
+          @if(in_array('create',$actionmenu))
           <a href="{{route('guarantor.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
+          @endif
+          @if(in_array('import',$actionmenu))
+          <a href="{{route('guarantor.import')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import">
+              <i class="fa fa-upload"></i>
+          </a>
+          @endif
+          @if(in_array('sync',$actionmenu))
+          <a href="#" onclick="sync()" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Syncronize">
+              <i class="fa fa-refresh"></i>
+          </a>
+          @endif
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -92,6 +104,43 @@
   function filter(){
     $('#add-filter').modal('show');
   }
+  function sync(){
+    $.ajax({
+        url: `{{route('guarantor.sync')}}`,
+        dataType: 'json', 
+        beforeSend:function(){
+            $('.overlay').removeClass('hidden');
+        }
+    }).done(function(response){
+        if(response.status){
+            $('.overlay').addClass('hidden');
+            $.gritter.add({
+                title: 'Success!',
+                text: response.message,
+                class_name: 'gritter-success',
+                time: 1000,
+            });
+            dataTable.ajax.reload( null, false );
+        }
+        else{
+            $.gritter.add({
+                title: 'Warning!',
+                text: response.message,
+                class_name: 'gritter-warning',
+                time: 1000,
+            });
+        }
+    }).fail(function(response){
+        var response = response.responseJSON;
+        $('.overlay').addClass('hidden');
+        $.gritter.add({
+            title: 'Error!',
+            text: response.message,
+            class_name: 'gritter-error',
+            time: 1000,
+        });
+    });
+}
   $(function(){
     $(".select2").select2();
     $('#form-search').submit(function(e){
@@ -184,12 +233,12 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-right">
                             ${row.deleted_at ?
-                            `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>
-                            <li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>`
+                            `@if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))<li><a class="dropdown-item restore" href="#" data-id="${row.id}"><i class="glyphicon glyphicon-refresh"></i> Restore</a></li>@endif`
                             : 
-                            `<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>
-                            <li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`
+                            `@if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
+                            @if(in_array('read',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/guarantor')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>@endif
+                            @if(in_array('delete',$actionmenu))<li><a class="dropdown-item archive" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>@endif`
                             }
                         </ul>
                       </div>`

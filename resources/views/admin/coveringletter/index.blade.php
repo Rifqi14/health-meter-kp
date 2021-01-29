@@ -168,6 +168,7 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                             @if(in_array('update',$actionmenu))<li><a class="dropdown-item" href="{{url('admin/coveringletter')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>@endif
                             @if(in_array('delete',$actionmenu))<li><a class="dropdown-item delete" href="#" data-id=${row.id}><i class="glyphicon glyphicon-trash"></i> Delete</a></li>@endif
+                            <li><a class="dropdown-item" href="{{url('admin/coveringletter')}}/${row.id}/print"><i class="glyphicon glyphicon-print "></i> Print</a></li>
                             
                         </ul>
                       </div>`

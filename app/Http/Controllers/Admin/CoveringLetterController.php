@@ -195,6 +195,33 @@ class CoveringLetterController extends Controller
             abort(404);
         }
     }
+    public function print($id)
+    {
+
+        $coveringletter = CoveringLetter::with([
+                                'patient',
+                                'doctor',
+                                'referraldoctor',
+                                'consultation',
+                                'doctorsite',
+                                'medicine',
+                                'partner',
+                                'patientsite',
+                                'referralpartner',
+                                'speciality',
+                                'referralspeciality',
+                                'usingrule',
+                                'workforce'
+        ])->find($id);
+
+        if ($coveringletter) {
+            $coveringletter->print_status = 1;
+            $coveringletter->save();
+            return view('admin.coveringletter.print', compact('coveringletter'));
+        } else {
+            abort(404);
+        }
+    }
 
     /**
      * Update the specified resource in storage.

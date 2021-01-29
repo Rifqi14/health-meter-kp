@@ -485,28 +485,28 @@
       }
     });
 
-    @if ($workforce->workforce_group_id)
+    @if ($workforce->workforcegroup)
       $('#workforce_group_id').select2('data', {id: {{ $workforce->workforcegroup->id }}, text: `{!! $workforce->workforcegroup->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->site_id)
+    @if ($workforce->site)
       $('#site_id').select2('data', {id: {{ $workforce->site->id }}, text: `{!! $workforce->site->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->agency_id)
+    @if ($workforce->agency)
       $('#agency_id').select2('data', {id: {{ $workforce->agency->id }}, text: `{!! $workforce->agency->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->grade_id)
+    @if ($workforce->grade)
       $('#grade_id').select2('data', {id: {{ $workforce->grade->id }}, text: `{!! $workforce->grade->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->title_id)
+    @if ($workforce->title)
       $('#title_id').select2('data', {id: {{ $workforce->title->id }}, text: `{!! $workforce->title->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->department_id)
+    @if ($workforce->department)
       $('#department_id').select2('data', {id: {{ $workforce->department->id }}, text: `{!! $workforce->department->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->sub_department_id)
+    @if ($workforce->subdepartment)
       $('#sub_department_id').select2('data', {id: {{ $workforce->subdepartment->id }}, text: `{!! $workforce->subdepartment->name !!}`}).trigger('change');
     @endif
-    @if ($workforce->guarantor_id)
+    @if ($workforce->guarantor)
       $('#guarantor_id').select2('data', {id: {{ $workforce->guarantor->id }}, text: `{!! $workforce->guarantor->title->name.' - '.$workforce->guarantor->title->code !!}`}).trigger('change');
     @endif
   });

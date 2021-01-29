@@ -52,6 +52,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/department/read', 'Admin\DepartmentController@read')->name('department.read');
         Route::get('/department/select', 'Admin\DepartmentController@select')->name('department.select');
         Route::get('/department/import', 'Admin\DepartmentController@import')->name('department.import');
+        Route::get('/department/sync', 'Admin\DepartmentController@sync')->name('department.sync');
         Route::get('/department/restore/{id}', 'Admin\DepartmentController@restore')->name('department.restore');
         Route::get('/department/delete/{id}', 'Admin\DepartmentController@delete')->name('department.delete');
         Route::post('/department/preview', 'Admin\DepartmentController@preview')->name('department.preview');
@@ -63,6 +64,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/title/employee', 'Admin\TitleController@employee')->name('title.employee');
         Route::get('/title/select', 'Admin\TitleController@select')->name('title.select');
         Route::get('/title/import', 'Admin\TitleController@import')->name('title.import');
+        Route::get('/title/sync', 'Admin\TitleController@sync')->name('title.sync');
         Route::get('/title/restore/{id}', 'Admin\TitleController@restore')->name('title.restore');
         Route::get('/title/delete/{id}', 'Admin\TitleController@delete')->name('title.delete');
         Route::post('/title/preview', 'Admin\TitleController@preview')->name('title.preview');
@@ -76,6 +78,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/grade/restore/{id}', 'Admin\GradeController@restore')->name('grade.restore');
         Route::get('/grade/delete/{id}', 'Admin\GradeController@delete')->name('grade.delete');
         Route::get('/grade/import', 'Admin\GradeController@import')->name('grade.import');
+        Route::get('/grade/sync', 'Admin\GradeController@sync')->name('grade.sync');
         Route::post('/grade/preview', 'Admin\GradeController@preview')->name('grade.preview');
         Route::post('/grade/storemass', 'Admin\GradeController@storemass')->name('grade.storemass');
         Route::resource('/grade', 'Admin\GradeController');
@@ -116,6 +119,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/site/read', 'Admin\SiteController@read')->name('site.read');
         Route::get('/site/select', 'Admin\SiteController@select')->name('site.select');
         Route::get('/site/import', 'Admin\SiteController@import')->name('site.import');
+        Route::get('/site/sync', 'Admin\SiteController@sync')->name('site.sync');
         Route::get('/site/restore/{id}', 'Admin\SiteController@restore')->name('site.restore');
         Route::get('/site/delete/{id}', 'Admin\SiteController@delete')->name('site.delete');
         Route::post('/site/preview', 'Admin\SiteController@preview')->name('site.preview');
@@ -442,6 +446,8 @@ Route::group(['prefix' => 'admin'], function () {
         // Guarantor
         Route::get('/guarantor/read', 'Admin\GuarantorController@read')->name('guarantor.read');
         Route::get('/guarantor/select', 'Admin\GuarantorController@select')->name('guarantor.select');
+        Route::get('/guarantor/import', 'Admin\GuarantorController@import')->name('guarantor.import');
+        Route::get('/guarantor/sync', 'Admin\GuarantorController@sync')->name('guarantor.sync');
         Route::get('/guarantor/restore/{id}', 'Admin\GuarantorController@restore')->name('guarantor.restore');
         Route::get('/guarantor/delete/{id}', 'Admin\GuarantorController@delete')->name('guarantor.delete');
         Route::resource('/guarantor', 'Admin\GuarantorController');
@@ -471,6 +477,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/subdepartment/read', 'Admin\SubDepartmentController@read')->name('subdepartment.read');
         Route::get('/subdepartment/select', 'Admin\SubDepartmentController@select')->name('subdepartment.select');
         Route::get('/subdepartment/import', 'Admin\SubDepartmentController@import')->name('subdepartment.import');
+        Route::get('/subdepartment/sync', 'Admin\SubDepartmentController@sync')->name('subdepartment.sync');
         Route::get('/subdepartment/restore/{id}', 'Admin\SubDepartmentController@restore')->name('subdepartment.restore');
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
         Route::post('/subdepartment/preview', 'Admin\SubDepartmentController@preview')->name('subdepartment.preview');
@@ -483,6 +490,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/workforce/restore/{id}', 'Admin\WorkforceController@restore')->name('workforce.restore');
         Route::get('/workforce/delete/{id}', 'Admin\WorkforceController@delete')->name('workforce.delete');
         Route::get('/workforce/import', 'Admin\WorkforceController@import')->name('workforce.import');
+        Route::get('/workforce/sync', 'Admin\WorkforceController@sync')->name('workforce.sync');
         Route::post('/workforce/preview', 'Admin\WorkforceController@preview')->name('workforce.preview');
         Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
         Route::resource('/workforce', 'Admin\WorkforceController');
@@ -544,11 +552,13 @@ Route::group(['prefix' => 'admin'], function () {
         Route::resource('/medicaltreatment', 'Admin\MedicalTreatmentController');
         //CoveringLetter
         Route::get('/coveringletter/read', 'Admin\CoveringLetterController@read')->name('coveringletter.read');
+        Route::get('/coveringletter/{id}/print', 'Admin\CoveringLetterController@print')->name('coveringletter.print');
         Route::resource('/coveringletter', 'Admin\CoveringLetterController');
 
         // CheckupSchedule
         Route::get('/healthinsurance/read', 'Admin\HealthInsuranceController@read')->name('healthinsurance.read');
         Route::get('/healthinsurance/select', 'Admin\HealthInsuranceController@select')->name('healthinsurance.select');
+        Route::get('/healthinsurance/{id}/print', 'Admin\HealthInsuranceController@print')->name('healthinsurance.print');
         Route::resource('/healthinsurance', 'Admin\HealthInsuranceController');
 
         // Report Letter

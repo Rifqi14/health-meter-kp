@@ -139,7 +139,7 @@ class SubDepartmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:sub_departments',
+            'code'          => 'required',
             'name'          => 'required',
             'site_id'       => 'required',
         ]);
@@ -149,6 +149,13 @@ class SubDepartmentController extends Controller
                 'status'     => false,
                 'message'     => $validator->errors()->first()
             ], 400);
+        }
+        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
         }
         $subdepartment = SubDepartment::create([
             'site_id'       => $request->site_id,
@@ -221,7 +228,7 @@ class SubDepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:sub_departments,code,'.$id,
+            'code'          => 'required',
             'site_id'       => 'required',
             'name'          => 'required',
         ]);
@@ -232,7 +239,13 @@ class SubDepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-
+        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->where('id','<>',$id)->first();
+        if($exist){
+            return response()->json([
+                'status' 	=> false,
+        		'message' 	=> 'The code has already been taken.'
+        	], 400);  
+        }
         $subdepartment = SubDepartment::withTrashed()->find($id);
         $subdepartment->site_id = $request->site_id;
         $subdepartment->code = strtoupper($request->code);
@@ -379,19 +392,19 @@ class SubDepartmentController extends Controller
         DB::beginTransaction();
         $subdepartments = json_decode($request->subdepartments);
         foreach($subdepartments as $subdepartment){
-            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->withTrashed()->first();
+            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->where('site_id',$subdepartment->site_id)->withTrashed()->first();
             if(!$cek){
-                $subdepartment = SubDepartment::create([
+                $insert = SubDepartment::create([
                     'code' 	        => strtoupper($subdepartment->code),
                     'name'          => $subdepartment->name,
                     'site_id'       => $subdepartment->site_id,
                     'updated_by'    => Auth::id()
                 ]);
-                if (!$subdepartment) {
+                if (!$insert) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $subdepartment
+                        'message'     => $insert
                     ], 400);
                 }
                 $subdepartment->deleted_at = $subdepartment->status?null:date('Y-m-d H:i:s');
@@ -418,5 +431,71 @@ class SubDepartmentController extends Controller
         	'status' 	=> true,
         	'results' 	=> route('subdepartment.index'),
         ], 200);
+    }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/subdivbid/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    SubDepartment::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $subdepartment){
+                        $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->withTrashed()->get();
+                        if(!$cek->count()){
+                            $insert = SubDepartment::create([
+                                'code' 	        => strtoupper($subdepartment->KODE),
+                                'name'          => $subdepartment->DESKRIPSI,
+                                'updated_by'    => Auth::id()
+                            ]);
+                            if (!$insert) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status'    => false,
+                                    'message'   => $insert
+                                ], 400);
+                            }
+                            $insert->deleted_at = $subdepartment->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->save();
+                        }
+                        else{
+                            SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->update([
+                                'name'          => $subdepartment->DESKRIPSI,
+                                'deleted_at'    => $subdepartment->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
+                                'update_by'     => Auth::id()
+                            ]);
+                        }  
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data sub department'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }

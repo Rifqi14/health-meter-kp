@@ -353,20 +353,20 @@ class GradeController extends Controller
         foreach($grades as $grade){
             $cek = Grade::whereRaw("upper(code) = '$grade->code'")->withTrashed()->first();
             if(!$cek){
-                $grade = Grade::create([
+                $insert = Grade::create([
                     'code' 	        => strtoupper($grade->code),
                     'name'          => $grade->name,
                     'updated_by'    => Auth::id()
                 ]);
-                if (!$grade) {
+                if (!$insert) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $grade
+                        'message'     => $insert
                     ], 400);
                 }
-                $grade->deleted_at = $grade->status?null:date('Y-m-d H:i:s');
-                $grade->save();
+                $insert->deleted_at = $grade->status?null:date('Y-m-d H:i:s');
+                $insert->save();
             }
             else{
                 $cek->code      = strtoupper($grade->code);
@@ -388,5 +388,78 @@ class GradeController extends Controller
         	'status' 	=> true,
         	'results' 	=> route('grade.index'),
         ], 200);
+    }
+    public function sync(Request $request)
+    {
+        DB::beginTransaction();
+        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/jenjangjabatan/?apikey=539581c464b44701a297a04a782ce4a9';
+        $curl = curl_init($host);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
+            case 200 :
+                $response = json_decode($response);
+                if(isset($response->returned_object) && count($response->returned_object) > 0){
+                    Grade::query()->update([
+                        'deleted_at'=>date('Y-m-d H:i:s')
+                    ]);
+                    foreach($response->returned_object as $grade){
+                        $cek = Grade::whereRaw("upper(code) = '$grade->KODE'")->withTrashed()->first();
+                        if(!$cek){
+                            $insert = Grade::create([
+                                'code' 	        => strtoupper($grade->KODE),
+                                'name'          => $grade->DESKRIPSI,
+                                'updated_by'    => Auth::id()
+                            ]);
+                            if (!$insert) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $insert
+                                ], 400);
+                            }
+                            $insert->deleted_at = $grade->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $insert->save();
+                        }
+                        else{
+                            $cek->code      = strtoupper($grade->KODE);
+                            $cek->name      = $grade->DESKRIPSI;
+                            $cek->deleted_at= $grade->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $cek->updated_by= Auth::id();
+                            $cek->save();
+                            if (!$cek) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $cek
+                                ], 400);
+                            }
+                        }  
+                    }
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> true,
+                        'message'   => 'Success syncronize data grade'
+                    ], 200);
+                }
+                else{
+                    curl_close($curl);
+                    DB::commit();
+                    return response()->json([
+                        'status' 	=> false,
+                        'message'   => 'Row data not found'
+                    ], 200);
+                }
+                
+                break;
+            default:
+                curl_close($curl);
+                DB::commit();
+                return response()->json([
+                    'status' 	=> false,
+                    'message'   => 'Error connection'
+                ], 200);
+        }
     }
 }
