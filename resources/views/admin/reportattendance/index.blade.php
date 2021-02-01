@@ -69,11 +69,11 @@
   <div class="col-md-12">
     <div class="nav-tabs-custom tab-primary">
       <ul class="nav nav-tabs">
-        <li><a href="#kehadiran" data-toggle="tab">Kehadiran</a></li>
-        <li class="active"><a href="#self-assessment" data-toggle="tab">Self Assessment</a></li>
+        <li class="active"><a href="#kehadiran" data-toggle="tab">Kehadiran</a></li>
+        <li><a href="#self-assessment" data-toggle="tab">Self Assessment</a></li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane hidden" id="kehadiran">
+        <div class="tab-pane active" id="kehadiran">
           <div class="row">
             <div class="col-md-12">
               <div class="box box-primary">
@@ -91,29 +91,7 @@
                 <!-- /.box-header -->
                 <div class="box-body">
                   <div class="row">
-                    <div class="col-md-3">
-                      <div>
-                        <h2 class="m-b-xs animate total-attendance">0</h2>
-                        <span class="no-margins">
-                          Total Workforce
-                        </span>
-                        <div class="progress">
-                          <div class="progress-bar" style="width: 100%;"></div>
-                        </div>
-                        <div class="row">
-                          <div class="col-xs-6">
-                            <small>Sudah Lapor</small>
-                            <h4 class="animate last-week-attendance">0</h4>
-                          </div>
-
-                          <div class="col-xs-6">
-                            <small>Belum Lapor</small>
-                            <h4 class="animate today-attendance">0</h4>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                       <div id="chart-attendance" class=" animate" style="height: 160px"></div>
                     </div>
                   </div>
@@ -139,7 +117,7 @@
             </thead>
           </table>
         </div>
-        <div class="tab-pane active" id="self-assessment">
+        <div class="tab-pane" id="self-assessment">
           <div class="row">
             <div class="col-md-12">
               <div class="box box-primary">
@@ -277,8 +255,74 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="add-filter-attendance" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Pencarian</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form-search-attendance" autocomplete="off">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="date">Tanggal</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="input-group">
+                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal">
+                      <span class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="site_id">Distrik</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Pilih Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Pilih Kelompok Workforce">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="attendance_description_id">Keterangan Kehadiran</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="attendance_description_id" class="form-control" data-placeholder="Pilih Keterangan Kehadiran">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button form="form-search-attendance" type="submit" class="btn btn-default" title="Apply"><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
 {{-- Modal Export --}}
-<div class="modal fade" id="export-assessment" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="export-attendance" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -288,7 +332,7 @@
         <h4 class="modal-title">Export</h4>
       </div>
       <div class="modal-body">
-        <form id="form-export" action="{{ route('reportdaily.export') }}" autocomplete="off">
+        <form id="form-export-attendance" action="{{ route('reportattendance.exportattendance') }}" autocomplete="off">
           @csrf
           <div class="row">
             <div class="col-md-12">
@@ -302,6 +346,103 @@
                         <i class="fa fa-calendar"></i>
                       </span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="site_id">Distrik</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Pilih Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Pilih Kelompok Workforce">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="attendance_description_id">Keterangan Kehadiran</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="attendance_description_id" class="form-control" data-placeholder="Pilih Keterangan Kehadiran">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button form="form-export-attendance" type="submit" class="btn btn-default" title="Apply"><i class="fa fa-download"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="export-assessment" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Export</h4>
+      </div>
+      <div class="modal-body">
+        <form id="form-export" action="{{ route('reportattendance.export') }}" autocomplete="off">
+          @csrf
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="date">Tanggal</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="input-group">
+                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal">
+                      <span class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="site_id">Distrik</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="site_id" class="form-control" data-placeholder="Pilih Distrik">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="workforce_group_id">Kelompok Workforce</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="workforce_group_id" class="form-control" data-placeholder="Pilih Kelompok Workforce">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label class="control-label" for="health_meter_id">Kategori Resiko</label>
+                <div class="row">
+                  <div class="col-md-12">
+                    <input type="text" name="health_meter_id" class="form-control" data-placeholder="Pilih Kategori Resiko">
                   </div>
                 </div>
               </div>
@@ -326,6 +467,12 @@
 <script type="text/javascript">
   function filterassessment(){
       $('#add-filter-assessment').modal('show');
+  }
+  function filterattendance() {
+      $('#add-filter-attendance').modal('show');
+  }
+  function exportattendance() {
+      $('#export-attendance').modal('show');
   }
   function exportassessment(){
       $('#export-assessment').modal('show');
@@ -388,11 +535,78 @@
           }
       });
   }
+
+  function chartassessment(){
+      $.ajax({
+          url: "{{route('reportattendance.chartattendance')}}",
+          method: 'GET',
+          dataType: 'json',
+          data:{
+              date:$('#form-search-attendance input[name=date]').val(),
+              site_id:$('#form-search-attendance input[name=site_id]').val(),
+              attendance_description_id:$('#form-search-attendance input[name=attendance_description_id]').val(),
+              workforce_group_id:$('#form-search-attendance input[name=workforce_group_id]').val()
+          },
+          beforeSend:function() {
+              $('#chart-attendance').removeClass('no-after');
+          },
+          success:function(response) {
+              $('#chart-attendance').addClass('no-after');
+              Highcharts.chart('chart-attendance', {
+                  title:{
+                      text:response.title,
+                  },
+                  subtitle:{
+                      text:response.subtitle,
+                  },
+                  chart: {
+                      type: 'area'
+                  },
+                  xAxis: {
+                      categories: response.categories,
+                  },
+                  yAxis: {
+                      min: 0,
+                      title: {
+                        text: false,
+                      }
+                  },
+                  legend: {
+                      enabled:false,
+                  },
+                  tooltip: {
+                      headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                      pointFormat: '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                      footerFormat: '</table>',
+                      shared: true,
+                      useHTML: true
+                  },
+                  plotOptions: {
+                      area: {
+                          marker: {
+                              enabled: false,
+                              symbol: 'circle',
+                              radius: 2,
+                              states: {
+                                  hover: {
+                                      enabled: true
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  colors: ['#CAE3BF'],
+                  credits: false,
+                  series: [{
+                      data: response.series
+                  }]
+              });
+          }
+      });
+  }
   $(function(){
       //date
-      $('.date-picker').daterangepicker({
-        startDate: moment().startOf('month').format('DD/MM/YYYY'),
-      });
+      $('.date-picker').daterangepicker();
       $("input[name=site_id]").select2({
           multiple: true,
           ajax: {
@@ -479,7 +693,97 @@
         },
         allowClear: true,
       });
+      $("input[name=attendance_description_id]").select2({
+        ajax: {
+          url: "{{route('attendancedescription.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30,
+            };
+          },
+          results: function (data,page) {
+            var more = (page * 30) < data.total;
+            var option = [];
+            $.each(data.rows,function(index,item){
+                option.push({
+                  id:item.id,  
+                  text: `${item.description}`
+                });
+            });
+            return {
+                results: option, more: more,
+            };
+          },
+        },
+        allowClear: true,
+      });
       chartassessment();
+      dataTableAttendance = $('#table-kehadiran').DataTable( {
+          stateSave:true,
+          processing: true,
+          serverSide: true,
+          filter:false,
+          info:false,
+          lengthChange:true,
+          responsive: true,
+          order: [[ 1, "desc" ]],
+          ajax: {
+              url: "{{route('reportattendance.attendance')}}",
+              type: "GET",
+              data:function(data){
+                  data.date = $('#form-search-attendance input[name=date]').val();
+                  data.site_id = $('#form-search-attendance input[name=site_id]').val();
+                  data.health_meter_id = $('#form-search-attendance input[name=health_meter_id]').val();
+                  data.attendance_description_id = $('#form-search-attendance input[name=attendance_description_id]').val();
+              }
+          },
+          columnDefs:[
+              {
+                  orderable: false,targets:[0]
+              },
+              { className: "text-right", targets: [0] },
+              { className: "text-center", targets: [0] },
+              { render: function ( type, data, row ) {
+                return row.date ? `${row.date}<br><small><b>${row.day}</b></small>` : ''
+              },targets:[1] },
+              { render: function ( type, data, row ) {
+                return row.workforce_id ? `${row.workforce.name}<br><small><b>${row.workforce.nid}</b></small>` : ''
+              },targets:[2] },
+              { render: function ( type, data, row ) {
+                return row.workforce.site ? `<span class="label label-primary">${row.workforce.site.name}</span>` : ''
+              },targets:[3] },
+              { render: function ( type, data, row ) {
+                return row.workforce.agency ? `<span class="">${row.workforce.agency.name}</span>` : ''
+              },targets:[4] },
+              { render: function ( type, data, row ) {
+                return row.workforce.department ? `<span class="">${row.workforce.department.name}</span>` : ''
+              },targets:[5] },
+              { render: function ( type, data, row ) {
+                return row.workforce.subdepartment ? `<span class="">${row.workforce.subdepartment.name}</span>` : ''
+              },targets:[6] },
+              { render: function ( type, data, row ) {
+                return row.workforce.title ? `<span class="">${row.workforce.title.name}</span>` : ''
+              },targets:[7] },
+              { render: function ( type, data, row ) {
+                return row.description ? `<span class="label label-success">${row.description.description}</span>` : ''
+              },targets:[8] },
+          ],
+          columns: [
+              { data: "no" },
+              { data: "date" },
+              { data: "workforce_id" },
+              { data: "workforce_id" },
+              { data: "workforce_id" },
+              { data: "workforce_id" },
+              { data: "workforce_id" },
+              { data: "workforce_id" },
+              { data: "attendance_description_id" },
+          ]
+      });
       dataTablePersonnel = $('#table-assessment').DataTable( {
           stateSave:true,
           processing: true,
@@ -548,6 +852,12 @@
           chartassessment();
           $('#add-filter-assessment').modal('hide');
       })
+      $('#form-search-attendance').submit(function(e){
+          e.preventDefault();
+          dataTableAttendance.draw();
+          chartassessment();
+          $('#add-filter-attendance').modal('hide');
+      })
 
       $('#form-export').submit(function(e){
           e.preventDefault();
@@ -556,6 +866,52 @@
               type: 'POST',
               dataType: 'JSON',
               data: $("#form-export").serialize(),
+              beforeSend:function(){
+                  $('.overlay').removeClass('hidden');
+              }
+          }).done(function(response){
+              if(response.status){
+                  $('.overlay').addClass('hidden');
+                  $.gritter.add({
+                      title: 'Success!',
+                      text: response.message,
+                      class_name: 'gritter-success',
+                      time: 1000,
+                  });
+                  let download = document.createElement("a");
+            download.href = response.file;
+            document.body.appendChild(download);
+            download.download = response.name;
+            download.click();
+            download.remove();
+              }
+              else{
+                  $.gritter.add({
+                      title: 'Warning!',
+                      text: response.message,
+                      class_name: 'gritter-warning',
+                      time: 1000,
+                  });
+              }
+          }).fail(function(response){
+              var response = response.responseJSON;
+              $('.overlay').addClass('hidden');
+              $.gritter.add({
+                  title: 'Error!',
+                  text: response.message,
+                  class_name: 'gritter-error',
+                  time: 1000,
+              });
+          });
+
+      })
+      $('#form-export-attendance').submit(function(e){
+          e.preventDefault();
+          $.ajax({
+              url: "{{ route('reportattendance.exportattendance') }}",
+              type: 'POST',
+              dataType: 'JSON',
+              data: $("#form-export-attendance").serialize(),
               beforeSend:function(){
                   $('.overlay').removeClass('hidden');
               }

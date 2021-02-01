@@ -524,10 +524,13 @@ Route::group(['prefix' => 'admin'], function () {
 
         // Laporan Kehadiran
         Route::get('/reportattendance/assessment', 'Admin\ReportAttendanceController@assessment')->name('reportattendance.assessment');
+        Route::get('/reportattendance/attendance', 'Admin\ReportAttendanceController@attendance')->name('reportattendance.attendance');
         Route::post('/reportattendance/export', 'Admin\ReportAttendanceController@export')->name('reportattendance.export');
+        Route::post('/reportattendance/exportattendance', 'Admin\ReportAttendanceController@exportattendance')->name('reportattendance.exportattendance');
         Route::get('/reportattendance/totalassessment', 'Admin\ReportAttendanceController@totalassessment')->name('reportattendance.totalassessment');
         Route::get('/reportattendance/lowriskassessment', 'Admin\ReportAttendanceController@lowriskassessment')->name('reportattendance.lowriskassessment');
         Route::get('/reportattendance/highriskassessment', 'Admin\ReportAttendanceController@highriskassessment')->name('reportattendance.highriskassessment');
+        Route::get('/reportattendance/chartattendance', 'Admin\ReportAttendanceController@chartAttendance')->name('reportattendance.chartattendance');
         Route::get('/reportattendance/chartassessment', 'Admin\ReportAttendanceController@chartassessment')->name('reportattendance.chartassessment');
         Route::get('/reportattendance/restore/{id}', 'Admin\ReportAttendanceController@restore')->name('reportattendance.restore');
         Route::get('/reportattendance/delete/{id}', 'Admin\ReportAttendanceController@delete')->name('reportattendance.delete');
