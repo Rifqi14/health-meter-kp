@@ -22,8 +22,8 @@ class ReportLetterController extends Controller
         $query           = $request->search['value'];
         $sort            = $request->columns[$request->order[0]['column']]['data'];
         $dir             = $request->order[0]['dir'];
-        $site_id            = $request->site_id;
-        $cover_letter_type  = strtoupper($request->cover_letter_type);
+        $site_id            = $request->site_id ? explode(',', $request->site_id) : null;
+        $cover_letter_type  = $request->cover_letter_type ? $request->cover_letter_type : null;
         $date               = explode(' - ', $request->date);
         $from               = Carbon::parse($date[0])->toDateString();
         $to                 = Carbon::parse($date[1])->toDateString();
@@ -32,11 +32,11 @@ class ReportLetterController extends Controller
         $query              = CoveringLetter::with(['updatedby.workforce.site', 'workforce', 'patient', 'patientsite'])->whereBetween('letter_date', [$from, $to]);
         if ($site_id) {
             $query->whereHas('updatedby.workforce.site', function($q) use($site_id) {
-                $q->where('id', $site_id);
+                $q->whereIn('id', $site_id);
             });
         }
         if ($cover_letter_type) {
-            $query->whereRaw("upper(type) like '%$cover_letter_type%'");
+            $query->whereIn('type', $cover_letter_type);
         }
         $recordsTotal       = $query->count();
 
@@ -44,11 +44,11 @@ class ReportLetterController extends Controller
         $query              = CoveringLetter::with(['updatedby.workforce.site', 'workforce', 'patient', 'patientsite'])->whereBetween('letter_date', [$from, $to]);
         if ($site_id) {
             $query->whereHas('updatedby.workforce.site', function($q) use($site_id) {
-                $q->where('id', $site_id);
+                $q->whereIn('id', $site_id);
             });
         }
         if ($cover_letter_type) {
-            $query->whereRaw("upper(type) like '%$cover_letter_type%'");
+            $query->whereIn('type', $cover_letter_type);
         }
         $query->offset($start);
         $query->limit($length);
@@ -75,8 +75,8 @@ class ReportLetterController extends Controller
         $query           = $request->search['value'];
         $sort            = $request->columns[$request->order[0]['column']]['data'];
         $dir             = $request->order[0]['dir'];
-        $site_id            = $request->site_id;
-        $cover_letter_type  = strtoupper($request->cover_letter_type);
+        $site_id            = $request->site_id ? explode(',', $request->site_id) : null;
+        $cover_letter_type  = $request->cover_letter_type ? $request->cover_letter_type : null;
         $date               = explode(' - ', $request->date);
         $from               = Carbon::parse($date[0])->toDateString();
         $to                 = Carbon::parse($date[1])->toDateString();
@@ -84,20 +84,20 @@ class ReportLetterController extends Controller
         // Count Data
         $query              = HealthInsurance::with(['lettermaker', 'lettermakersite', 'workforce', 'patient', 'patientsite'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('letter_maker_site_id', $site_id);
+            $query->whereIn('letter_maker_site_id', $site_id);
         }
         if ($cover_letter_type) {
-            $query->whereRaw("upper(cover_letter_type) like '%$cover_letter_type%'");
+            $query->whereIn('cover_letter_type', $cover_letter_type);
         }
         $recordsTotal       = $query->count();
 
         // Select Pagination
         $query              = HealthInsurance::with(['lettermaker', 'lettermakersite', 'workforce', 'patient', 'patientsite'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('letter_maker_site_id', $site_id);
+            $query->whereIn('letter_maker_site_id', $site_id);
         }
         if ($cover_letter_type) {
-            $query->whereRaw("upper(cover_letter_type) like '%$cover_letter_type%'");
+            $query->whereIn('cover_letter_type', $cover_letter_type);
         }
         $query->offset($start);
         $query->limit($length);
@@ -119,8 +119,8 @@ class ReportLetterController extends Controller
 
     public function exportLetter(Request $request)
     {
-        $site_id            = $request->site_id;
-        $cover_letter_type  = strtoupper($request->cover_letter_type);
+        $site_id            = $request->site_id ? explode(',', $request->site_id) : null;
+        $cover_letter_type  = $request->cover_letter_type ? $request->cover_letter_type : null;
         $date               = explode(' - ', $request->date);
         $from               = Carbon::parse($date[0])->toDateString();
         $to                 = Carbon::parse($date[1])->toDateString();
@@ -128,10 +128,12 @@ class ReportLetterController extends Controller
         $query              = CoveringLetter::with(['updatedby.workforce.site', 'workforce', 'patient', 'patientsite'])->whereBetween('letter_date', [$from, $to]);
         if ($site_id) {
             $query->whereHas('updatedby.workforce.site', function($q) use($site_id) {
-                $q->where('id', $site_id);
+                $q->whereIn('id', $site_id);
             });
         }
-        $query->whereRaw("upper(type) like '%$cover_letter_type%'");
+        if ($cover_letter_type) {
+            $query->whereIn('type', $cover_letter_type);
+        }
         $query->orderBy('letter_date', 'desc');
         $exportCoverLetters = $query->get();
 
@@ -195,17 +197,19 @@ class ReportLetterController extends Controller
 
     public function exportInsurance(Request $request)
     {
-        $site_id            = $request->site_id;
-        $cover_letter_type  = strtoupper($request->cover_letter_type);
+        $site_id            = $request->site_id ? explode(',', $request->site_id) : null;
+        $cover_letter_type  = $request->cover_letter_type ? $request->cover_letter_type : null;
         $date               = explode(' - ', $request->date);
         $from               = Carbon::parse($date[0])->toDateString();
         $to                 = Carbon::parse($date[1])->toDateString();
 
         $query              = HealthInsurance::with(['lettermaker', 'lettermakersite', 'workforce', 'patient', 'patientsite'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('letter_maker_site_id', $site_id);
+            $query->whereIn('letter_maker_site_id', $site_id);
         }
-        $query->whereRaw("upper(cover_letter_type) like '%$cover_letter_type%'");
+        if ($cover_letter_type) {
+            $query->whereIn('cover_letter_type', $cover_letter_type);
+        }
         $query->orderBy('date', 'desc');
         $exportCoverLetters = $query->get();
 

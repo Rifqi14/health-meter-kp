@@ -310,8 +310,6 @@
               name:term,
               page:page,
               limit:30,
-              data_manager:{{$accesssite}},
-              site_id : {{$siteinfo->id}}
               };
           },
           results: function (data,page) {
@@ -329,6 +327,7 @@
           },
           },
           allowClear: true,
+          multiple: true,
       });
 
       $( "input[name=workforce_group_id]" ).select2({
@@ -358,11 +357,12 @@
             },
           },
           allowClear: true,
+          multiple: true
       });
 
       $( "input[name=health_meter_id]" ).select2({
           ajax: {
-          url: "{{route('reportweekly.selectcategory')}}",
+          url: "{{route('healthmeter.select')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
@@ -370,8 +370,6 @@
               name:term,
               page:page,
               limit:30,
-              site_id: $("#form-search").find('input[name=site_id]').val(),
-              workforce_group_id: $("#form-search").find('input[name=workforce_group_id]').val(),
               };
           },
           results: function (data,page) {

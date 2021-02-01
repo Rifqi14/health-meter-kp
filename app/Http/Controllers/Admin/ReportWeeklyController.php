@@ -66,22 +66,34 @@ class ReportWeeklyController extends Controller
         $query = $request->search['value'];
         $sort = $request->columns[$request->order[0]['column']]['data'];
         $dir = $request->order[0]['dir'];
-        $site_id = $request->site_id ? $request->site_id : -1;
+        $site_id = $request->site_id ? explode(',', $request->site_id) : null;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
-        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? explode(',', $request->workforce_group_id) : null;
         
         // Count data
         $query = Workforce::select(
                                 'workforces.*',
-                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id'') as total")
-                            )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+                                DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
+                            )->with(['department', 'title']);
+        if ($site_id) {
+            $query->whereIn('site_id', $site_id);
+        }
+        if ($workforce_group_id) {
+            $query->whereIn('workforce_group_id', $workforce_group_id);
+        }
         $recordsTotal = $query->count();
 
         // Select pagination
         $query = Workforce::select(
                                 'workforces.*',
                                 DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
-                            )->with(['department', 'title'])->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+                            )->with(['department', 'title']);
+        if ($site_id) {
+            $query->whereIn('site_id', $site_id);
+        }
+        if ($workforce_group_id) {
+            $query->whereIn('workforce_group_id', $workforce_group_id);
+        }
         $query->offset($start);
         $query->limit($length);
         $query->orderBy($sort, $dir);
@@ -141,14 +153,19 @@ class ReportWeeklyController extends Controller
     {
         $start_date = date('Y-m-d', strtotime('-7 days'));
         $finish_date = date('Y-m-d');
-        $site_id = $request->site_id ? $request->site_id : -1;
+        $site_id = $request->site_id ? explode(',', $request->site_id) : null;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
-        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? explode(',', $request->workforce_group_id) : null;
         $query = Workforce::select(
             'workforces.name',
             DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
         );
-        $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+        if ($site_id) {
+            $query->whereIn('site_id', $site_id);
+        }
+        if ($workforce_group_id) {
+            $query->whereIn('workforce_group_id', $workforce_group_id);
+        }
         $query->orderBy('total', 'desc');
         $query->limit(10);
         $category = $query->get();
@@ -174,9 +191,9 @@ class ReportWeeklyController extends Controller
     {
         $start_date = date('Y-m-d', strtotime('-7 days'));
         $finish_date = date('Y-m-d');
-        $site_id = $request->site_id ? $request->site_id : -1;
+        $site_id = $request->site_id ? explode(',', $request->site_id) : null;
         $health_meter_id = $request->health_meter_id ? $request->health_meter_id : -1;
-        $workforce_group_id = $request->workforce_group_id ? $request->workforce_group_id : -1;
+        $workforce_group_id = $request->workforce_group_id ? explode(',', $request->workforce_group_id) : null;
         $category_title = HealthMeter::find($health_meter_id);
         $from = Carbon::parse($request->date)->subWeek();
         $object 	= new \PHPExcel();
@@ -188,7 +205,12 @@ class ReportWeeklyController extends Controller
             'workforces.*',
             DB::raw("(SELECT count(ar.id) FROM assessment_results ar WHERE workforce_id = workforces.id and ar.date >= '$start_date' and ar.date <= '$finish_date' and ar.health_meter_id = '$health_meter_id') as total")
         )->with(['department', 'title']);
-        $query->where('site_id', $site_id)->where('workforce_group_id', $workforce_group_id);
+        if ($site_id) {
+            $query->whereIn('site_id', $site_id);
+        }
+        if ($workforce_group_id) {
+            $query->whereIn('workforce_group_id', $workforce_group_id);
+        }
         $query->orderBy('total', 'desc');
         $category = $query->get();
 

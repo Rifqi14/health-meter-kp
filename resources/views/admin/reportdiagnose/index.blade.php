@@ -257,6 +257,7 @@
         },
       },
       allowClear: true,
+      multiple: true,
     });
     $("input[name=examination_type_id]").select2({
       ajax: {
@@ -285,6 +286,7 @@
         },
       },
       allowClear: true,
+      multiple: true,
     });
     $(".select2").select2({
       allowClear: true,

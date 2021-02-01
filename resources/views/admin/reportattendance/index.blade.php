@@ -229,7 +229,7 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div class="input-group">
-                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
+                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal">
                       <span class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </span>
@@ -297,7 +297,7 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div class="input-group">
-                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal" value="{{ date('Y-m-d')}}">
+                      <input type="text" class="form-control date-picker" name="date" placeholder="Tanggal">
                       <span class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                       </span>
@@ -390,35 +390,35 @@
   }
   $(function(){
       //date
-      $('.date-picker').datepicker({
-          autoclose: true,
-          format: 'yyyy-mm-dd'
-      })
+      $('.date-picker').daterangepicker({
+        startDate: moment().startOf('month').format('DD/MM/YYYY'),
+      });
       $("input[name=site_id]").select2({
+          multiple: true,
           ajax: {
-          url: "{{route('site.select')}}",
-          type:'GET',
-          dataType: 'json',
-          data: function (term,page) {
-              return {
-              name:term,
-              page:page,
-              limit:30,
-              };
-          },
-          results: function (data,page) {
-              var more = (page * 30) < data.total;
-              var option = [];
-              $.each(data.rows,function(index,item){
-              option.push({
-                  id:item.id,
-                  text: item.name
-              });
-              });
-              return {
-              results: option, more: more,
-              };
-          },
+            url: "{{route('site.select')}}",
+            type:'GET',
+            dataType: 'json',
+            data: function (term,page) {
+                return {
+                name:term,
+                page:page,
+                limit:30,
+                };
+            },
+            results: function (data,page) {
+                var more = (page * 30) < data.total;
+                var option = [];
+                $.each(data.rows,function(index,item){
+                option.push({
+                    id:item.id,
+                    text: item.name
+                });
+                });
+                return {
+                results: option, more: more,
+                };
+            },
           },
           allowClear: true,
       });
@@ -449,10 +449,11 @@
           },
           },
           allowClear: true,
+          multiple: true
       });
       $("input[name=health_meter_id]").select2({
         ajax: {
-          url: "{{route('reportweekly.selectcategory')}}",
+          url: "{{route('healthmeter.select')}}",
           type:'GET',
           dataType: 'json',
           data: function (term,page) {
@@ -460,8 +461,6 @@
               name:term,
               page:page,
               limit:30,
-              site_id : $("#form-search").find('input[name=site_id]').val(),
-              workforce_group_id : $("#form-search").find('input[name=workforce_group_id]').val(),
             };
           },
           results: function (data,page) {

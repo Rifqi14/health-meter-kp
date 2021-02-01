@@ -520,7 +520,7 @@ Route::group(['prefix' => 'admin'], function () {
 
         // Laporan Kehadiran
         Route::get('/reportattendance/assessment', 'Admin\ReportAttendanceController@assessment')->name('reportattendance.assessment');
-        Route::get('/reportattendance/export', 'Admin\ReportAttendanceController@export')->name('reportattendance.export');
+        Route::post('/reportattendance/export', 'Admin\ReportAttendanceController@export')->name('reportattendance.export');
         Route::get('/reportattendance/totalassessment', 'Admin\ReportAttendanceController@totalassessment')->name('reportattendance.totalassessment');
         Route::get('/reportattendance/lowriskassessment', 'Admin\ReportAttendanceController@lowriskassessment')->name('reportattendance.lowriskassessment');
         Route::get('/reportattendance/highriskassessment', 'Admin\ReportAttendanceController@highriskassessment')->name('reportattendance.highriskassessment');

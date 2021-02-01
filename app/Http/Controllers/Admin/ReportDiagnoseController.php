@@ -26,8 +26,8 @@ class ReportDiagnoseController extends Controller
         $query              = $request->search['value'];
         $sort               = $request->columns[$request->order[0]['column']]['data'];
         $dir                = $request->order[0]['dir'];
-        $site_id            = $request->site_id;
-        $examination_type_id= $request->examination_type_id;
+        $site_id            = $request->site_id ? explode(',', $request->site_id) : null;
+        $examination_type_id= $request->examination_type_id ? explode(',', $request->examination_type_id) : null;
         $date               = explode(' - ', $request->date);
         $from               = Carbon::parse($date[0])->toDateString();
         $to                 = Carbon::parse($date[1])->toDateString();
@@ -35,20 +35,20 @@ class ReportDiagnoseController extends Controller
         // Count Data
         $query              = CheckupResult::with(['patient', 'patientsite', 'workforce', 'examinationtype'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('patient_site_id', $site_id);
+            $query->whereIn('patient_site_id', $site_id);
         }
         if ($examination_type_id) {
-            $query->where('examination_type_id', $examination_type_id);
+            $query->whereIn('examination_type_id', $examination_type_id);
         }
         $recordsTotal       = $query->count();
 
         // Select Pagination
         $query              = CheckupResult::with(['patient', 'patientsite', 'workforce', 'examinationtype'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('patient_site_id', $site_id);
+            $query->whereIn('patient_site_id', $site_id);
         }
         if ($examination_type_id) {
-            $query->where('examination_type_id', $examination_type_id);
+            $query->whereIn('examination_type_id', $examination_type_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -70,18 +70,18 @@ class ReportDiagnoseController extends Controller
 
     public function exportDiagnose(Request $request)
     {
-        $site_id                = $request->site_id;
-        $examination_type_id    = $request->examination_type_id;
+        $site_id                = $request->site_id ? explode(',', $request->site_id) : null;
+        $examination_type_id    = $request->examination_type_id ? explode(',', $request->examination_type_id) : null;
         $date                   = explode(' - ', $request->date);
         $from                   = Carbon::parse($date[0])->toDateString();
         $to                     = Carbon::parse($date[1])->toDateString();
 
         $query              = CheckupResult::with(['patient', 'patientsite', 'workforce', 'examinationtype'])->whereBetween('date', [$from, $to]);
         if ($site_id) {
-            $query->where('patient_site_id', $site_id);
+            $query->whereIn('patient_site_id', $site_id);
         }
         if ($examination_type_id) {
-            $query->where('examination_type_id', $examination_type_id);
+            $query->whereIn('examination_type_id', $examination_type_id);
         }
         $query->orderBy('date', 'asc');
         $exportDiagnose = $query->get();

@@ -194,7 +194,7 @@
                 <label for="cover_letter_type" class="control-label">Jenis Surat</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat">
+                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat" multiple>
                       <option value=""></option>
                       @foreach (config('enums.coveringletter_type') as $key => $item)
                       <option value="{{ $item }}">{{ $item }}</option>
@@ -256,7 +256,7 @@
                 <label for="cover_letter_type" class="control-label">Jenis Surat</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat">
+                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat" multiple>
                       @foreach (config('enums.coveringletter_type') as $key => $item)
                       <option value="{{ $key }}">{{ $item }}</option>
                       @endforeach
@@ -316,10 +316,9 @@
                 <label for="cover_letter_type" class="control-label">Jenis Surat</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat">
-                      <option value=""></option>
+                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat" multiple>
                       @foreach (config('enums.authority') as $key => $item)
-                      <option value="{{ $item }}">{{ $item }}</option>
+                      <option value="{{ $key }}">{{ $item }}</option>
                       @endforeach
                     </select>
                   </div>
@@ -378,7 +377,7 @@
                 <label for="cover_letter_type" class="control-label">Jenis Surat</label>
                 <div class="row">
                   <div class="col-md-12">
-                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat">
+                    <select name="cover_letter_type" class="form-control select2" data-placeholder="Pilih Jenis Surat" multiple>
                       @foreach (config('enums.authority') as $key => $item)
                       <option value="{{ $key }}">{{ $item }}</option>
                       @endforeach
@@ -468,6 +467,7 @@
         },
       },
       allowClear: true,
+      multiple: true,
     });
     dataTableCoverLetter = $('#table-surat-pengantar').DataTable( {
         stateSave:true,
@@ -546,7 +546,7 @@
             { className: "text-right", targets: [0] },
             { className: "text-center", targets: [0] },
             { render: function ( type, data, row ) {
-              return row.letter_maker_id ? `<span class="label label-primary">${row.lettermaker.name}</span>` : ''
+              return row.lettermakersite ? `<span class="label label-primary">${row.lettermakersite.name}</span>` : ''
             },targets:[2] },
             { render: function ( type, data, row ) {
               return row.workforce_id ? `<span class="text-blue text-bold">${row.workforce.name}</span><br><small><i>${row.workforce.nid}</i></small>` : ''
