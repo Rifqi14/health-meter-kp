@@ -30,14 +30,12 @@
                         <i class="fa fa-refresh"></i>
                     </a>
                     @endif
+                    @if(in_array('export',$actionmenu))
+                    <a href="#" onclick="exportsite()" class="btn btn-danger btn-sm text-white" data-toggle="tooltip" title="Export"><i class="fa fa-download"></i></a>
+                    @endif
                     <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
                         <i class="fa fa-search"></i>
                     </a>
-                     @if(in_array('export',$actionmenu))
-                     <a href="{{route('site.download')}}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Export">
-                        <i class="fa fa-download"></i>
-                    </a>
-                    @endif
                 </div>
                 <!-- /. tools -->
             </div>
@@ -110,46 +108,46 @@
 <script src="{{asset('adminlte/component/dataTables/js/datatables.min.js')}}"></script>
 <script src="{{asset('assets/js/plugins/bootbox/bootbox.min.js')}}"></script>
 <script type="text/javascript">
-function filter(){
+    function filter(){
     $('#add-filter').modal('show');
 }
 function sync(){
-    $.ajax({
-        url: `{{route('site.sync')}}`,
-        dataType: 'json', 
-        beforeSend:function(){
-            $('.overlay').removeClass('hidden');
-        }
-    }).done(function(response){
-        if(response.status){
-            $('.overlay').addClass('hidden');
-            $.gritter.add({
-                title: 'Success!',
-                text: response.message,
-                class_name: 'gritter-success',
-                time: 1000,
-            });
-            dataTable.ajax.reload( null, false );
-        }
-        else{
-            $.gritter.add({
-                title: 'Warning!',
-                text: response.message,
-                class_name: 'gritter-warning',
-                time: 1000,
-            });
-        }
-    }).fail(function(response){
-        var response = response.responseJSON;
-        $('.overlay').addClass('hidden');
-        $.gritter.add({
-            title: 'Error!',
-            text: response.message,
-            class_name: 'gritter-error',
-            time: 1000,
-        });
-    });
-}
+      $.ajax({
+          url: `{{route('site.sync')}}`,
+          dataType: 'json', 
+          beforeSend:function(){
+              $('.overlay').removeClass('hidden');
+          }
+      }).done(function(response){
+          if(response.status){
+              $('.overlay').addClass('hidden');
+              $.gritter.add({
+                  title: 'Success!',
+                  text: response.message,
+                  class_name: 'gritter-success',
+                  time: 1000,
+              });
+              dataTable.ajax.reload( null, false );
+          }
+          else{
+              $.gritter.add({
+                  title: 'Warning!',
+                  text: response.message,
+                  class_name: 'gritter-warning',
+                  time: 1000,
+              });
+          }
+      }).fail(function(response){
+          var response = response.responseJSON;
+          $('.overlay').addClass('hidden');
+          $.gritter.add({
+              title: 'Error!',
+              text: response.message,
+              class_name: 'gritter-error',
+              time: 1000,
+          });
+      });
+  }
 $(function(){
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
@@ -403,6 +401,50 @@ $(function(){
         });
     })
 });
-
+function exportsite() {
+    var data = {_token: "{{ csrf_token() }}"}
+    $.ajax({
+        url: "{{ route('site.export') }}",
+        type: 'POST',
+        dataType: 'JSON',
+        data: data,
+        beforeSend:function(){
+            $('.overlay').removeClass('d-none');
+        }
+    }).done(function(response){
+        if(response.status){
+        $('.overlay').addClass('d-none');
+        $.gritter.add({
+            title: 'Success!',
+            text: response.message,
+            class_name: 'gritter-success',
+            time: 1000,
+        });
+        let download = document.createElement("a");
+        download.href = response.file;
+        document.body.appendChild(download);
+        download.download = response.name;
+        download.click();
+        download.remove();
+        }
+        else{
+        $.gritter.add({
+            title: 'Warning!',
+            text: response.message,
+            class_name: 'gritter-warning',
+            time: 1000,
+        });
+        }
+    }).fail(function(response){
+        var response = response.responseJSON;
+        $('.overlay').addClass('d-none');
+        $.gritter.add({
+            title: 'Error!',
+            text: response.message,
+            class_name: 'gritter-error',
+            time: 1000,
+        });
+    });
+}
 </script>
 @endpush

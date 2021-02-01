@@ -72,6 +72,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('/title/storemass', 'Admin\TitleController@storemass')->name('title.storemass');
         Route::post('/title/assignrole', 'Admin\TitleController@assignrole')->name('title.assignrole');
         Route::delete('/title/deleterole', 'Admin\TitleController@deleterole')->name('title.deleterole');
+        Route::post('/title/export', 'Admin\TitleController@export')->name('title.export');
         Route::resource('/title', 'Admin\TitleController');
         //Route Grade
         Route::get('/grade/read', 'Admin\GradeController@read')->name('grade.read');
@@ -82,6 +83,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/grade/sync', 'Admin\GradeController@sync')->name('grade.sync');
         Route::post('/grade/preview', 'Admin\GradeController@preview')->name('grade.preview');
         Route::post('/grade/storemass', 'Admin\GradeController@storemass')->name('grade.storemass');
+        Route::post('/grade/export', 'Admin\GradeController@export')->name('grade.export');
         Route::resource('/grade', 'Admin\GradeController');
         //Route Employee
         Route::get('/employee/read', 'Admin\EmployeeController@read')->name('employee.read');
@@ -125,7 +127,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/site/delete/{id}', 'Admin\SiteController@delete')->name('site.delete');
         Route::post('/site/preview', 'Admin\SiteController@preview')->name('site.preview');
         Route::post('/site/storemass', 'Admin\SiteController@storemass')->name('site.storemass');
-        Route::post('/site/download', 'Admin\SiteController@download')->name('site.download');
+        Route::post('/site/export', 'Admin\SiteController@export')->name('site.export');
         Route::resource('/site', 'Admin\SiteController');
         //Route User Site
         Route::get('/siteuser/read', 'Admin\SiteUserController@read')->name('siteuser.read');
@@ -452,6 +454,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/guarantor/sync', 'Admin\GuarantorController@sync')->name('guarantor.sync');
         Route::get('/guarantor/restore/{id}', 'Admin\GuarantorController@restore')->name('guarantor.restore');
         Route::get('/guarantor/delete/{id}', 'Admin\GuarantorController@delete')->name('guarantor.delete');
+        Route::post('/guarantor/export', 'Admin\GuarantorController@export')->name('guarantor.export');
         Route::resource('/guarantor', 'Admin\GuarantorController');
 
         // Agency
@@ -484,6 +487,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/subdepartment/delete/{id}', 'Admin\SubDepartmentController@delete')->name('subdepartment.delete');
         Route::post('/subdepartment/preview', 'Admin\SubDepartmentController@preview')->name('subdepartment.preview');
         Route::post('/subdepartment/storemass', 'Admin\SubDepartmentController@storemass')->name('subdepartment.storemass');
+        Route::post('/subdepartment/export', 'Admin\SubDepartmentController@export')->name('subdepartment.export');
         Route::resource('/subdepartment', 'Admin\SubDepartmentController');
 
         // Workforce

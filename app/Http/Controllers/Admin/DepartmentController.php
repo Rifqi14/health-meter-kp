@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Site;
 use App\Models\Department;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
@@ -27,10 +27,7 @@ class DepartmentController extends Controller
     {
         return view('admin.department.index');
     }
-    public function export()
-    {
-        echo('aaaaa');
-    }
+    
     public function read(Request $request)
     {
         $start = $request->start;
@@ -399,21 +396,21 @@ class DepartmentController extends Controller
         foreach($departments as $department){
             $cek = Department::whereRaw("upper(code) = '$department->code'")->withTrashed()->where('site_id',$department->site_id)->first();
             if(!$cek){
-                $insert = Department::create([
+                $department = Department::create([
                     'code' 	        => strtoupper($department->code),
                     'name'          => $department->name,
                     'site_id'       => $department->site_id,
                     'updated_by'    => Auth::id()
                 ]);
-                if (!$insert) {
+                if (!$department) {
                     DB::rollback();
                     return response()->json([
                         'status' => false,
-                        'message'     => $insert
+                        'message'     => $department
                     ], 400);
                 }
-                $insert->deleted_at = $department->status?null:date('Y-m-d H:i:s');
-                $insert->save();
+                $department->deleted_at = $department->status?null:date('Y-m-d H:i:s');
+                $department->save();
             }
             else{
                 $cek->code      = strtoupper($department->code);
@@ -437,70 +434,57 @@ class DepartmentController extends Controller
         	'results' 	=> route('department.index'),
         ], 200);
     }
-    public function sync(Request $request)
+    public function export()
     {
-        DB::beginTransaction();
-        $host = 'https://webcontent.ptpjb.com/api/data/hr/health_meter/divbid/?apikey=539581c464b44701a297a04a782ce4a9';
-        $curl = curl_init($host);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($curl);
-        switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
-            case 200 :
-                $response = json_decode($response);
-                if(isset($response->returned_object) && count($response->returned_object) > 0){
-                    Department::query()->update([
-                        'deleted_at'=>date('Y-m-d H:i:s')
-                    ]);
-                    foreach($response->returned_object as $department){
-                        $cek = Department::whereRaw("upper(code) = '$department->KODE'")->withTrashed()->get();
-                        if(!$cek->count()){
-                            $insert = Department::create([
-                                'code' 	        => strtoupper($department->KODE),
-                                'name'          => $department->DESKRIPSI,
-                                'updated_by'    => Auth::id()
-                            ]);
-                            if (!$insert) {
-                                DB::rollback();
-                                return response()->json([
-                                    'status'    => false,
-                                    'message'   => $insert
-                                ], 400);
-                            }
-                            $insert->deleted_at = $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
-                            $insert->save();
-                        }
-                        else{
-                            Department::whereRaw("upper(code) = '$department->KODE'")->update([
-                                'name'          => $department->DESKRIPSI,
-                                'deleted_at'    => $department->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
-                                'update_by'     => Auth::id()
-                            ]);
-                        }  
-                    }
-                    curl_close($curl);
-                    DB::commit();
-                    return response()->json([
-                        'status' 	=> true,
-                        'message'   => 'Success syncronize data department'
-                    ], 200);
-                }
-                else{
-                    curl_close($curl);
-                    DB::commit();
-                    return response()->json([
-                        'status' 	=> false,
-                        'message'   => 'Row data not found'
-                    ], 200);
-                }
-                
-                break;
-            default:
-                curl_close($curl);
-                DB::commit();
-                return response()->json([
-                    'status' 	=> false,
-                    'message'   => 'Error connection'
-                ], 200);
+        // dd('aaaaaaa');
+        $object = new \PHPExcel();
+        $object->getProperties()->setCreator('PJB');
+        $object->setActiveSheetIndex(0);
+        $sheet = $object->getActiveSheet();
+
+        $query = Department::select('departments.*', 'sites.code as site_code');
+        $query->leftJoin('sites','sites.id', '=', 'departments.site_id');
+        $departments = $query->get();
+
+        // Header Columne Excel
+        $sheet->setCellValue('A1', 'Kode');
+        $sheet->setCellValue('B1', 'Nama');
+        $sheet->setCellValue('C1', 'Kode Distrik');
+        $sheet->setCellValue('D1', 'Status');
+
+        $row_number = 2;
+
+        foreach ($departments as $department) {
+
+            $sheet->setCellValue('A' . $row_number, $department->code);
+            $sheet->setCellValue('B' . $row_number, $department->name);
+            $sheet->setCellValue('C' . $row_number, $department->site_code);
+            $sheet->setCellValue('D' . $row_number, $department->deleted_at ? 'N' : 'Y');
+
+            $row_number++;
+        }
+        foreach (range('A', 'D') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $objWriter = \PHPExcel_IOFactory::createWriter($object, 'Excel2007');
+        ob_start();
+        $objWriter->save('php://output');
+        $export = ob_get_contents();
+        ob_end_clean();
+        header('Content-Type: application/json');
+        if ($departments->count() > 0) {
+            return response()->json([
+                'status'     => true,
+                'name'       => 'data-departments-' . date('d-m-Y') . '.xlsx',
+                'message'    => "Sukses Download Data Bidang",
+                'file'       => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($export)
+            ], 200);
+        } else {
+            return response()->json([
+                'status'     => false,
+                'message'    => "Data not found",
+            ], 400);
         }
     }
 }

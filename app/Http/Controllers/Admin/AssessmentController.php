@@ -113,18 +113,6 @@ class AssessmentController extends Controller
         $workforce = Auth::user()->workforce;
         $workforce_group_id = $workforce->workforce_group_id;
         $site_id = $workforce->site_id;
-        // $questions = AssessmentQuestion::with([
-        //   'answer',
-        //   'parent',
-        //   'answercode',
-        //   'site' => function ($q) use ($site_id) {
-        //     $q->where('site_id', $site_id);
-        //   },
-        //   'workforcegroup' => function ($q) use ($workforce_group_id) {
-        //     $q->where('workforce_group_id', $workforce_group_id);
-        //   },
-        // ])->orderBy('order', 'asc')->get();
-        // $assessment = AssessmentResult::where('date', date('Y-m-d'))->where('workforce_id', Auth::id())->first();
         $questions = AssessmentQuestion::select('assessment_questions.*')
                             ->leftJoin('assessment_question_workforce_groups','assessment_question_workforce_groups.assessment_question_id','=','assessment_questions.id')
                             ->leftJoin('assessment_question_sites','assessment_question_sites.assessment_question_id','=','assessment_questions.id')
@@ -208,7 +196,7 @@ class AssessmentController extends Controller
             }
         }
         $questions = $filters;
-        $answers = AssessmentAnswer::all();
+        $answers = AssessmentAnswer::orderBy('order','asc')->get();
         return view('admin.assessment.create', compact('questions','answers','workforce','actions'));
     }
 
@@ -368,7 +356,7 @@ class AssessmentController extends Controller
         }
         $bobot = 0;
         $formula = Formula::first();
-        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        $healthmeters = HealthMeter::get();
         if($formula){
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();
@@ -444,7 +432,7 @@ class AssessmentController extends Controller
         $site_id = $workforce->site_id;
         $bobot = 0;
         $formula = Formula::first();
-        $healthmeters = HealthMeter::where('site_id',$site_id)->where('workforce_group_id',$workforce_group_id)->get();
+        $healthmeters = HealthMeter::get();
         if($formula){
             $calculate = $formula->calculate;
             $assessmentanswers = AssessmentAnswer::all();

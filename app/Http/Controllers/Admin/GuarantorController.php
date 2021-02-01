@@ -521,4 +521,60 @@ class GuarantorController extends Controller
                 ], 200);
         }
     }
+    public function export()
+    {
+        // dd('aaaaaaa');
+        $object = new \PHPExcel();
+        $object->getProperties()->setCreator('PJB');
+        $object->setActiveSheetIndex(0);
+        $sheet = $object->getActiveSheet();
+
+        $query = Guarantor::select('guarantors.*', 'sites.code as site_code', 'titles.name as title_name');
+        $query->leftJoin('sites', 'sites.id', '=', 'guarantors.site_id');
+        $query->leftJoin('titles', 'titles.id', '=', 'guarantors.site_id');
+        $guarantors = $query->get();
+
+        // Header Columne Excel
+        $sheet->setCellValue('A1', 'DISTRIK_KODE');
+        $sheet->setCellValue('B1', 'POSITION');
+        $sheet->setCellValue('C1', 'STATUS Jabatan');
+        $sheet->setCellValue('D1', 'NID');
+        $sheet->setCellValue('E1', 'STATUS AKTIF');
+
+        $row_number = 2;
+
+        foreach ($guarantors as $guarantor) {
+
+            $sheet->setCellValue('A' . $row_number, $guarantor->site_code);
+            $sheet->setCellValue('B' . $row_number, $guarantor->title_name);
+            $sheet->setCellValue('C' . $row_number, '-');
+            $sheet->setCellValue('D' . $row_number, '-');
+            $sheet->setCellValue('E' . $row_number, $guarantor->deleted_at ? 'N' : 'Y');
+
+            $row_number++;
+        }
+        foreach (range('A', 'E') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $objWriter = \PHPExcel_IOFactory::createWriter($object, 'Excel2007');
+        ob_start();
+        $objWriter->save('php://output');
+        $export = ob_get_contents();
+        ob_end_clean();
+        header('Content-Type: application/json');
+        if ($guarantors->count() > 0) {
+            return response()->json([
+                'status'     => true,
+                'name'       => 'data-guarantors-' . date('d-m-Y') . '.xlsx',
+                'message'    => "Sukses Download Data Penanggung Jawab",
+                'file'       => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($export)
+            ], 200);
+        } else {
+            return response()->json([
+                'status'     => false,
+                'message'    => "Data not found",
+            ], 400);
+        }
+    }
 }
