@@ -4,7 +4,10 @@
 @section('stylesheets')
 <link href="{{asset('adminlte/component/dataTables/css/datatables.min.css')}}" rel="stylesheet">
 <style>
-
+.direct-chat-img {
+      object-fit: contain;
+      border:1px #d2d6de solid;
+  }
   .direct-chat-messages {
     height: 400px !important;
   }
@@ -57,6 +60,7 @@
 </style>
 @endsection
 @push('breadcrump')
+<li><a href="{{route('assessment.index')}}">Assessment</a></li>
 <li class="active">Detail Assessment</li>
 @endpush
 @section('content')
@@ -64,7 +68,7 @@
   <div class="col-lg-12">
     <div class="box box-primary direct-chat direct-chat-primary">
       <div class="box-header">
-        <h3 class="box-title">Log Terakhir</h3>
+        <h3 class="box-title">Detail Assessment</h3>
       </div>
       <div class="box-body">
         <div class="direct-chat-messages">

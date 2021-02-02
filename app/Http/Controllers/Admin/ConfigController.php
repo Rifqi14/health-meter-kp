@@ -32,7 +32,7 @@ class ConfigController extends Controller
             'company_email' => 'required|email',
             'company_phone' => 'required',
             'company_address' => 'required',
-            'bot_icon'      => 'required',
+            'bot_icon'      => 'mimes:png',
             'bot_username'  => 'required'
         ]);
 

@@ -13,7 +13,7 @@
       border:1px #d2d6de solid;
   }
   .direct-chat-messages {
-    height: 400px !important;
+    height: 430px !important;
   }
   .direct-chat-text{
     margin-right: 20% !important;
@@ -135,6 +135,42 @@
   });
   function loader(){
     if(start == questions.length){
+      var complete = true;
+      $(".direct-chat-msg").each(function() {
+          if($(this).hasClass('answer')){
+            if($(this).is(':visible')){
+              $('.direct-chat-messages').append(`
+              <div class="direct-chat-msg error" >
+                <div class="direct-chat-info clearfix">
+                  <span class="direct-chat-name pull-left">{{config('configs.bot_username')}}</span>
+                </div>
+                <img class="direct-chat-img" src="{{is_file(config('configs.bot_icon'))?asset(config('configs.bot_icon')):asset('assets/bot.png')}}" alt="{{config('configs.bot_username')}}">
+                <div class="direct-chat-text">
+                  Anda belum menutup semua isian , check kembali isian anda. <br/>
+                  Pilih ya jika sudah melengkapi isian.
+                </div>
+              </div>
+            `);
+            $('.direct-chat-messages').append(`
+              <div class="direct-chat-msg right" id="error_answer">
+                <div class="direct-chat-info clearfix">
+                  <span class="direct-chat-name pull-right">{{$workforce->name}}</span>
+                </div>
+                <img class="direct-chat-img" src="{{is_file('assets/user/'.Auth::guard('admin')->user()->id.'.png')?asset('assets/user/'.Auth::guard('admin')->user()->id.'.png'):asset('adminlte/images/user2-160x160.jpg')}}" alt="{{$workforce->name}}">
+                <div class="direct-chat-text pull-right">
+                  <input type="radio" value="1" onclick="reload(this)">
+                  Ya <br/><input type="radio" value="0" onclick="reload(this)"> Muat Ulang
+                </div>
+              </div>`);
+
+              $(".direct-chat-messages").stop().animate({ scrollTop: $(".direct-chat-messages")[0].scrollHeight}, 1000); 
+              complete = false;
+            }
+          }
+      });
+      if(!complete){
+        return;
+      }
       $.ajax({
           url:'{{route('assessment.check')}}',
           method:'post',
@@ -262,14 +298,8 @@
     switch(questions[start].type){
       case 'Pertanyaan':
             message = questions[start].description;
-            if(actions[questions[start].id]){
-              write(message,questions[start].id);
-              user(1);
-            }
-            else{
-              write(message,questions[start].id);
-              user();
-            }
+            write(message,questions[start].id);
+            user();
             break;
       case 'Informasi' :
             message = questions[start].description_information;
@@ -329,14 +359,8 @@
     switch(question_childs[id].type){
       case 'Pertanyaan':
             message = question_childs[id].description;
-            if(actions[questions[start].id]){
-              write(message,question_childs[id].id);
-              userchild(id,1);
-            }
-            else{
-              write(message,question_childs[id].id);
-              userchild(id);
-            }
+            write(message,question_childs[id].id);
+            userchild(id);
             break;
       case 'Informasi' :
             message = question_childs[id].description_information;
@@ -961,21 +985,24 @@
           if($(this).hasClass('question')){
             var question_id = $(this).attr('id');
             var question_class = $(this).attr('class');
-            record+=`<div id="${question_id}" class="${question_class}">`;
+            var answerdesc_style = $(this).attr('style');
+            record+=`<div id="${question_id}" class="${question_class}" style="${answerdesc_style}">`;
             record+=$(this).html();
             record+=`</div>`;
           }
           if($(this).hasClass('answer')){
             var answer_id = $(this).attr('id');
             var answer_class = $(this).attr('class');
-            record+=`<div id="answer_${answer_id}" class="${answer_class}" style="display:none">`;
+            var answerdesc_style = $(this).attr('style');
+            record+=`<div id="answer_${answer_id}" class="${answer_class}" style="${answerdesc_style}">`;
             record+=$(this).html();
             record+=`</div>`;
           }
           if($(this).hasClass('answerdesc')){
             var answerdesc_id = $(this).attr('id');
             var answerdesc_class = $(this).attr('class');
-            record+=`<div id="${answerdesc_id}" class="${answerdesc_class}">`;
+            var answerdesc_style = $(this).attr('style');
+            record+=`<div id="${answerdesc_id}" class="${answerdesc_class}" style="${answerdesc_style}">`;
             record+=$(this).html();
             record+=`</div>`;
           }

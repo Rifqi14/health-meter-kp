@@ -190,7 +190,9 @@ class AssessmentController extends Controller
                             }
                         }
                     }
-                    
+                    if($question->type == 'Pertanyaan' && count($actions) > 0){
+                        continue;
+                    }
                     $filters[] = $question;
                     break;
             }
