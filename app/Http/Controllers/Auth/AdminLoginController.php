@@ -85,7 +85,7 @@ class AdminLoginController extends Controller
                 switch(curl_getinfo($curl, CURLINFO_HTTP_CODE)){
                     case 200 :
                             $response = json_decode($response);
-                            if(isset($response->valid)){
+                            if(isset($response->valid) && $response->valid == 1 ){
                                 $username = $response->nid;
                                 if($username){
                                     if (Auth::guard("admin")->loginUsingId($user->id)) {
