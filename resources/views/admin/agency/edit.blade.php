@@ -123,44 +123,7 @@
          }
       });
       $("select[name=authentication]").trigger('change');
-      $("#site_id").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      @if($agency->site)
-      $("#site_id").select2('data',{id:{{$agency->site->id}},text:'{{$agency->site->name}}'}).trigger('change');
-      @endif
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
+      
       $("#form").validate({
         errorElement: 'span',
         errorClass: 'help-block',
