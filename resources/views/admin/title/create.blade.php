@@ -46,6 +46,24 @@
                 <input type="text" class="form-control" id="name" name="name" placeholder="Nama" required>
               </div>
             </div>
+            <div class="form-group">
+              <label for="agency_id" class="col-sm-2 control-label">Instansi <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="agency_id" name="agency_id" data-placeholder="Instansi" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Bidang" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="sub_department_id" class="col-sm-2 control-label">Sub Bidang <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <input type="text" class="form-control" id="sub_department_id" name="sub_department_id" data-placeholder="Sub Bidang" required>
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -61,41 +79,146 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
+    $("#department_id").select2({
+      ajax: {
+          url: "{{route('department.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
+          };
+          },
+          results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+              option.push({
+              id:item.id,  
+              text: `${item.name}`
+              });
+          });
+          return {
+              results: option, more: more,
+          };
+          },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#department_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
+    $("#sub_department_id").select2({
+      ajax: {
+          url: "{{route('subdepartment.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
+          };
+          },
+          results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+              option.push({
+              id:item.id,  
+              text: `${item.name}`
+              });
+          });
+          return {
+              results: option, more: more,
+          };
+          },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#sub_department_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
+    $("#agency_id").select2({
+      ajax: {
+          url: "{{route('agency.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30,
+              site_id:$('#site_id').val()==''?-1:$('#site_id').val()
+          };
+          },
+          results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+              option.push({
+              id:item.id,  
+              text: `${item.name}`
+              });
+          });
+          return {
+              results: option, more: more,
+          };
+          },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#agency_id", function () {
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
     $("#site_id").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
-      });
+      ajax: {
+          url: "{{route('site.select')}}",
+          type:'GET',
+          dataType: 'json',
+          data: function (term,page) {
+          return {
+              name:term,
+              page:page,
+              limit:30,
+              data_manager:{{$accesssite}},
+              site_id : {{$siteinfo->id}}
+          };
+          },
+          results: function (data,page) {
+          var more = (page * 30) < data.total;
+          var option = [];
+          $.each(data.rows,function(index,item){
+              option.push({
+              id:item.id,  
+              text: `${item.name}`
+              });
+          });
+          return {
+              results: option, more: more,
+          };
+          },
+      },
+      allowClear: true,
+    });
+    $(document).on("change", "#site_id", function () {
+      $('#department_id').select2('val','');
+      $('#sub_department_id').select2('val','');
+      $('#agency_id').select2('val','');
+      if (!$.isEmptyObject($('#form').validate().submitted)) {
+        $('#form').validate().form();
+      }
+    });
     $("#form").validate({
       errorElement: 'span',
       errorClass: 'help-block',

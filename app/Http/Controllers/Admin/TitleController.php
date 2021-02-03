@@ -225,6 +225,9 @@ class TitleController extends Controller
             'name'      => $request->name,
             'code'      => strtoupper($request->code),
             'shortname' => $request->shortname,
+            'agency_id' => $request->agency_id,
+            'department_id' => $request->department_id,
+            'sub_department_id' => $request->sub_department_id,
             'updated_by'=> Auth::id()
         ]);
         if (!$title) {
@@ -247,7 +250,7 @@ class TitleController extends Controller
      */
     public function show($id)
     {
-        $title = Title::with(['user'])->find($id);
+        $title = Title::with(['user'])->withTrashed()->find($id);
         // dd($title);
         if($title){
             return view('admin.title.detail',compact('title'));
@@ -344,6 +347,9 @@ class TitleController extends Controller
         $title->code = $request->code;
         $title->name = $request->name;
         $title->shortname = $request->shortname;
+        $title->agency_id = $request->agency_id;
+        $title->department_id = $request->department_id;
+        $title->sub_department_id = $request->sub_department_id;
         $title->updated_by = Auth::id();
         $title->save();
 
