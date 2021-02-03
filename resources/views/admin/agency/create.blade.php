@@ -13,10 +13,8 @@
         <h3 class="box-title">Tambah Instansi</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-              class="fa fa-reply"></i></a>
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
@@ -24,12 +22,12 @@
         <form id="form" action="{{route('agency.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
           <div class="box-body">
-            <div class="form-group">
+            {{-- <div class="form-group">
               <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
               </div>
-            </div>
+            </div> --}}
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
@@ -43,8 +41,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="authentication" class="col-sm-2 control-label">Autentikasi <b
-                  class="text-danger">*</b></label>
+              <label for="authentication" class="col-sm-2 control-label">Autentikasi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <select id="type" name="authentication" class="form-control select2" placeholder="Pilih Autentikasi" required>
                   <option value="local">Local</option>
@@ -54,17 +51,38 @@
               </div>
             </div>
             <div class="form-group" style="display: none">
-              <label for="host" class="col-sm-2 control-label">Host <b
-                class="text-danger">*</b></label>
+              <label for="host" class="col-sm-2 control-label">Host <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="host" name="host" placeholder="Host" required>
               </div>
             </div>
             <div class="form-group" style="display: none">
-              <label for="port" class="col-sm-2 control-label">Port <b
-                class="text-danger">*</b></label>
+              <label for="port" class="col-sm-2 control-label">Port <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="port" name="port" placeholder="Port" value="389" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="site" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <table class="table table-bordered table-striped" id="table-site">
+                  <thead>
+                    <th>Nama</th>
+                    <th class="text-center">Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($sites as $site)
+                    <tr>
+                      <td>
+                        <input type="hidden" name="site[]" value="{{ $site->id }}">{{ $site->name }}
+                      </td>
+                      <td class="text-center">
+                        <input type="checkbox" name="site_status[{{ $site->id }}]" checked>
+                      </td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -85,6 +103,10 @@
       $("input[name=port]").inputmask("Regex", { regex: "[0-9]*" });
       $('.select2').select2({
         allowClear:true
+      });
+      $('input[name^=site_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
       });
       $("select[name=authentication]").on('change',function(){
          $('input[name=host]').closest('.form-group').hide();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Agency;
+use App\Models\AgencySite;
 use App\Models\Site;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -126,7 +127,8 @@ class AgencyController extends Controller
      */
     public function create()
     {
-        return view('admin.agency.create');
+        $sites = Site::orderBy('sites.name', 'asc')->get();
+        return view('admin.agency.create', compact('sites'));
     }
 
     /**
@@ -141,7 +143,6 @@ class AgencyController extends Controller
             'code'          => 'required',
             'name'          => 'required',
             'authentication'=> 'required',
-            'site_id'       => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -150,29 +151,42 @@ class AgencyController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-        $existCode = Agency::whereRaw("upper(code) = '$request->code'")->where('site_id', $request->site_id)->first();
-        if ($existCode) {
-            return response()->json([
-                'status'    => false,
-                'message'   => 'The code has already been taken.'
-            ], 400);
-        }
-        $site = Site::find($request->site_id);
+
+        DB::beginTransaction();
         $agency = Agency::create([
-            'code'          => $site->code.strtoupper($request->code),
+            'code'          => strtoupper($request->code),
             'name'          => $request->name,
             'authentication'=> $request->authentication,
             'host'          => $request->host,
             'port'          => $request->port,
             'updated_by'    => Auth::id(),
-            'site_id'       => $request->site_id,
         ]);
         if (!$agency) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' 	=> $agency
             ], 400);
         }
+        if ($request->site) {
+            foreach ($request->site as $key => $value) {
+                if (isset($request->site_status[$value])) {
+                    $site = AgencySite::create([
+                        'agency_id' => $agency->id,
+                        'site_id'   => $value,
+                        'updated_by'=> Auth::id(),
+                    ]);
+                    if (!$site) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status'    => false,
+                            'message'   => $site
+                        ], 400);
+                    }
+                }
+            }
+        }
+        DB::commit();
         return response()->json([
             'status'    => true,
             'results'   => route('agency.index'),
@@ -204,8 +218,12 @@ class AgencyController extends Controller
     public function edit($id)
     {
         $agency = Agency::withTrashed()->find($id);
+        $sites = Site::select('sites.*', 'agency_sites.id as agency_site_id')->leftJoin('agency_sites', function ($join) use ($id) {
+            $join->on('agency_sites.site_id', '=', 'sites.id')
+                 ->where('agency_id', '=', $id);
+        })->orderBy('sites.name', 'asc')->get();
         if ($agency) {
-            return view('admin.agency.edit', compact('agency'));
+            return view('admin.agency.edit', compact('agency', 'sites'));
         } else {
             abort(404);
         }
@@ -247,6 +265,31 @@ class AgencyController extends Controller
                 'status' => false,
                 'message' 	=> $agency
             ], 400);
+        }
+        
+        if ($request->site) {
+            $exception = [];
+            foreach ($request->site as $key => $value) {
+                if (isset($request->site_status[$value])) {
+                    array_push($exception, $value);
+                    $check = AgencySite::where('agency_id', $agency->id)->where('site_id', $value)->first();
+                    if (!$check) {
+                        $agencySite = AgencySite::create([
+                            'agency_id'     => $agency->id,
+                            'site_id'       => $value,
+                            'updated_by'    => Auth::id(),
+                        ]);
+                        if (!$agencySite) {
+                            DB::rollBack();
+                            return response()->json([
+                                'status'    => false,
+                                'message'   => $agencySite
+                            ], 400);
+                        }
+                    }
+                }
+                $agencySite = AgencySite::whereNotIn('site_id', $exception)->where('agency_id', $agency->id)->forceDelete();
+            }
         }
         return response()->json([
         	'status' 	=> true,

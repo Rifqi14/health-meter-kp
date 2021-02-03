@@ -32,7 +32,6 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Distrik</th>
               <th width="200">Nama</th>
               <th width="100">Authentikasi</th>
               <th width="200">Link</th>
@@ -146,7 +145,7 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 6, "asc" ]],
+        order: [[ 5, "asc" ]],
         ajax: {
             url: "{{route('agency.read')}}",
             type: "GET",
@@ -166,19 +165,16 @@
                 orderable: false,targets:[0]
             },
             { className: "text-right", targets: [0] },
-            { className: "text-center", targets: [7,8] },
-            { render:function( data, type, row ) {
-                    return `${row.site.name}`
-            },targets: [1] },
+            { className: "text-center", targets: [6,7] },
             {
                 render:function( data, type, row ) {
                     return `${row.name} <br>
                             <small>${row.code}</small>`
-                },targets: [2]
+                },targets: [1]
             },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [6]
+            },targets: [5]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -187,7 +183,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [7]
+            },targets: [6]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -205,12 +201,11 @@
                             }
                         </ul>
                       </div>`
-            },targets: [8]
+            },targets: [7]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "site_id" },
             { data: "name" },
             { data: "authentication" },
             { data: "host" },

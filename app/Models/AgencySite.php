@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AgencySite extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
 
     public function site()
