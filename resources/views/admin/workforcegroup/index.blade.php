@@ -15,8 +15,7 @@
         <h3 class="box-title">Data Kelompok Workforce</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('workforcegroup.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="Tambah">
+          <a href="{{route('workforcegroup.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -46,8 +45,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -78,8 +76,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>
@@ -125,6 +122,10 @@
             },
             { className: "text-right", targets: [0,3] },
             { className: "text-center", targets: [4,5,6] },
+            { render: function ( data, type, row ) {
+              return `${row.name}<br><b>${row.code ? row.code : ''}</b>`
+            },targets: [1]
+            },
             { render: function ( data, type, row ) {
               if (row.data_manager) {
                 teks = 'Tiap Unit';

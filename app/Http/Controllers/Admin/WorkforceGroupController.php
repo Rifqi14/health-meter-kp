@@ -121,6 +121,7 @@ class WorkforceGroupController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
+            'code'          => 'required|unique:workforce_groups'
         ]);
 
         if ($validator->fails()) {
@@ -129,9 +130,10 @@ class WorkforceGroupController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-
+        
         try {
             $workforce = WorkforceGroup::create([
+                'code'          => strtoupper($request->code),
                 'name'          => $request->name,
                 'data_manager'  => $request->data_manager ? 1 : 0,
                 'updated_by'    => Auth::id(),
@@ -186,6 +188,7 @@ class WorkforceGroupController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
+            'code'          => 'required|unique:workforce_groups,code,'.$id,
         ]);
 
         if ($validator->fails()) {
@@ -197,6 +200,7 @@ class WorkforceGroupController extends Controller
 
         $workforce = WorkforceGroup::withTrashed()->find($id);
         $workforce->name = $request->name;
+        $workforce->code = strtoupper($request->code);
         $workforce->data_manager = $request->data_manager ? 1 : 0;
         $workforce->updated_by = Auth::id();
         $workforce->save();
