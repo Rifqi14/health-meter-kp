@@ -69,12 +69,6 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                <label for="site" class="control-label">Distrik</label>
-                <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
                 <label for="name" class="control-label">Arsip Kelompok</label>
                 <select id="category" name="category" class="form-control select2" placeholder="Pilih Tipe Arsip">
                   <option value="">Non-Arsip</option>
@@ -107,36 +101,6 @@
       dataTable.draw();
       $('#add-filter').modal('hide');
     })
-    $("#site").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-    });
     dataTable = $('.datatable').DataTable( {
         stateSave:true,
         processing: true,
@@ -152,12 +116,8 @@
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
               var category = $('#form-search').find('select[name=category]').val();
-              var site = $('#form-search').find('input[name=site]').val();
               data.name = name;
               data.category = category;
-              data.site = site;
-              data.data_manager = {{$accesssite}};
-              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[

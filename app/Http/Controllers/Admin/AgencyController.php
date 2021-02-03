@@ -41,32 +41,17 @@ class AgencyController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $arsip = $request->category;
-        $site = $request->site;
-        $data_manager = $request->data_manager;
-        $site_id = $request->site_id;
         //Count Data
-        $query = Agency::with(['user', 'site'])->whereRaw("upper(name) like '%$name%'");
+        $query = Agency::with(['user'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
-        }
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Agency::with(['user', 'site'])->whereRaw("upper(name) like '%$name%'");
+        $query = Agency::with(['user'])->whereRaw("upper(name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
-        }
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -96,14 +81,16 @@ class AgencyController extends Controller
         //Count Data
         $query = Agency::whereRaw("upper(name) like '%$name%'");
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->leftJoin('agency_sites','agency_sites.agency_id','=','agencies.id');
+            $query->where('agency_sites.site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
         $query = Agency::whereRaw("upper(name) like '%$name%'");
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->leftJoin('agency_sites','agency_sites.agency_id','=','agencies.id');
+            $query->where('agency_sites.site_id',$site_id);
         }
         $query->offset($start*$length);
         $query->limit($length);
@@ -140,7 +127,7 @@ class AgencyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required',
+            'code'          => 'required|unique:agencies',
             'name'          => 'required',
             'authentication'=> 'required',
         ]);
@@ -203,7 +190,11 @@ class AgencyController extends Controller
     {
         $agency = Agency::withTrashed()->find($id);
         if ($agency) {
-            return view('admin.agency.detail', compact('agency'));
+            $sites = Site::select('sites.*', 'agency_sites.id as agency_site_id')->leftJoin('agency_sites', function ($join) use ($id) {
+                $join->on('agency_sites.site_id', '=', 'sites.id')
+                     ->where('agency_id', '=', $id);
+            })->orderBy('sites.name', 'asc')->get();
+            return view('admin.agency.detail', compact('agency','sites'));
         } else {
             abort(404);
         }
@@ -252,7 +243,7 @@ class AgencyController extends Controller
         }
 
         $agency = Agency::find($id);
-        //$agency->code           = $request->code;
+        $agency->code           = $request->code;
         $agency->name           = $request->name;
         $agency->authentication = $request->authentication;
         $agency->host           = $request->host;
@@ -397,9 +388,7 @@ class AgencyController extends Controller
             $authentication = strtolower($sheet->getCellByColumnAndRow(2, $row)->getValue());
             $host = $sheet->getCellByColumnAndRow(3, $row)->getValue();
             $port = $sheet->getCellByColumnAndRow(4, $row)->getValue();
-            $site_code = strtoupper($sheet->getCellByColumnAndRow(5, $row)->getValue());
-            $status = $sheet->getCellByColumnAndRow(6, $row)->getValue();
-            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+            $status = $sheet->getCellByColumnAndRow(5, $row)->getValue();
             if ($code) {
                 $error = [];
                 if (!$site) {
@@ -412,8 +401,6 @@ class AgencyController extends Controller
                     'autentikasi' => array_key_exists($authentication, $authMethod) ? $authMethod[$authentication] : null,
                     'host'      => $host,
                     'port'      => $port,
-                    'site_name' => $site ? $site->name : null,
-                    'site_id'   => $site ? $site->id : null,
                     'status'    => $status == 'Y'?1:0,
                     'error'     => implode('<br>', $error),
                     'is_import' => count($error) == 0 ? 1 : 0,
@@ -447,7 +434,7 @@ class AgencyController extends Controller
         DB::beginTransaction();
         $agencies = json_decode($request->agency);
         foreach ($agencies as $key => $agency) {
-            $existCode = Agency::whereRaw("upper(code) = '$agency->code'")->where('site_id', $agency->site_id)->first();
+            $existCode = Agency::whereRaw("upper(code) = '$agency->code'")->first();
             if (!$existCode) {
                 $insert = Agency::create([
                     'code'          => strtoupper($agency->code),
@@ -456,7 +443,6 @@ class AgencyController extends Controller
                     'updated_by'    => Auth::id(),
                     'host'          => $agency->host,
                     'port'          => $agency->port,
-                    'site_id'       => $agency->site_id,
                     'deleted_at'    => $agency->status ? null : date('Y-m-d H:i:s'),
                 ]);
                 if (!$insert) {
@@ -473,7 +459,6 @@ class AgencyController extends Controller
                 $existCode->updated_by      = Auth::id();
                 $existCode->host            = $agency->host;
                 $existCode->port            = $agency->port;
-                $existCode->site_id         = $agency->site_id;
                 $existCode->deleted_at      = $agency->status ? null : date('Y-m-d H:i:s');
                 $existCode->save();
                 if (!$existCode) {

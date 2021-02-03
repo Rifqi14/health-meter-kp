@@ -32,7 +32,7 @@
             <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $agency->code }}" required readonly>
+                <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $agency->code }}" required>
               </div>
             </div>
             <div class="form-group">

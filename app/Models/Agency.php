@@ -17,6 +17,6 @@ class Agency extends Model
     }
     public function site()
     {
-        return $this->hasOne('App\Models\Site', 'id', 'site_id');
+        return $this->hasMany('App\Models\AgencySite',  'site_id');
     }
 }

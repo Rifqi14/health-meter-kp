@@ -37,7 +37,6 @@
         <table class="table table-striped table-bordered" style="width:100%" id="table-item">
           <thead>
             <tr>
-              <th width="100">Distrik</th>
               <th width="50">Kode</th>
               <th width="250">Nama</th>
               <th width="50">Autentikasi</th>
@@ -110,7 +109,6 @@ function loadItem(table_item){
     count=0;
     $.each(items, function() {
         table_item.row.add([
-                this.site_name,
                 this.code,
                 this.name,
                 this.autentikasi,
@@ -144,21 +142,21 @@ $(function(){
         lengthChange:true,
         autoWidth:false,
         paging:true,
-        order: [[ 8, "asc" ]],
+        order: [[ 7, "asc" ]],
         columnDefs: [
             {
-                orderable: false,targets:[0,1,2,3,4,5,6,7,8]
+                orderable: false,targets:[0,1,2,3,4,5,6,7]
             },
-            { className: "text-center", targets: [6,8] },
+            { className: "text-center", targets: [5,7] },
             {
                 render:function( data, type, row ) {
                     return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? 'Non-Aktif' : 'Aktif'}</span>`
-                },targets: [6]
+                },targets: [5]
             },
             {
                 render:function( data, type, row ) {
                     return `<span class="label ${data == 0 ? 'bg-red' : 'bg-green'}">${data == 0 ? '<i class="fa fa-times"></i>' : '<i class="fa fa-check"></i>'}</span>`
-                },targets: [8]
+                },targets: [7]
             },
         ],
     });
