@@ -15,9 +15,12 @@
         <h3 class="box-title">Data Instansi</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('agency.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
-            <i class="fa fa-plus"></i>
-          </a>
+          @if (in_array('create', $actionmenu))
+          <a href="{{route('agency.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah"><i class="fa fa-plus"></i></a>
+          @endif
+          @if (in_array('import', $actionmenu))
+          <a href="{{ route('agency.import') }}" class="btn btn-success btn-sm" data-toggle="tooltip" title="Import"><i class="fa fa-upload"></i></a>
+          @endif
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
             <i class="fa fa-search"></i>
           </a>
@@ -47,8 +50,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -68,10 +70,10 @@
             </div>
             <div class="col-md-12">
               <div class="form-group">
-                  <label for="site" class="control-label">Distrik</label>
-                  <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
+                <label for="site" class="control-label">Distrik</label>
+                <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
               </div>
-          </div>
+            </div>
             <div class="col-md-12">
               <div class="form-group">
                 <label for="name" class="control-label">Arsip Kelompok</label>
@@ -85,8 +87,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>

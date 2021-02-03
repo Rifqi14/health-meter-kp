@@ -460,8 +460,11 @@ Route::group(['prefix' => 'admin'], function () {
         // Agency
         Route::get('/agency/read', 'Admin\AgencyController@read')->name('agency.read');
         Route::get('/agency/select', 'Admin\AgencyController@select')->name('agency.select');
+        Route::get('/agency/import', 'Admin\AgencyController@import')->name('agency.import');
         Route::get('/agency/restore/{id}', 'Admin\AgencyController@restore')->name('agency.restore');
         Route::get('/agency/delete/{id}', 'Admin\AgencyController@delete')->name('agency.delete');
+        Route::post('/agency/preview', 'Admin\AgencyController@preview')->name('agency.preview');
+        Route::post('/agency/storemass', 'Admin\AgencyController@storemass')->name('agency.storemass');
         Route::resource('/agency', 'Admin\AgencyController');
 
         // Agency Site

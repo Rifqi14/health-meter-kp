@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Agency;
 use App\Models\Site;
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
+
+use function Ramsey\Uuid\v1;
 
 class AgencyController extends Controller
 {
@@ -134,7 +138,7 @@ class AgencyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required|unique:agencies',
+            'code'          => 'required',
             'name'          => 'required',
             'authentication'=> 'required',
             'site_id'       => 'required',
@@ -144,6 +148,13 @@ class AgencyController extends Controller
             return response()->json([
                 'status'     => false,
                 'message'     => $validator->errors()->first()
+            ], 400);
+        }
+        $existCode = Agency::whereRaw("upper(code) = '$request->code'")->where('site_id', $request->site_id)->first();
+        if ($existCode) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'The code has already been taken.'
             ], 400);
         }
         $site = Site::find($request->site_id);
@@ -297,6 +308,144 @@ class AgencyController extends Controller
         return response()->json([
             'status'    => true,
             'message'   => 'Success delete data'
+        ], 200);
+    }
+
+    public function import(Request $request)
+    {
+        if (in_array('import', $request->actionmenu)) {
+            return view('admin.agency.import');
+        } else {
+            abort(403);
+        }
+    }
+
+    /**
+     * Function to give preview from file to import to database
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function preview(Request $request)
+    {
+        $authMethod = [
+            'ldap'  => 'LDAP',
+            'local' => 'Local',
+            'web'   => 'WEB (API)'
+        ];
+        $validator = Validator::make($request->all(), [
+            'file'      => 'required|mimes:xlsx'
+        ]);
+        $file = $request->file('file');
+        try {
+            $filetype = \PHPExcel_IOFactory::identify($file);
+            $objReader = \PHPExcel_IOFactory::createReader($filetype);
+            $objPHPExcel = $objReader->load($file);
+        } catch (Exception $ex) {
+            die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME).'": '.$ex->getMessage());
+        }
+        $data = [];
+        $no = 1;
+        $sheet = $objPHPExcel->getActiveSheet(0);
+        $highestRow = $sheet->getHighestRow();
+        for ($row=2; $row <= $highestRow; $row++) { 
+            $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
+            $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+            $authentication = strtolower($sheet->getCellByColumnAndRow(2, $row)->getValue());
+            $host = $sheet->getCellByColumnAndRow(3, $row)->getValue();
+            $port = $sheet->getCellByColumnAndRow(4, $row)->getValue();
+            $site_code = strtoupper($sheet->getCellByColumnAndRow(5, $row)->getValue());
+            $status = $sheet->getCellByColumnAndRow(6, $row)->getValue();
+            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+            if ($code) {
+                $error = [];
+                if (!$site) {
+                    array_push($error, 'Distrik tidak ditemukan');
+                }
+                $data[] = array(
+                    'index' => $no,
+                    'code'  => $site ? trim($site->code . $code) : null,
+                    'name'  => $name,
+                    'autentikasi' => array_key_exists($authentication, $authMethod) ? $authMethod[$authentication] : null,
+                    'host'      => $host,
+                    'port'      => $port,
+                    'site_name' => $site ? $site->name : null,
+                    'site_id'   => $site ? $site->id : null,
+                    'status'    => $status == 'Y'?1:0,
+                    'error'     => implode('<br>', $error),
+                    'is_import' => count($error) == 0 ? 1 : 0,
+                );
+            }
+        }
+        return response()->json([
+            'status'    => true,
+            'data'      => $data
+        ], 200);
+    }
+
+    /**
+     * Storemass data from preview to database
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function storeMass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'agency'    => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'    => false,
+                'message'   => $validator->errors()->first()
+            ], 400);
+        }
+        DB::beginTransaction();
+        $agencies = json_decode($request->agency);
+        foreach ($agencies as $key => $agency) {
+            $existCode = Agency::whereRaw("upper(code) = '$agency->code'")->where('site_id', $agency->site_id)->first();
+            if (!$existCode) {
+                $insert = Agency::create([
+                    'code'          => strtoupper($agency->code),
+                    'name'          => $agency->name,
+                    'authentication'=> $agency->autentikasi,
+                    'updated_by'    => Auth::id(),
+                    'host'          => $agency->host,
+                    'port'          => $agency->port,
+                    'site_id'       => $agency->site_id,
+                    'deleted_at'    => $agency->status ? null : date('Y-m-d H:i:s'),
+                ]);
+                if (!$insert) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status'    => false,
+                        'message'   => $insert
+                    ], 400);
+                }
+            } else {
+                $existCode->code    = strtoupper($agency->code);
+                $existCode->name    = $agency->name;
+                $existCode->authentication  = $agency->autentikasi;
+                $existCode->updated_by      = Auth::id();
+                $existCode->host            = $agency->host;
+                $existCode->port            = $agency->port;
+                $existCode->site_id         = $agency->site_id;
+                $existCode->deleted_at      = $agency->status ? null : date('Y-m-d H:i:s');
+                $existCode->save();
+                if (!$existCode) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status'    => false,
+                        'message'   => $existCode
+                    ], 400);
+                }
+            }
+        }
+        DB::commit();
+        return response()->json([
+            'status'    => true,
+            'results'   => route('agency.index'),
         ], 200);
     }
 }
