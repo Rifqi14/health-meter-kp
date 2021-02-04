@@ -36,27 +36,26 @@ return [
     'religion' => [
         'islam' => 'Islam',
         'protestan' => 'Protestan',
-        'katolik'   => 'Katolik',
+        'Katholik'  => 'Katholik',
         'hindu'     => 'Hindu',
         'buddha'    => 'Buddha',
         'konghucu'  => 'Konghucu'
     ],
     'marriage_status' => [
-        'menikah'   => 'Menikah',
-        'belum'     => 'Belum Menikah',
-        'cerai'     => 'Cerai'
+        'bujangan'  => 'BUJANGAN',
+        'duda/janda'=> 'DUDA/JANDA',
+        'kawin'     => 'KAWIN'
     ],
     'last_education' => [
-        'sd'    => 'SD Sederajat',
-        'smp'   => 'SMP Sederajat',
-        'sma'   => 'SMA Sederajat',
-        'smk'   => 'SMK Sederajat',
-        'd1'    => 'Diploma 1 / D1',
-        'd2'    => 'Diploma 2 / D2',
-        'd3'    => 'Diploma 3 / D3',
-        'd4'    => 'Diploma 4 / D4',
-        's1'    => 'Strata 1 / S1',
-        's2'    => 'Strata 2 / S2',
-        's3'    => 'Strata 3 / S3'
+        'sd'    => 'SD/SETARA',
+        'smp'   => 'SLTP/SETARA',
+        'sma'   => 'SLTA/SETARA',
+        'd1'    => 'D1/SETARA',
+        'd2'    => 'D2/SETARA',
+        'd3'    => 'D3/SETARA',
+        'd4'    => 'D4/SETARA',
+        's1'    => 'S1/SETARA',
+        's2'    => 'S2/SETARA',
+        's3'    => 'S3/SETARA'
     ]
 ];

@@ -14,6 +14,7 @@ use App\Models\Title;
 use App\Models\Grade;
 use App\Models\Department;
 use App\Models\Guarantor;
+use App\Models\Region;
 use App\Models\SubDepartment;
 use App\Models\TitleWorkforce;
 use App\Role;
@@ -743,6 +744,10 @@ class WorkforceController extends Controller
                         $title = Title::whereRaw("upper(code) = '$workforce->KODE_JABATAN'")->first();
                         $grade = Grade::whereRaw("upper(code) = '$workforce->KODE_JENJANGJABATAN'")->first();
                         $agency = Agency::whereRaw("upper(code) = '$workforce->ID_INSTANSI'")->first();
+                        $pob = Region::whereRaw("upper(name) = '$workforce->TEMPAT_LAHIR'")->first();
+                        $kota = str_replace("KOTA ", "", $workforce->KAB_KOTA);
+                        $kab = str_replace("KAB. ", "", $workforce->KAB_KOTA);
+                        $region = Region::whereRaw("upper(name) = '$kota' OR upper(name) = '$kab'")->first();
                         $workforcegroup = WorkforceGroup::whereRaw("upper(code) = '$workforce->ID_JENISWORKFORCE'")->first();
                         if($site){
                             $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
@@ -750,14 +755,28 @@ class WorkforceController extends Controller
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
                                 $insert = Workforce::create([
+                                    'code'                  => strtoupper($workforce->EMP_ID),
                                     'nid' 	                => strtoupper($workforce->NID),
                                     'name'                  => $workforce->NAMA,
+                                    'place_of_birth'        => $pob?$pob->id:null,
+                                    'birth_date'            => date('Y-m-d', strtotime($workforce->TANGGAL_LAHIR)),
+                                    'gender'                => strtoupper($workforce->JENIS_KELAMIN) == "PRIA" ? "m" : "f",
+                                    'religion'              => $workforce->AGAMA,
+                                    'marriage_status'       => $workforce->STATUS_PERKAWINAN,
+                                    'last_education'        => $workforce->PENDIDIKAN_TERAKHIR,
+                                    'blood_type'            => $workforce->GOLONGAN_DARAH,
+                                    'rhesus'                => $workforce->RHESUS == "-" ? "Negatif" : "Positif",
+                                    'address'               => $workforce->ALAMAT,
+                                    'region_id'             => $region?$region->id:null,
+                                    'phone'                 => $workforce->NO_HP,
+                                    'id_card_number'        => $workforce->NO_KTP,
+                                    'bpjs_employment_number'=> $workforce->NO_BPJSKETENAGAKERJAAN,
+                                    'bpjs_health_number'    => $workforce->NO_BPJSKESEHATAN,
                                     'site_id'               => $site->id,
                                     'workforce_group_id'    => $workforcegroup?$workforcegroup->id:null,
                                     'agency_id'             => $agency?$agency->id:null,
                                     'department_id'         => $department?$department->id:null,
                                     'sub_department_id'     => $subdepartment?$subdepartment->id:null,
-                                    'title_id'              => $title?$title->id:null,
                                     'title_id'              => $title?$title->id:null,
                                     'start_date'            => date('Y-m-d',strtotime($workforce->POS_STARTDATE)),
                                     'finish_date'           => date('Y-m-d',strtotime($workforce->POS_STOPDATE)),
@@ -792,6 +811,21 @@ class WorkforceController extends Controller
                             else{
                                 $cek->site_id       = $site->id;
                                 $cek->name          = $workforce->NAMA;
+                                $cek->code          = strtoupper($workforce->EMP_ID);
+                                $cek->place_of_birth= $pob?$pob->id:null;
+                                $cek->birth_date    = date('Y-m-d', strtotime($workforce->TANGGAL_LAHIR));
+                                $cek->gender        = strtoupper($workforce->JENIS_KELAMIN) == 'PRIA' ? 'm' : 'f';
+                                $cek->religion      = $workforce->AGAMA;
+                                $cek->marriage_status = $workforce->STATUS_PERKAWINAN;
+                                $cek->last_education= $workforce->PENDIDIKAN_TERAKHIR;
+                                $cek->blood_type    = $workforce->GOLONGAN_DARAH;
+                                $cek->rhesus        = $workforce->RHESUS == "-" ? "Negatif" : "Positif";
+                                $cek->address       = $workforce->ALAMAT;
+                                $cek->region_id     = $region?$region->id:null;
+                                $cek->phone         = $workforce->NO_HP;
+                                $cek->id_card_number= $workforce->NO_KTP;
+                                $cek->bpjs_employment_number = $workforce->NO_BPJSKETENAGAKERJAAN;
+                                $cek->bpjs_health_number = $workforce->NO_BPJSKESEHATAN;
                                 $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
                                 $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
                                 $cek->agency_id = $agency?$agency->id:null;
