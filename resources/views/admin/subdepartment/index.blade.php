@@ -44,7 +44,6 @@
           <thead>
             <tr>
               <th width="10">#</th>
-              <th width="100">Distrik</th>
               <th width="200">Nama</th>
               <th width="150">Terakhir Dirubah</th>
               <th width="150">Dirubah Oleh</th>
@@ -76,12 +75,6 @@
               <div class="form-group">
                 <label class="control-label" for="name">Nama</label>
                 <input type="text" name="name" class="form-control" placeholder="Nama">
-              </div>
-            </div>
-            <div class="col-md-12">
-              <div class="form-group">
-                  <label for="site" class="control-label">Distrik</label>
-                  <input type="text" class="form-control" id="site" name="site" data-placeholder="Distrik">
               </div>
             </div>
             <div class="col-md-12">
@@ -151,36 +144,6 @@
   }
   $(function(){
     $(".select2").select2();
-    $("#site").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-    });
     $('#form-search').submit(function(e){
       e.preventDefault();
       dataTable.draw();
@@ -194,37 +157,30 @@
         info:false,
         lengthChange:true,
         responsive: true,
-        order: [[ 6, "asc" ]],
+        order: [[ 5, "asc" ]],
         ajax: {
             url: "{{route('subdepartment.read')}}",
             type: "GET",
             data:function(data){
               var name = $('#form-search').find('input[name=name]').val();
               var category = $('#form-search').find('select[name=category]').val();
-              var site = $('#form-search').find('input[name=site]').val();
               data.name = name;
               data.category = category;
-              data.site = site;
-              data.data_manager = {{$accesssite}};
-              data.site_id = {{$siteinfo->id}};
             }
         },
         columnDefs:[
             {
-                orderable: false,targets:[0,1,4]
+                orderable: false,targets:[0,3]
             },
-            { className: "text-right", targets: [0,4] },
-            { className: "text-center", targets: [5,6] },
-            { render:function( data, type, row ) {
-              return `${row.site?row.site.name:'-'}`
-            },targets: [1] },
+            { className: "text-right", targets: [0] },
+            { className: "text-center", targets: [4,5] },
             { render: function ( data, type, row ) {
                   return `<p>${row.name + '<br>' + row.code}</p>`
-            },targets: [2]
+            },targets: [1]
             },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
-            },targets: [4]
+            },targets: [3]
             },
             { render: function ( data, type, row ) {
               if (row.deleted_at) {
@@ -233,7 +189,7 @@
                 bg = 'bg-green', teks = 'Aktif';
               }
               return `<span class="label ${bg}">${teks}</span>`
-            },targets: [5]
+            },targets: [4]
             },
             { render: function ( data, type, row ) {
               return `<div class="dropdown">
@@ -251,12 +207,11 @@
                             }
                         </ul>
                       </div>`
-            },targets: [6]
+            },targets: [5]
             }
         ],
         columns: [
             { data: "no" },
-            { data: "site_id" },
             { data: "name" },
             { data: "updated_at" },
             { data: "updated_by" },

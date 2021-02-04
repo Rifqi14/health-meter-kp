@@ -17,6 +17,6 @@ class SubDepartment extends Model
     }
     public function site()
     {
-        return $this->hasOne('App\Models\Site', 'id', 'site_id');
+        return $this->hasMany('App\Models\SubDepartmentSite',  'site_id');
     }
 }

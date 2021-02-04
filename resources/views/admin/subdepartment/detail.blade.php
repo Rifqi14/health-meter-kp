@@ -23,12 +23,6 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Distrik</label>
-              <div class="col-sm-6">
-                <p class="form-control-static">{{$subdepartment->site->name}}</p>
-              </div>
-            </div>
-            <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->code}}</p>
@@ -38,6 +32,31 @@
               <label for="name" class="col-sm-2 control-label">Nama</label>
               <div class="col-sm-6">
                 <p class="form-control-static">{{$subdepartment->name}}</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="site" class="col-sm-2 control-label">Unit</label>
+              <div class="col-sm-6">
+                <table class="table table-bordered table-striped" id="table-site">
+                  <thead>
+                    <th>Nama</th>
+                    <th class="text-center">Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($sites as $site)
+                    @if($site->sub_department_site_id)
+                    <tr>
+                      <td>
+                        <input type="hidden" name="site[]" value="{{ $site->id }}">{{ $site->name }}
+                      </td>
+                      <td class="text-center">
+                        <span class="label label-success"><i class="fa fa-check"></i></span>
+                      </td>
+                    </tr>
+                    @endif
+                    @endforeach
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

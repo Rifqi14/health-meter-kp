@@ -24,12 +24,6 @@
           @method('PUT')
           <div class="box-body">
             <div class="form-group">
-              <label for="site_id" class="col-sm-2 control-label">Distrik <b class="text-danger">*</b></label>
-              <div class="col-sm-6">
-                <input type="text" class="form-control" id="site_id" name="site_id" data-placeholder="Pilih Distrik" required>
-              </div>
-            </div>
-            <div class="form-group">
               <label for="code" class="col-sm-2 control-label">Kode <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="code" name="code" placeholder="Kode" value="{{ $subdepartment->code }}" required>
@@ -39,6 +33,31 @@
               <label for="name" class="col-sm-2 control-label">Nama <b class="text-danger">*</b></label>
               <div class="col-sm-6">
                 <input type="text" class="form-control" id="name" name="name" placeholder="Nama" value="{{ $subdepartment->name }}" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="site" class="col-sm-2 control-label">Unit <b class="text-danger">*</b></label>
+              <div class="col-sm-6">
+                <table class="table table-bordered table-striped" id="table-site">
+                  <thead>
+                    <th>Nama</th>
+                    <th class="text-center">Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($sites as $site)
+                    <tr>
+                      <td>
+                        <input type="hidden" name="site[]" value="{{ $site->id }}">{{ $site->name }}
+                      </td>
+                      <td class="text-center">
+                        <input type="checkbox" name="site_status[{{ $site->id }}]" @if ($site->sub_department_site_id)
+                        checked
+                        @endif>
+                      </td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -56,43 +75,9 @@
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script>
   $(document).ready(function(){
-    $("#site_id").select2({
-        ajax: {
-            url: "{{route('site.select')}}",
-            type:'GET',
-            dataType: 'json',
-            data: function (term,page) {
-            return {
-                name:term,
-                page:page,
-                limit:30,
-                data_manager:{{$accesssite}},
-                site_id : {{$siteinfo->id}}
-            };
-            },
-            results: function (data,page) {
-            var more = (page * 30) < data.total;
-            var option = [];
-            $.each(data.rows,function(index,item){
-                option.push({
-                id:item.id,  
-                text: `${item.name}`
-                });
-            });
-            return {
-                results: option, more: more,
-            };
-            },
-        },
-        allowClear: true,
-      });
-      @if($subdepartment->site_id)
-      $("#site_id").select2('data',{id:{{$subdepartment->site->id}},text:'{{$subdepartment->site->name}}'}).trigger('change');
-      @endif
-      $(document).on("change", "#site_id", function () {
-        if (!$.isEmptyObject($('#form').validate().submitted)) {
-          $('#form').validate().form();
-        }
+    $('input[name^=site_status]').iCheck({
+          checkboxClass: 'icheckbox_square-green',
+          radioClass: 'iradio_square-green',
       });
       $("#form").validate({
         errorElement: 'span',
