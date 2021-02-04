@@ -468,7 +468,7 @@ class SubDepartmentController extends Controller
                             SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->update([
                                 'name'          => $subdepartment->DESKRIPSI,
                                 'deleted_at'    => $subdepartment->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
-                                'update_by'     => Auth::id()
+                                'updated_by'     => Auth::id()
                             ]);
                         }  
                     }
