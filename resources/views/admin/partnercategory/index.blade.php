@@ -15,8 +15,7 @@
         <h3 class="box-title">Data Kategori Faskes</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('partnercategory.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="Tambah">
+          <a href="{{route('partnercategory.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -45,8 +44,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -60,8 +58,8 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="name">Nama</label>
-                <input type="text" name="name" class="form-control" placeholder="Nama">
+                <label class="control-label" for="name">Kategori</label>
+                <input type="text" name="name" class="form-control" placeholder="Kategori">
               </div>
             </div>
             <div class="col-md-12">
@@ -77,8 +75,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>
@@ -116,7 +113,7 @@
         { className: "text-right", targets: [0] },
         { className: "text-center", targets: [4,5] },
         { render: function (data, type, row) {
-          return `<span class="label bg-blue">${row.user.name}</span>`
+          return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
         }, targets: [3]},
         { render:function( data, type, row ) {
                     return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`
@@ -167,7 +164,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengarsipkan Department?',
+          title:'Mengarsipkan Kategori Faskes?',
           message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
           callback: function(result) {
             if(result) {

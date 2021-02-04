@@ -44,6 +44,8 @@ class FormulaController extends Controller
         $query->whereRaw("upper(formulas.name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
+        } else {
+            $query->withTrashed();
         }
         $recordsTotal = $query->count();
 
@@ -52,6 +54,8 @@ class FormulaController extends Controller
         $query->whereRaw("upper(formulas.name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
+        } else {
+            $query->withTrashed();
         }
         $query->offset($start);
         $query->limit($length);

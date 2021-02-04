@@ -3,47 +3,50 @@
 @section('stylesheets')
 <link href="{{asset('adminlte/component/nestable/nestable.min.css')}}" rel="stylesheet">
 <style type="text/css">
-.overlay-wrapper{
-    position:relative;
-}
-.dd-handle {
-    display: block;
-    height: 40px;
-    padding: 8px 10px;
-    text-decoration: none;
-    font-weight: 500;
-    border: 1px solid 
-    #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-}
-.dd-handle span{
-    font-weight: 500;
-}
-.dd-item > button {
-    margin:10px 0;
-}
-.item_actions{
-    position: absolute;
-    top: 8px;
-    right: 10px;
-}
+    .overlay-wrapper {
+        position: relative;
+    }
+
+    .dd-handle {
+        display: block;
+        height: 40px;
+        padding: 8px 10px;
+        text-decoration: none;
+        font-weight: 500;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    }
+
+    .dd-handle span {
+        font-weight: 500;
+    }
+
+    .dd-item>button {
+        margin: 10px 0;
+    }
+
+    .item_actions {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+    }
 </style>
 @endsection
 @push('breadcrump')
-    <li class="active">Modul</li>
+<li class="active">Modul</li>
 @endpush
 @section('content')
 <div class="row">
     <div class="col-lg-12">
         <div class="box box-primary" id="box-menu">
             <div class="box-header">
-              <h3 class="box-title">Data Modul</h3>
-              <div class="pull-right box-tools">
-                <button class="btn btn-sm btn-primary create" title="Tambah"><i class="fa fa-plus"></i></button>
-                <button class="btn btn-sm btn-warning updateorder" title="Tambah"><i class="fa fa-save"></i></button>
-              </div>
+                <h3 class="box-title">Data Modul</h3>
+                <div class="pull-right box-tools">
+                    <button class="btn btn-sm btn-primary create" title="Tambah"><i class="fa fa-plus"></i></button>
+                    <button class="btn btn-sm btn-warning updateorder" title="Simpan"><i class="fa fa-save"></i></button>
+                </div>
             </div>
             <div class="box-body">
                 <div class="dd">
@@ -57,53 +60,53 @@
     </div>
 </div>
 <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content overlay-wrapper">
-			<div class="modal-header">
-			    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <div class="modal-dialog">
+        <div class="modal-content overlay-wrapper">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-				<h4 class="modal-title">Tambah Modul</h4>
-			</div>
-			<div class="modal-body">
-                <form id="form" method="post" autocomplete="off"/>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-xs-12 control-label" for="menu_name">Name</label>
-                        <div class="col-sm-9 controls">
-                                <input type="text" class="form-control" id="menu_name" name="menu_name" placeholder="Name" value="" required/>					
-                        </div>
+                <h4 class="modal-title">Tambah Modul</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form" method="post" autocomplete="off" />
+                <div class="form-group row">
+                    <label class="col-md-3 col-xs-12 control-label" for="menu_name">Name</label>
+                    <div class="col-sm-9 controls">
+                        <input type="text" class="form-control" id="menu_name" name="menu_name" placeholder="Name" value="" required />
                     </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-xs-12 control-label" for="menu_route">Route</label>
-                        <div class="col-sm-9 controls">
-                                <input type="text" class="form-control" id="menu_route" name="menu_route" value="" placeholder="Route" />					
-                        </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3 col-xs-12 control-label" for="menu_route">Route</label>
+                    <div class="col-sm-9 controls">
+                        <input type="text" class="form-control" id="menu_route" name="menu_route" value="" placeholder="Route" />
                     </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-xs-12 control-label" for="menu_icon">Icon</label>
-                        <div class="col-sm-9 controls">
-                                <input type="text" class="form-control" id="menu_icon" name="menu_icon" value="" placeholder="Icon"/>					
-                        </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3 col-xs-12 control-label" for="menu_icon">Icon</label>
+                    <div class="col-sm-9 controls">
+                        <input type="text" class="form-control" id="menu_icon" name="menu_icon" value="" placeholder="Icon" />
                     </div>
-                    {{ csrf_field() }}
-                    <input type="hidden" name="_method"/>
+                </div>
+                {{ csrf_field() }}
+                <input type="hidden" name="_method" />
                 </form>
-			</div>
-			<div class="modal-footer">
-				<button type="submit" form="form" class="btn btn-danger btn-sm" ><i class="fa fa-save"></i></button>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="form" class="btn btn-danger btn-sm"><i class="fa fa-save"></i></button>
             </div>
             <div class="overlay hidden">
                 <i class="fa fa-refresh fa-spin"></i>
             </div>
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
 @endsection
 @push('scripts')
 <script src="{{asset('adminlte/component/nestable/jquery.nestable.js')}}"></script>
 <script src="{{asset('adminlte/component/validate/jquery.validate.min.js')}}"></script>
 <script type="text/javascript">
-$(function(){
+    $(function(){
     $('.dd').nestable({
         maxDepth:2
     }).nestable('collapseAll');

@@ -16,16 +16,13 @@
         <h3 class="box-title">Tambah Pertanyaan Assessment</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i
-              class="fa fa-save"></i></button>
-          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i
-              class="fa fa-reply"></i></a>
+          <button form="form" type="submit" class="btn btn-sm btn-primary" title="Simpan"><i class="fa fa-save"></i></button>
+          <a href="{{ url()->previous() }}" class="btn btn-sm btn-default" title="Kembali"><i class="fa fa-reply"></i></a>
         </div>
         <!-- /. tools -->
       </div>
       <div class="box-body">
-        <form id="form" action="{{route('assessmentquestion.store')}}" class="form-horizontal" method="post"
-          autocomplete="off">
+        <form id="form" action="{{route('assessmentquestion.store')}}" class="form-horizontal" method="post" autocomplete="off">
           {{ csrf_field() }}
           <div class="box-body">
             <div class="form-group">
@@ -37,22 +34,19 @@
             <div class="form-group">
               <label for="question_parent_code" class="col-sm-2 control-label">Parent Pertanyaan</label>
               <div class="col-sm-6" style="padding-top: 5px">
-                <input type="text" class="form-control" id="question_parent_code" placeholder="Parent Pertanyaan"
-                  name="question_parent_code">
+                <input type="text" class="form-control" id="question_parent_code" placeholder="Parent Pertanyaan" name="question_parent_code">
               </div>
             </div>
             <div class="form-group">
               <label for="answer_parent_code" class="col-sm-2 control-label">Parent Opsi Jawaban</label>
               <div class="col-sm-6" style="padding-top: 5px">
-                <input type="text" class="form-control" id="answer_parent_code" placeholder="Parent Opsi Jawaban"
-                  name="answer_parent_code">
+                <input type="text" class="form-control" id="answer_parent_code" placeholder="Parent Opsi Jawaban" name="answer_parent_code">
               </div>
             </div>
             <div class="form-group">
               <label for="type" class="col-sm-2 control-label">Jenis Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <select id="type" name="type" class="form-control select2" placeholder="Pilih Type"
-                  required>
+                <select id="type" name="type" class="form-control select2" placeholder="Pilih Type" required>
                   <option value=""></option>
                   <option value="Informasi">Informasi</option>
                   <option value="Pertanyaan">Pertanyaan</option>
@@ -63,23 +57,20 @@
             <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Pertanyaan <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Pertanyaan"
-                  name="description" required></textarea>
+                <textarea class="form-control" style="resize: vertical" id="description" placeholder="Pertanyaan" name="description" required></textarea>
               </div>
             </div>
             <div class="form-group">
               <label for="description_information" class="col-sm-2 control-label">Informasi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Informasi"
-                  name="description_information" required></textarea>
-                  <p class="text-danger">Tambahkan tag berikut <b>[question] , [answer] , [update]</b>. Hanya untuk tipe Informasi Dan Pertanyaan</p>
+                <textarea class="form-control" style="resize: vertical" id="description_information" placeholder="Informasi" name="description_information" required></textarea>
+                <p class="text-danger">Tambahkan tag berikut <b>[question] , [answer] , [update]</b>. Hanya untuk tipe Informasi Dan Pertanyaan</p>
               </div>
             </div>
             <div class="form-group">
               <label for="frequency" class="col-sm-2 control-label">Frekuensi <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                <select id="frequency" name="frequency" class="form-control select2" placeholder="Pilih Frekuensi"
-                  required>
+                <select id="frequency" name="frequency" class="form-control select2" placeholder="Pilih Frekuensi" required>
                   <option value=""></option>
                   <option value="harian">Harian</option>
                   <option value="bulanan">Bulanan</option>
@@ -90,44 +81,41 @@
             </div>
             <div class="form-group">
               <label class="col-sm-2 control-label" for="answer_type">Tipe Jawaban <b class="text-danger">*</b></label>
-              <div class="col-sm-6">  
-              <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban">
-                    <option value=""></option>
-                    <option value="checkbox">Checkbox</option>
-                    <option value="radio">Radio Button</option>
-                    <option value="text">Teks</option>
-                    <option value="number">Angka</option>
+              <div class="col-sm-6">
+                <select name="answer_type" class="form-control select2" placeholder="Pilih Tipe Jawaban">
+                  <option value=""></option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="radio">Radio Button</option>
+                  <option value="text">Teks</option>
+                  <option value="number">Angka</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
               <label for="date" class="col-sm-2 control-label">Tanggal Mulai - Sampai</label>
               <div class="col-sm-3">
-                <input type="text" class="form-control date" id="start_date" placeholder="Tanggal Mulai"
-                  name="start_date">
+                <input type="text" class="form-control date" id="start_date" placeholder="Tanggal Mulai" name="start_date">
               </div>
               <div class="col-sm-3">
-                <input type="text" class="form-control date" id="finish_date" placeholder="Tanggal Sampai"
-                  name="finish_date">
+                <input type="text" class="form-control date" id="finish_date" placeholder="Tanggal Sampai" name="finish_date">
               </div>
             </div>
             <div class="form-group">
-              <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b
-                  class="text-danger">*</b></label>
+              <label for="workforce_group_id" class="col-sm-2 control-label">Kelompok Workforce <b class="text-danger">*</b></label>
               <div class="col-sm-6">
-                  <table class="table table-bordered table-striped" id="table-workforcegroup">
-                    <thead>
-                        <th>Nama</th>
-                        <th>Status</th>
-                    </thead>
-                    <tbody>
-                      @foreach ($workforcegroups as $workforcegroup)
-                      <tr>
-                      <td><input type="hidden" name="workforcegroup[]" value="{{$workforcegroup->id}}"/>{{$workforcegroup->name}}</td>
-                        <td class="text-center"><input type="checkbox" name="workforcegroup_status[{{$workforcegroup->id}}]" checked></td>
-                      </tr>
-                      @endforeach
-                    </tbody>
+                <table class="table table-bordered table-striped" id="table-workforcegroup">
+                  <thead>
+                    <th>Nama</th>
+                    <th>Status</th>
+                  </thead>
+                  <tbody>
+                    @foreach ($workforcegroups as $workforcegroup)
+                    <tr>
+                      <td><input type="hidden" name="workforcegroup[]" value="{{$workforcegroup->id}}" />{{$workforcegroup->name}}</td>
+                      <td class="text-center"><input type="checkbox" name="workforcegroup_status[{{$workforcegroup->id}}]" checked></td>
+                    </tr>
+                    @endforeach
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -136,18 +124,18 @@
               <div class="col-sm-6">
                 <table class="table table-bordered table-striped" id="table-workforcegroup">
                   <thead>
-                      <th>Nama</th>
-                      <th>Status</th>
+                    <th>Nama</th>
+                    <th>Status</th>
                   </thead>
                   <tbody>
                     @foreach ($sites as $site)
                     <tr>
-                    <td><input type="hidden" name="site[]" value="{{$site->id}}"/>{{$site->name}}</td>
+                      <td><input type="hidden" name="site[]" value="{{$site->id}}" />{{$site->name}}</td>
                       <td class="text-center"><input type="checkbox" name="site_status[{{$site->id}}]" checked></td>
                     </tr>
                     @endforeach
                   </tbody>
-              </table>
+                </table>
               </div>
             </div>
           </div>

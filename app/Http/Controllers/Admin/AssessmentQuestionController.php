@@ -42,14 +42,14 @@ class AssessmentQuestionController extends Controller
         $arsip = $request->category;
 
         //Count Data
-        $query = AssessmentQuestion::with(['user', 'workforcegroup', 'site'])->whereRaw("upper(type) like '%$name%'");
+        $query = AssessmentQuestion::with(['user', 'workforcegroup', 'site'])->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = AssessmentQuestion::with(['user', 'workforcegroup', 'site'])->whereRaw("upper(type) like '%$name%'");
+        $query = AssessmentQuestion::with(['user', 'workforcegroup', 'site'])->whereRaw("upper(description) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
         }

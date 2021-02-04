@@ -168,7 +168,7 @@ class HealthMeterController extends Controller
     public function show(Request $request,$id)
     {
         if(in_array('read',$request->actionmenu)){
-            $healthmeter = HealthMeter::with(['site', 'workforcegroup'])->find($id);
+            $healthmeter = HealthMeter::withTrashed()->with(['site', 'workforcegroup'])->find($id);
             if($healthmeter){
                 return view('admin.healthmeter.detail',compact('healthmeter'));
             }

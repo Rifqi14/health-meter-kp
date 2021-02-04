@@ -106,7 +106,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="order">Urutan</label>
-                                <input type="number" name="order" class="form-control" placeholder="Urutan" required>
+                                <input type="number" name="order" class="form-control" placeholder="Urutan" min="1" required>
                             </div>
                         </div>
                     </div>
@@ -403,6 +403,7 @@
                     });
                     $('#form .form-group').removeClass('has-error').removeClass('has-success');
                     $('#form input[name=_method]').attr('value', 'PUT');
+                    $('#form input[name=order]').attr('value', response.data.order);
                     $('#form input[name=description]').attr('value', response.data.description);
                     $('#form select[name=answer_type]').select2('val', response.data.answer_type);
                     $('#form input[name=rating]').attr('value', response.data.rating);

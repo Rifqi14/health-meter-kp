@@ -499,7 +499,7 @@ class GuarantorController extends Controller
                     DB::commit();
                     return response()->json([
                         'status' 	=> true,
-                        'message'   => 'Success syncronize data department'
+                        'message'   => 'Success syncronize data penanggung jawab'
                     ], 200);
                 }
                 else{

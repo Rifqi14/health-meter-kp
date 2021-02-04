@@ -30,7 +30,7 @@
             <tr>
               <th width="10">#</th>
               <th width="200">Kode</th>
-              <th width="200">Nama</th>
+              <th width="200">Deskripsi</th>
               <th width="100">Terakhir Dirubah</th>
               <th width="100">Dirubah Oleh</th>
               <th width="100">Status</th>
@@ -59,8 +59,8 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="name">Nama</label>
-                <input type="text" name="name" class="form-control" placeholder="Nama">
+                <label class="control-label" for="name">Deskripsi</label>
+                <input type="text" name="name" class="form-control" placeholder="Deskripsi">
               </div>
             </div>
             <div class="col-md-12">

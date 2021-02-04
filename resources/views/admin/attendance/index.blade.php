@@ -73,7 +73,7 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="attendance_description_id">Nama</label>
+                <label class="control-label" for="attendance_description_id">Ketarangan Kehadiran</label>
                 <input type="text" name="attendance_description_id" class="form-control" data-placeholder="Pilih Keterangan Kehadiran" id="attendance_description_id">
               </div>
             </div>

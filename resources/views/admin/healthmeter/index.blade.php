@@ -12,7 +12,7 @@
     <div class="col-lg-12">
         <div class="box box-primary">
             <div class="box-header">
-                <h3 class="box-title">Data Health Meter</h3>
+                <h3 class="box-title">Data Kategori Resiko</h3>
                 <!-- tools box -->
                 <div class="pull-right box-tools">
                     @if(in_array('create',$actionmenu))
@@ -181,7 +181,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengarsipkan Health Meter?',
+          title:'Mengarsipkan Kategori Resiko?',
           message:'Data ini akan diarsipkan dan tidak dapat digunakan pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -240,7 +240,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Mengembalikan Health Meter?',
+          title:'Mengembalikan Kategori Resiko?',
           message:'Data ini akan dikembalikan dan dapat digunakan lagi pada menu lainnya.',
           callback: function(result) {
             if(result) {
@@ -302,7 +302,7 @@
               className: 'btn-default btn-sm'
             },
           },
-          title:'Menghapus Health Meter?',
+          title:'Menghapus Kategori Resiko?',
           message:'Data yang telah dihapus tidak dapat dikembalikan',
           callback: function(result) {
             if(result) {

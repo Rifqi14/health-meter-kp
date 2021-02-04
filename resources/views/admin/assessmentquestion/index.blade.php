@@ -15,8 +15,7 @@
         <h3 class="box-title">Data Pertanyaan Assessment</h3>
         <!-- tools box -->
         <div class="pull-right box-tools">
-          <a href="{{route('assessmentquestion.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip"
-            title="Tambah">
+          <a href="{{route('assessmentquestion.create')}}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Tambah">
             <i class="fa fa-plus"></i>
           </a>
           <a href="#" onclick="filter()" class="btn btn-default btn-sm" data-toggle="tooltip" title="Search">
@@ -45,8 +44,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -60,8 +58,8 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <label class="control-label" for="name">Nama</label>
-                <input type="text" name="name" class="form-control" placeholder="Nama">
+                <label class="control-label" for="name">Pertanyaan</label>
+                <input type="text" name="name" class="form-control" placeholder="Pertanyaan">
               </div>
             </div>
             <div class="col-md-12">
@@ -77,8 +75,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>

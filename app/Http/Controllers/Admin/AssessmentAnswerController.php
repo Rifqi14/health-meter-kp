@@ -132,6 +132,14 @@ class AssessmentAnswerController extends Controller
         	], 400);
         }
 
+        $existOrder = AssessmentAnswer::where('assessment_question_id', $request->assessment_question_id)->where('order', $request->order)->first();
+        if ($existOrder) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Order already been used'
+            ], 400);
+        }
+
         try {
             $answer = AssessmentAnswer::create([
                 'assessment_question_id'    => $request->assessment_question_id,
@@ -201,6 +209,14 @@ class AssessmentAnswerController extends Controller
         		'status' 	=> false,
         		'message' 	=> $validator->errors()->first()
         	], 400);
+        }
+
+        $existOrder = AssessmentAnswer::where('assessment_question_id', $request->assessment_question_id)->where('order', $request->order)->where('id', '<>', $id)->first();
+        if ($existOrder) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Order already been used'
+            ], 400);
         }
 
         $answer = AssessmentAnswer::withTrashed()->find($id);

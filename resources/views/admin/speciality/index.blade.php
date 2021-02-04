@@ -44,8 +44,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -76,8 +75,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>
@@ -115,7 +113,7 @@
         { className: "text-right", targets: [0] },
         { className: "text-center", targets: [4,5] },
         { render: function (data, type, row) {
-          return `<span class="label bg-blue">${row.user.name}</span>`
+          return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
         }, targets: [3]},
         { render:function( data, type, row ) {
                     return `<span class="label ${row.deleted_at ? 'bg-red' : 'bg-green'}">${row.deleted_at ? 'Non-Aktif' : 'Aktif'}</span>`

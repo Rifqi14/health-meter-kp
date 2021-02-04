@@ -45,8 +45,7 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog"
-  aria-hidden="true" data-backdrop="static">
+<div class="modal fade" id="add-filter" tabindex="-1" role="dialog" aria-hidden="true" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -77,8 +76,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i
-            class="fa fa-search"></i></button>
+        <button form="form-search" type="submit" class="btn btn-default btn-sm" title="Apply"><i class="fa fa-search"></i></button>
       </div>
     </div>
   </div>
@@ -119,7 +117,7 @@
           return `${row.examination.name}`
         }, targets: [1]},
         { render: function (data, type, row) {
-          return `<span class="label bg-blue">${row.user.name}</span>`
+          return `<span class="label bg-blue">${row.user ? row.user.name : ''}</span>`
         }, targets: [4]},
         { render: function ( data, type, row ) {
                 if (row.deleted_at) {
@@ -142,7 +140,7 @@
             } else {
               html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}/edit"><i class="glyphicon glyphicon-edit"></i> Edit</a></li>`;
               html += `<li><a class="dropdown-item" href="{{url('admin/examinationtype')}}/${row.id}"><i class="glyphicon glyphicon-info-sign"></i> Detail</a></li>`
-              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Arsip</a></li>`;
+              html += `<li><a class="dropdown-item delete" href="#" data-id="${row.id}"><i class="fa fa-archive"></i> Archive</a></li>`;
             }
             html += `</ul>
                     </div>`;
