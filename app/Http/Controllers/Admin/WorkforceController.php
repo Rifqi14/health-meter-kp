@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SiteUser;
 use App\Models\Workforce;
+use App\Models\Agency;
+use App\Models\WorkforceGroup;
 use App\Models\Patient;
 use App\Models\Site;
 use App\Models\Title;
