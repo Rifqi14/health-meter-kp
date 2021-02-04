@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\SubDepartment;
+use App\Models\SubDepartmentSite;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -37,19 +38,10 @@ class SubDepartmentController extends Controller
         $dir = $request->order[0]['dir'];
         $name = strtoupper($request->name);
         $arsip = $request->category;
-        $site = $request->site;
-        $data_manager = $request->data_manager;
-        $site_id = $request->site_id;
         //Count Data
         $query = SubDepartment::with(['user','site'])->whereRaw("upper(sub_departments.name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
-        }
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
@@ -57,12 +49,6 @@ class SubDepartmentController extends Controller
         $query = SubDepartment::with(['user','site'])->select('sub_departments.*')->whereRaw("upper(sub_departments.name) like '%$name%'");
         if ($arsip) {
             $query->onlyTrashed();
-        }
-        if ($site) {
-            $query->where('site_id', $site);
-        }
-        if($data_manager){
-            $query->where('site_id',$site_id);
         }
         $query->offset($start);
         $query->limit($length);
@@ -89,16 +75,18 @@ class SubDepartmentController extends Controller
         $name = strtoupper($request->name);
         $site_id = $request->site_id;
         //Count Data
-        $query = SubDepartment::whereRaw("upper(name) like '%$name%'");
+        $query = SubDepartment::select('sub_departments.*')->whereRaw("upper(name) like '%$name%'");
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->leftJoin('sub_department_sites','sub_department_sites.sub_department_id','=','sub_departments.id');
+            $query->where('sub_department_sites.site_id',$site_id);
         }
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = SubDepartment::whereRaw("upper(name) like '%$name%'");
+        $query = SubDepartment::select('sub_departments.*')->whereRaw("upper(name) like '%$name%'");
         if($site_id){
-            $query->where('site_id',$site_id);
+            $query->leftJoin('sub_department_sites','sub_department_sites.sub_department_id','=','sub_departments.id');
+            $query->where('sub_department_sites.site_id',$site_id);
         }
         $query->offset($start*$length);
         $query->limit($length);
@@ -123,7 +111,8 @@ class SubDepartmentController extends Controller
     public function create(Request $request)
     {
         if(in_array('create',$request->actionmenu)){
-            return view('admin.subdepartment.create');
+            $sites = Site::orderBy('sites.name', 'asc')->get();
+            return view('admin.subdepartment.create', compact('sites'));
         }
         else{
             abort(403);
@@ -139,7 +128,7 @@ class SubDepartmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required',
+            'code'          => 'required|unique:sub_departments',
             'name'          => 'required',
             'site_id'       => 'required',
         ]);
@@ -150,25 +139,38 @@ class SubDepartmentController extends Controller
                 'message'     => $validator->errors()->first()
             ], 400);
         }
-        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->first();
-        if($exist){
-            return response()->json([
-                'status' 	=> false,
-        		'message' 	=> 'The code has already been taken.'
-        	], 400);  
-        }
+        DB::beginTransaction();
         $subdepartment = SubDepartment::create([
-            'site_id'       => $request->site_id,
             'code'          => strtoupper($request->code),
             'name'          => $request->name,
             'updated_by'    => Auth::id(),
         ]);
         if (!$subdepartment) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' 	=> $subdepartment
             ], 400);
         }
+        if ($request->site) {
+            foreach ($request->site as $key => $value) {
+                if (isset($request->site_status[$value])) {
+                    $site = SubDepartmentSite::create([
+                        'sub_department_id' => $subdepartment->id,
+                        'site_id'   => $value,
+                        'updated_by'=> Auth::id(),
+                    ]);
+                    if (!$site) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status'    => false,
+                            'message'   => $site
+                        ], 400);
+                    }
+                }
+            }
+        }
+        DB::commit();
         return response()->json([
             'status'    => true,
             'results'   => route('subdepartment.index'),
@@ -186,7 +188,11 @@ class SubDepartmentController extends Controller
         if(in_array('read',$request->actionmenu)){
             $subdepartment = SubDepartment::withTrashed()->find($id);
             if($subdepartment){
-                return view('admin.subdepartment.detail',compact('subdepartment'));
+                $sites = Site::select('sites.*', 'sub_department_sites.id as sub_department_site_id')->leftJoin('sub_department_sites', function ($join) use ($id) {
+                    $join->on('sub_department_sites.site_id', '=', 'sites.id')
+                         ->where('sub_department_id', '=', $id);
+                })->orderBy('sites.name', 'asc')->get();
+                return view('admin.subdepartment.detail',compact('subdepartment','sites'));
             }
             else{
                 abort(404);
@@ -208,7 +214,11 @@ class SubDepartmentController extends Controller
         if(in_array('update',$request->actionmenu)){
             $subdepartment = SubDepartment::withTrashed()->find($id);
             if ($subdepartment) {
-                return view('admin.subdepartment.edit', compact('subdepartment'));
+                $sites = Site::select('sites.*', 'sub_department_sites.id as sub_department_site_id')->leftJoin('sub_department_sites', function ($join) use ($id) {
+                    $join->on('sub_department_sites.site_id', '=', 'sites.id')
+                         ->where('sub_department_id', '=', $id);
+                })->orderBy('sites.name', 'asc')->get();
+                return view('admin.subdepartment.edit', compact('subdepartment','sites'));
             } else {
                 abort(404);
             }
@@ -228,8 +238,7 @@ class SubDepartmentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'code'          => 'required',
-            'site_id'       => 'required',
+            'code'          => 'required|unique:sub_departments,code,'.$id,
             'name'          => 'required',
         ]);
 
@@ -239,15 +248,7 @@ class SubDepartmentController extends Controller
         		'message' 	=> $validator->errors()->first()
         	], 400);
         }
-        $exist = SubDepartment::whereRaw("upper(code) = '$request->code'")->where('site_id',$request->site_id)->where('id','<>',$id)->first();
-        if($exist){
-            return response()->json([
-                'status' 	=> false,
-        		'message' 	=> 'The code has already been taken.'
-        	], 400);  
-        }
         $subdepartment = SubDepartment::withTrashed()->find($id);
-        $subdepartment->site_id = $request->site_id;
         $subdepartment->code = strtoupper($request->code);
         $subdepartment->name = $request->name;
         $subdepartment->updated_by = Auth::id();
@@ -257,6 +258,30 @@ class SubDepartmentController extends Controller
                 'status' => false,
                 'message' 	=> $subdepartment
             ], 400);
+        }
+        if ($request->site) {
+            $exception = [];
+            foreach ($request->site as $key => $value) {
+                if (isset($request->site_status[$value])) {
+                    array_push($exception, $value);
+                    $check = SubDepartmentSite::where('sub_department_id', $subdepartment->id)->where('site_id', $value)->first();
+                    if (!$check) {
+                        $subdepartmentsite = SubDepartmentSite::create([
+                            'sub_department_id'     => $subdepartment->id,
+                            'site_id'       => $value,
+                            'updated_by'    => Auth::id(),
+                        ]);
+                        if (!$subdepartmentsite) {
+                            DB::rollBack();
+                            return response()->json([
+                                'status'    => false,
+                                'message'   => $subdepartmentsite
+                            ], 400);
+                        }
+                    }
+                }
+                $subdepartmentsite = SubDepartmentSite::whereNotIn('site_id', $exception)->where('sub_department_id', $subdepartment->id)->forceDelete();
+            }
         }
         return response()->json([
             'status' 	=> true,
@@ -350,20 +375,13 @@ class SubDepartmentController extends Controller
         for ($row = 2; $row <= $highestRow; $row++){
             $code = $sheet->getCellByColumnAndRow(0, $row)->getValue();
             $name = $sheet->getCellByColumnAndRow(1, $row)->getValue();
-            $site_code = strtoupper($sheet->getCellByColumnAndRow(2, $row)->getValue());
-            $status = $sheet->getCellByColumnAndRow(3, $row)->getValue();
-            $site = Site::whereRaw("upper(code) = '$site_code'")->first();
+            $status = $sheet->getCellByColumnAndRow(2, $row)->getValue();
             if($code){
                 $error = [];
-                if(!$site){
-                    array_push($error,'Distrik Tidak Ditemukan');
-                }
                 $data[] = array(
                     'index'=>$no,
                     'code' => trim($code),
                     'name' => $name,
-                    'site_name'=>$site?$site->name:null,
-                    'site_id'=>$site?$site->id:null,
                     'status'=>$status=='Y'?1:0,
                     'error'=>implode($error,'<br>'),
                     'is_import'=>count($error) == 0?1:0
@@ -392,12 +410,11 @@ class SubDepartmentController extends Controller
         DB::beginTransaction();
         $subdepartments = json_decode($request->subdepartments);
         foreach($subdepartments as $subdepartment){
-            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->where('site_id',$subdepartment->site_id)->withTrashed()->first();
+            $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->code'")->withTrashed()->first();
             if(!$cek){
                 $insert = SubDepartment::create([
                     'code' 	        => strtoupper($subdepartment->code),
                     'name'          => $subdepartment->name,
-                    'site_id'       => $subdepartment->site_id,
                     'updated_by'    => Auth::id()
                 ]);
                 if (!$insert) {
@@ -413,7 +430,6 @@ class SubDepartmentController extends Controller
             else{
                 $cek->code      = strtoupper($subdepartment->code);
                 $cek->name      = $subdepartment->name;
-                $cek->site_id   = $subdepartment->site_id;
                 $cek->deleted_at= $subdepartment->status?null:date('Y-m-d H:i:s');
                 $cek->updated_by= Auth::id();
                 $cek->save();
@@ -447,8 +463,8 @@ class SubDepartmentController extends Controller
                         'deleted_at'=>date('Y-m-d H:i:s')
                     ]);
                     foreach($response->returned_object as $subdepartment){
-                        $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->withTrashed()->get();
-                        if(!$cek->count()){
+                        $cek = SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->withTrashed()->first();
+                        if(!$cek){
                             $insert = SubDepartment::create([
                                 'code' 	        => strtoupper($subdepartment->KODE),
                                 'name'          => $subdepartment->DESKRIPSI,
@@ -465,11 +481,18 @@ class SubDepartmentController extends Controller
                             $insert->save();
                         }
                         else{
-                            SubDepartment::whereRaw("upper(code) = '$subdepartment->KODE'")->update([
-                                'name'          => $subdepartment->DESKRIPSI,
-                                'deleted_at'    => $subdepartment->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s'),
-                                'updated_by'     => Auth::id()
-                            ]);
+                            $cek->code      = strtoupper($site->KODE);
+                            $cek->name      = $site->DESKRIPSI;
+                            $cek->deleted_at= $site->STATUS_AKTIF=='Y'?null:date('Y-m-d H:i:s');
+                            $cek->updated_by= Auth::id();
+                            $cek->save();
+                            if (!$cek) {
+                                DB::rollback();
+                                return response()->json([
+                                    'status' => false,
+                                    'message'     => $cek
+                                ], 400);
+                            }
                         }  
                     }
                     curl_close($curl);
