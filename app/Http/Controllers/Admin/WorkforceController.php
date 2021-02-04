@@ -749,9 +749,9 @@ class WorkforceController extends Controller
                         $kab = str_replace("KAB. ", "", $workforce->KAB_KOTA);
                         $region = Region::whereRaw("upper(name) = '$kota' OR upper(name) = '$kab'")->first();
                         $workforcegroup = WorkforceGroup::whereRaw("upper(code) = '$workforce->ID_JENISWORKFORCE'")->first();
+                        $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->first();
+                        $subdepartment = SubDepartment::whereRaw("upper(code) = '$workforce->KODE_SUBDIVBID'")->first();
                         if($site){
-                            $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
-                            $subdepartment = SubDepartment::whereRaw("upper(code) = '$workforce->KODE_SUBDIVBID'")->where('site_id',$site->id)->first();
                             $cek = Workforce::whereRaw("upper(nid) = '$workforce->NID'")->withTrashed()->first();
                             if(!$cek){
                                 $insert = Workforce::create([
