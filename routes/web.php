@@ -495,13 +495,17 @@ Route::group(['prefix' => 'admin'], function () {
 
         // Workforce
         Route::get('/workforce/read', 'Admin\WorkforceController@read')->name('workforce.read');
+        Route::get('/workforce/readsecondarytitle', 'Admin\WorkforceController@readSecondaryTitle')->name('workforce.readsecondarytitle');
         Route::get('/workforce/select', 'Admin\WorkforceController@select')->name('workforce.select');
+        Route::get('/workforce/selectsecondarytitle', 'Admin\WorkforceController@selectSecondaryTitle')->name('workforce.selectsecondarytitle');
         Route::get('/workforce/restore/{id}', 'Admin\WorkforceController@restore')->name('workforce.restore');
         Route::get('/workforce/delete/{id}', 'Admin\WorkforceController@delete')->name('workforce.delete');
         Route::get('/workforce/import', 'Admin\WorkforceController@import')->name('workforce.import');
         Route::get('/workforce/sync', 'Admin\WorkforceController@sync')->name('workforce.sync');
+        Route::post('/workforce/secondarytitle', 'Admin\WorkforceController@secondaryTitle')->name('workforce.secondarytitle');
         Route::post('/workforce/preview', 'Admin\WorkforceController@preview')->name('workforce.preview');
         Route::post('/workforce/storemass', 'Admin\WorkforceController@storemass')->name('workforce.storemass');
+        Route::post('/workforce/deletesecondarytitle', 'Admin\WorkforceController@deleteSecondaryTitle')->name('workforce.deletesecondarytitle');
         Route::resource('/workforce', 'Admin\WorkforceController');
         
         // Pasien

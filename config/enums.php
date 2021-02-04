@@ -33,4 +33,30 @@ return [
         'Rujukan' => "Rujukan",
         'Diagnosa' => "Diagnosa"
     ],
+    'religion' => [
+        'islam' => 'Islam',
+        'protestan' => 'Protestan',
+        'katolik'   => 'Katolik',
+        'hindu'     => 'Hindu',
+        'buddha'    => 'Buddha',
+        'konghucu'  => 'Konghucu'
+    ],
+    'marriage_status' => [
+        'menikah'   => 'Menikah',
+        'belum'     => 'Belum Menikah',
+        'cerai'     => 'Cerai'
+    ],
+    'last_education' => [
+        'sd'    => 'SD Sederajat',
+        'smp'   => 'SMP Sederajat',
+        'sma'   => 'SMA Sederajat',
+        'smk'   => 'SMK Sederajat',
+        'd1'    => 'Diploma 1 / D1',
+        'd2'    => 'Diploma 2 / D2',
+        'd3'    => 'Diploma 3 / D3',
+        'd4'    => 'Diploma 4 / D4',
+        's1'    => 'Strata 1 / S1',
+        's2'    => 'Strata 2 / S2',
+        's3'    => 'Strata 3 / S3'
+    ]
 ];

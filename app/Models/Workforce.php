@@ -27,6 +27,10 @@ class Workforce extends Model
     {
         return $this->belongsTo(Title::class);
     }
+    public function secondarytitle()
+    {
+        return $this->belongsToMany(Title::class, 'title_workforce')->withTimestamps();
+    }
     public function site()
     {
         return $this->belongsTo(Site::class);
@@ -51,6 +55,14 @@ class Workforce extends Model
     {
         return $this->hasMany(AssessmentResult::class, 'workforce_id');
     }
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
+    public function placeofbirth()
+    {
+        return $this->belongsTo(Region::class, 'place_of_birth');
+    }
     
     public function grade()
     {
@@ -72,5 +84,29 @@ class Workforce extends Model
     public function attendance()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Scope a query to check code
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $q
+     * @param mixed $code
+     * @return void
+     */
+    public function scopeCheckCode($q, $code)
+    {
+        return $q->whereRaw("upper(code) = '$code'");
+    }
+
+    /**
+     * Scope a query to check nid
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $q
+     * @param mixed $nid
+     * @return void
+     */
+    public function scopeCheckNID($q, $nid)
+    {
+        return $q->whereRaw("upper(nid) = '$nid'");
     }
 }

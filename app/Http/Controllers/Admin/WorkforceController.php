@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Agency;
 use App\Models\SiteUser;
 use App\Models\Workforce;
 use App\Models\Agency;
@@ -16,7 +15,7 @@ use App\Models\Grade;
 use App\Models\Department;
 use App\Models\Guarantor;
 use App\Models\SubDepartment;
-use App\Models\WorkforceGroup;
+use App\Models\TitleWorkforce;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
@@ -158,6 +157,146 @@ class WorkforceController extends Controller
     }
 
     /**
+     * Select secondary title hide already choosen title
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function selectSecondaryTitle(Request $request)
+    {
+        $start = $request->page ? $request->page - 1 : 0;
+        $length = $request->limit;
+        $display_name = strtoupper($request->name);
+        $id_except = [];
+        if ($request->workforce_id) {
+            $titleworkforce = DB::table('title_workforce')->where('workforce_id', $request->workforce_id)->get();
+            foreach ($titleworkforce as $key => $value) {
+                array_push($id_except, $value->title_id);
+            }
+        }
+
+        // Count Data
+        $query = Title::whereRaw("upper(name) like '%$display_name%'");
+        if ($request->workforce_id) {
+            $query->whereNotIn('id', $id_except);
+        }
+        $recordsTotal = $query->count();
+
+        // Select Pagination
+        $query = Title::whereRaw("upper(name) like '%$display_name%'");
+        if ($request->workforce_id) {
+            $query->whereNotIn('id', $id_except);
+        }
+        $query->orderBy('name', 'asc');
+        $query->offset($start);
+        $query->limit($length);
+        $titles = $query->get();
+
+        $data = [];
+        foreach ($titles as $title) {
+            $title->no = ++$start;
+            $data[] = $title;
+        }
+        return response()->json([
+            'total' => $recordsTotal,
+            'rows' => $data
+        ], 200);
+    }
+
+    public function secondaryTitle(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title_id'  => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'    => false,
+                'message'   => $validator->errors()->first()
+            ], 400);
+        }
+
+        $workforce = Workforce::find($request->workforce_title_id);
+        $title = Title::find($request->title_id);
+        $workforce->secondarytitle()->attach($title);
+        if (!$workforce) {
+            return response()->json([
+                'status' => false,
+                'message'     => $workforce
+            ], 400);
+        }
+        return response()->json([
+            'status'    => true,
+            'message'     => 'Title has been added'
+        ], 200);
+    }
+
+    /**
+     * Get secondary title by employee id
+     *
+     * @param Type $var
+     * @return void
+     */
+    public function readSecondaryTitle(Request $request)
+    {
+        $start = $request->start;
+        $length = $request->length;
+        $query = $request->search['value'];
+        $sort = $request->columns[$request->order[0]['column']]['data'];
+        $dir = $request->order[0]['dir'];
+        $workforce_id = $request->workforce_id;
+
+        //Count Data
+        $query = TitleWorkforce::with(['title'])->where('workforce_id', $workforce_id);
+        $recordsTotal = $query->count();
+
+        //Select Pagination
+        $query = TitleWorkforce::with(['title'])->where('workforce_id', $workforce_id);
+        $query->offset($start);
+        $query->limit($length);
+        $query->orderBy($sort, $dir);
+        $titles = $query->get();
+
+        $data = [];
+        foreach ($titles as $title) {
+            $title->no = ++$start;
+            $data[] = $title;
+        }
+        return response()->json([
+            'draw' => $request->draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsTotal,
+            'data' => $data
+        ], 200);
+    }
+
+    /**
+     * Detach title from workforce
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function deleteSecondaryTitle(Request $request)
+    {
+        $workforce_id = $request->workforce_id;
+        $title_id = $request->title_id;
+        try {
+            $workforce = Workforce::find($workforce_id);
+            $title = Title::find($title_id);
+            $workforce->secondarytitle()->detach($title);
+        } catch (QueryException $th) {
+            return response()->json([
+                'status'     => false,
+                'message'     => 'Error delete data' . $th->getMessage()
+            ], 400);
+        }
+        return response()->json([
+            'status'     => true,
+            'message' => 'Success delete data'
+        ], 200);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -181,15 +320,26 @@ class WorkforceController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nid'               => 'required|unique:workforces',
+            'site_id'           => 'required',
+            'code'              => 'required',
+            'nid'               => 'required',
+            'id_card_number'    => 'required',
             'name'              => 'required',
+            'address'           => 'required',
+            'region_id'         => 'required',
+            'phone'             => 'required',
             'workforce_group_id'=> 'required',
             'agency_id'         => 'required',
-            'site_id'           => 'required',
-            'department_id'     => 'required',
-            'sub_department_id' => 'required',
-            'email'             => 'required',
-            'password'          => 'required'
+            'place_of_birth'    => 'required',
+            'birth_date'        => 'required',
+            'gender'            => 'required',
+            'religion'          => 'required',
+            'marriage_status'   => 'required',
+            'last_education'    => 'required',
+            'blood_type'        => 'required',
+            'rhesus'            => 'required',
+            'email'             => 'required|unique:users',
+            'password'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -199,22 +349,45 @@ class WorkforceController extends Controller
             ], 400);
         }
 
+        $exist = Workforce::checkCode($request->code)->checkNID($request->nid)->first();
+        if ($exist) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'NID dan Employee ID telah digunakan'
+            ], 400);
+        }
+
         try {
             DB::beginTransaction();
             $workforce = Workforce::create([
-                'nid'               => $request->nid,
-                'name'              => $request->name,
-                'workforce_group_id'=> $request->workforce_group_id,
-                'agency_id'         => $request->agency_id,
-                'grade_id'          => $request->grade_id,
-                'title_id'          => $request->title_id,
-                'site_id'           => $request->site_id,
-                'department_id'     => $request->department_id,
-                'sub_department_id' => $request->sub_department_id,
-                'guarantor_id'      => $request->guarantor_id,
-                'start_date'        => $request->start_date,
-                'finish_date'       => $request->finish_date,
-                'updated_by'        => Auth::id()
+                'site_id'                   => $request->site_id,
+                'code'                      => strtoupper($request->code),
+                'nid'                       => strtoupper($request->nid),
+                'id_card_number'            => $request->id_card_number,
+                'name'                      => $request->name,
+                'address'                   => $request->address,
+                'region_id'                 => $request->region_id,
+                'phone'                     => $request->phone,
+                'workforce_group_id'        => $request->workforce_group_id,
+                'agency_id'                 => $request->agency_id,
+                'start_date'                => $request->start_date,
+                'finish_date'               => $request->finish_date,
+                'place_of_birth'            => $request->place_of_birth,
+                'birth_date'                => $request->birth_date,
+                'gender'                    => $request->gender,
+                'religion'                  => $request->religion,
+                'marriage_status'           => $request->marriage_status,
+                'last_education'            => $request->last_education,
+                'blood_type'                => $request->blood_type,
+                'rhesus'                    => $request->rhesus,
+                'bpjs_employment_number'    => $request->bpjs_employment_number,
+                'bpjs_health_number'        => $request->bpjs_health_number,
+                'grade_id'                  => $request->grade_id,
+                'title_id'                  => $request->title_id,
+                'department_id'             => $request->department_id,
+                'sub_department_id'         => $request->sub_department_id,
+                'guarantor_id'              => $request->guarantor_id,
+                'updated_by'                => Auth::id()
             ]);
             if ($workforce) {
                 $user = User::create([
@@ -285,7 +458,7 @@ class WorkforceController extends Controller
      */
     public function edit($id)
     {
-        $workforce = Workforce::with(['updatedby', 'workforcegroup', 'agency', 'title', 'site', 'department', 'subdepartment', 'guarantor','user'])->find($id);
+        $workforce = Workforce::with(['updatedby', 'workforcegroup', 'agency', 'title', 'site', 'department', 'subdepartment', 'guarantor','user', 'region', 'placeofbirth', 'guarantor.title', 'guarantor.site'])->find($id);
         if ($workforce) {
             return view('admin.workforce.edit', compact('workforce'));
         } else {
@@ -303,14 +476,25 @@ class WorkforceController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'nid'               => 'required|unique:workforces,nid,'.$id,
-            'name'              => 'required',
-            'workforce_group_id'=> 'required',
-            'agency_id'         => 'required',
-            'site_id'           => 'required',
-            'department_id'     => 'required',
-            'sub_department_id' => 'required',
-            'email'             => 'required'
+            'nid'                   => 'required',
+            'site_id'               => 'required',
+            'code'                  => 'required',
+            'id_card_number'        => 'required',
+            'name'                  => 'required',
+            'address'               => 'required',
+            'region_id'             => 'required',
+            'phone'                 => 'required',
+            'workforce_group_id'    => 'required',
+            'agency_id'             => 'required',
+            'place_of_birth'        => 'required',
+            'birth_date'            => 'required',
+            'gender'                => 'required',
+            'religion'              => 'required',
+            'marriage_status'       => 'required',
+            'last_education'        => 'required',
+            'blood_type'            => 'required',
+            'rhesus'                => 'required',
+            'email'                 => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -318,6 +502,14 @@ class WorkforceController extends Controller
         		'status' 	=> false,
         		'message' 	=> $validator->errors()->first()
         	], 400);
+        }
+
+        $exist = Workforce::checkCode($request->code)->checkNID($request->nid)->where('id', '<>', $id)->first();
+        if ($exist) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'NID dan Employee ID telah digunakan'
+            ], 400);
         }
 
         $workforce = Workforce::withTrashed()->find($id);
@@ -355,18 +547,33 @@ class WorkforceController extends Controller
                 ], 400);
             }
         }
-        $workforce->nid                 = $request->nid;
+        $workforce->site_id             = $request->site_id;
+        $workforce->code                = strtoupper($request->code);
+        $workforce->nid                 = strtoupper($request->nid);
+        $workforce->id_card_number      = $request->id_card_number;
         $workforce->name                = $request->name;
+        $workforce->address             = $request->address;
+        $workforce->region_id           = $request->region_id;
+        $workforce->phone               = $request->phone;
         $workforce->workforce_group_id  = $request->workforce_group_id;
         $workforce->agency_id           = $request->agency_id;
+        $workforce->start_date          = $request->start_date;
+        $workforce->finish_date         = $request->finish_date;
+        $workforce->place_of_birth      = $request->place_of_birth;
+        $workforce->birth_date          = $request->birth_date;
+        $workforce->gender              = $request->gender;
+        $workforce->religion            = $request->religion;
+        $workforce->marriage_status     = $request->marriage_status;
+        $workforce->last_education      = $request->last_education;
+        $workforce->blood_type          = $request->blood_type;
+        $workforce->rhesus              = $request->rhesus;
+        $workforce->bpjs_employment_number = $request->bpjs_employment_number;
+        $workforce->bpjs_health_number  = $request->bpjs_health_number;
         $workforce->grade_id            = $request->grade_id;
         $workforce->title_id            = $request->title_id;
-        $workforce->site_id             = $request->site_id;
         $workforce->department_id       = $request->department_id;
         $workforce->sub_department_id   = $request->sub_department_id;
         $workforce->guarantor_id        = $request->guarantor_id;
-        $workforce->start_date          = $request->start_date;
-        $workforce->finish_date         = $request->finish_date;
         $workforce->updated_by          = Auth::id();
         $workforce->save();
         if (!$workforce) {

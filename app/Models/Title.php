@@ -17,6 +17,14 @@ class Title extends Model
     {
         return $this->hasMany('App\Models\EmployeeMovement');
     }
+    public function workforce()
+    {
+        return $this->belongsTo(Workforce::class);
+    }
+    public function workforcepivot()
+    {
+        return $this->belongsToMany(Workforce::class, 'title_workforce');
+    }
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'role_titles', 'title_id', 'role_id');
