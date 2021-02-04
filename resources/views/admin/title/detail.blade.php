@@ -39,6 +39,15 @@
                         <b>Kode</b> <span class="pull-right">{{ $title->code }}</span>
                     </li>
                     <li class="list-group-item">
+                        <b>Instansi</b> <span class="pull-right">{{ $title->agency?$title->agency->name:'-' }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Bidang</b> <span class="pull-right">{{ $title->department?$title->department->name:'-' }}</span>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Sub Bidang</b> <span class="pull-right">{{ $title->sub_department?$title->sub_department->name:'-' }}</span>
+                    </li>
+                    <li class="list-group-item">
                         <b>Terakhir Dirubah</b> <span class="pull-right">{{ $title->updated_at }}</span>
                     </li>
                     <li class="list-group-item">

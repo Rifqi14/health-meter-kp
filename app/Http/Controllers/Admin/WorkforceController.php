@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Agency;
 use App\Models\SiteUser;
 use App\Models\Workforce;
+use App\Models\Agency;
+use App\Models\WorkforceGroup;
 use App\Models\Patient;
 use App\Models\Site;
 use App\Models\Title;
@@ -533,6 +535,8 @@ class WorkforceController extends Controller
                         $site = Site::whereRaw("upper(code) = '$workforce->KODE_DISTRIK'")->first();
                         $title = Title::whereRaw("upper(code) = '$workforce->KODE_JABATAN'")->first();
                         $grade = Grade::whereRaw("upper(code) = '$workforce->KODE_JENJANGJABATAN'")->first();
+                        $agency = Agency::whereRaw("upper(code) = '$workforce->ID_INSTANSI'")->first();
+                        $workforcegroup = WorkforceGroup::whereRaw("upper(code) = '$workforce->ID_JENISWORKFORCE'")->first();
                         if($site){
                             $department = Department::whereRaw("upper(code) = '$workforce->KODE_DIVBID'")->where('site_id',$site->id)->first();
                             $subdepartment = SubDepartment::whereRaw("upper(code) = '$workforce->KODE_SUBDIVBID'")->where('site_id',$site->id)->first();
@@ -542,8 +546,8 @@ class WorkforceController extends Controller
                                     'nid' 	                => strtoupper($workforce->NID),
                                     'name'                  => $workforce->NAMA,
                                     'site_id'               => $site->id,
-                                    'workforce_group_id'    => 1,
-                                    'agency_id'             => 1,
+                                    'workforce_group_id'    => $workforcegroup?$workforcegroup->id:null,
+                                    'agency_id'             => $agency?$agency->id:null,
                                     'department_id'         => $department?$department->id:null,
                                     'sub_department_id'     => $subdepartment?$subdepartment->id:null,
                                     'title_id'              => $title?$title->id:null,
@@ -583,6 +587,8 @@ class WorkforceController extends Controller
                                 $cek->name          = $workforce->NAMA;
                                 $cek->start_date    = date('Y-m-d',strtotime($workforce->POS_STARTDATE));
                                 $cek->finish_date   = date('Y-m-d',strtotime($workforce->POS_STOPDATE));
+                                $cek->agency_id = $agency?$agency->id:null;
+                                $cek->workforce_group_id = $workforcegroup?$workforcegroup->id:null;
                                 $cek->department_id = $department?$department->id:null;
                                 $cek->sub_department_id = $subdepartment?$subdepartment->id:null;
                                 $cek->grade_id      = $grade?$grade->id:null;

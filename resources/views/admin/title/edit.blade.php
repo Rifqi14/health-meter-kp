@@ -109,7 +109,7 @@
         },
         allowClear: true,
       });
-      @if ($title->department_id)
+      @if ($title->department)
       $("#department_id").select2('data', {id: {{ $title->department_id }}, text:'{{ $title->department->name }}'}).trigger('change');
       @endif
       $(document).on("change", "#department_id", function () {
@@ -146,7 +146,7 @@
         },
         allowClear: true,
       });
-      @if ($title->sub_department_id)
+      @if ($title->sub_department)
       $("#sub_department_id").select2('data', {id: {{ $title->sub_department_id }}, text:'{{ $title->sub_department->name }}'}).trigger('change');
       @endif
       $(document).on("change", "#sub_department_id", function () {
@@ -183,7 +183,7 @@
         },
         allowClear: true,
       });
-      @if ($title->agency_id)
+      @if ($title->agency)
       $("#agency_id").select2('data', {id: {{ $title->agency_id }}, text:'{{ $title->agency->name }}'}).trigger('change');
       @endif
       $(document).on("change", "#agency_id", function () {
@@ -221,7 +221,7 @@
         },
         allowClear: true,
       });
-      @if($title->site_id)
+      @if($title->site)
       $("#site_id").select2('data',{id:{{$title->site->id}},text:'{{$title->site->name}}'}).trigger('change');
       @endif
       $(document).on("change", "#site_id", function () {
