@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Agency;
 use App\Models\SiteUser;
 use App\Models\Workforce;
 use App\Models\Patient;
@@ -11,7 +12,9 @@ use App\Models\Site;
 use App\Models\Title;
 use App\Models\Grade;
 use App\Models\Department;
+use App\Models\Guarantor;
 use App\Models\SubDepartment;
+use App\Models\WorkforceGroup;
 use App\Role;
 use App\User;
 use Illuminate\Database\QueryException;
@@ -376,9 +379,13 @@ class WorkforceController extends Controller
         ], 200);
     }
 
-    public function import()
+    public function import(Request $request)
     {
-        return view('admin.workforce.import');
+        if (in_array('import', $request->actionmenu)) {
+            return view('admin.workforce.import');
+        } else {
+            abort(403);
+        }
     }
 
     public function preview(Request $request)
@@ -398,6 +405,57 @@ class WorkforceController extends Controller
         $no = 1;
         $sheet = $objPHPExcel->getActiveSheet(0);
         $highestRow = $sheet->getHighestRow();
+        for ($row=2; $row <= $highestRow ; $row++) { 
+            $code                   = strtoupper($sheet->getCellByColumnAndRow(0, $row)->getValue());
+            $nid                    = strtoupper($sheet->getCellByColumnAndRow(1, $row)->getValue());
+            $name                   = $sheet->getCellByColumnAndRow(2, $row)->getValue();
+            $workforce_group_code   = strtoupper($sheet->getCellByColumnAndRow(3, $row)->getValue());
+            $agency_code            = strtoupper($sheet->getCellByColumnAndRow(4, $row)->getValue());
+            $title_code             = strtoupper($sheet->getCellByColumnAndRow(5, $row)->getValue());
+            $start_date             = $sheet->getCellByColumnAndRow(6, $row)->getValue();
+            $finish_date            = $sheet->getCellByColumnAndRow(7, $row)->getValue();
+            $grade_code             = strtoupper($sheet->getCellByColumnAndRow(8, $row)->getValue());
+            $site_code              = strtoupper($sheet->getCellByColumnAndRow(9, $row)->getValue());
+            $department_code        = strtoupper($sheet->getCellByColumnAndRow(10, $row)->getValue());
+            $sub_department_code    = strtoupper($sheet->getCellByColumnAndRow(11, $row)->getValue());
+            $guarantor_code         = strtoupper($sheet->getCellByColumnAndRow(12, $row)->getValue());
+            $status                 = $sheet->getCellByColumnAndRow(13, $row)->getValue();
+            $workforce_group        = WorkforceGroup::whereRaw("upper(code) = '$workforce_group_code'")->first();
+            $agency                 = Agency::whereRaw("upper(code) = '$agency_code'")->first();
+            $title                  = Title::whereRaw("upper(code) = '$title_code'")->first();
+            $grade                  = Grade::whereRaw("upper(code) = '$grade_code'")->first();
+            $site                   = Site::whereRaw("upper(code) = '$site_code'")->first();
+            $department             = Department::whereRaw("upper(code) = '$department_code'")->first();
+            $sub_department         = SubDepartment::whereRaw("upper(code) = '$sub_department_code'")->first();
+            $guarantor              = Guarantor::whereRaw("upper(code) = '$guarantor_code'")->first();
+            if ($nid) {
+                $error = [];
+                if (!$workforce_group) {
+                    array_push($error, 'Kelompok Workforce tidak ditemukan');
+                }
+                if (!$agency) {
+                    array_push($error, 'Instansi tidak ditemukan');
+                }
+                if (!$title) {
+                    array_push($error, 'Jabatan tidak ditemukan');
+                }
+                if (!$grade) {
+                    array_push($error, 'Jenjang jabatan tidak ditemukan');
+                }
+                if (!$site) {
+                    array_push($error, 'Distrik tidak ditemukan');
+                }
+                if (!$department) {
+                    array_push($error, 'Divisi bidang tidak ditemukan');
+                }
+                if (!$sub_department) {
+                    array_push($error, 'Sub divisi bidang tidak ditemukan');
+                }
+                if (!$guarantor) {
+                    array_push($error, 'Penanggung jawab tidak ditemukan');
+                }
+            }
+        }
     }
 
     /**
