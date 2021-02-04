@@ -29,6 +29,18 @@ class Title extends Model
     {
         return $this->hasOne('App\Models\Site', 'id', 'site_id');
     }
+    public function agency()
+    {
+        return $this->hasOne('App\Models\Agency', 'id', 'agency_id');
+    }
+    public function department()
+    {
+        return $this->hasOne('App\Models\Department', 'id', 'department_id');
+    }
+    public function sub_department()
+    {
+        return $this->hasOne('App\Models\SubDepartment', 'id', 'sub_department_id');
+    }
     public function t_schedulemaker()
     {
         return $this->hasMany(Title::class, 'schedule_maker_title_id');

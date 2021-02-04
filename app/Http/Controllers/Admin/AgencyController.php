@@ -79,7 +79,7 @@ class AgencyController extends Controller
         $site_id = $request->site_id;
 
         //Count Data
-        $query = Agency::whereRaw("upper(name) like '%$name%'");
+        $query = Agency::select('agencies.*')->whereRaw("upper(name) like '%$name%'");
         if($site_id){
             $query->leftJoin('agency_sites','agency_sites.agency_id','=','agencies.id');
             $query->where('agency_sites.site_id',$site_id);
@@ -87,7 +87,7 @@ class AgencyController extends Controller
         $recordsTotal = $query->count();
 
         //Select Pagination
-        $query = Agency::whereRaw("upper(name) like '%$name%'");
+        $query = Agency::select('agencies.*')->whereRaw("upper(name) like '%$name%'");
         if($site_id){
             $query->leftJoin('agency_sites','agency_sites.agency_id','=','agencies.id');
             $query->where('agency_sites.site_id',$site_id);
