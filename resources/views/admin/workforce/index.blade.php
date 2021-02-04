@@ -299,13 +299,13 @@
               return `${row.name}<br><small>${row.nid}</small>`
             },targets: [2] },
             { render: function ( data, type, row) {
-              return `${row.workforce_group_id ? row.workforcegroup.name : ''}`
+              return `${row.workforce_group ? row.workforcegroup.name : ''}`
             },targets: [3] },
             { render: function ( data, type, row) {
-              return `${row.agency_id ? row.agency.name : ''}`
+              return `${row.agency ? row.agency.name : ''}`
             },targets: [4] },
             { render: function ( data, type, row) {
-              return `${row.site_id ? row.site.name : ''}`
+              return `${row.site ? row.site.name : ''}`
             },targets: [1] },
             { render: function ( data, type, row ) {
                   return `<span class="label bg-blue">${row.updatedby ? row.updatedby.name : ''}</span>`
