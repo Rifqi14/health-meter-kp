@@ -81,15 +81,15 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="department_id" class="col-sm-2 control-label">Bidang <b class="text-danger">*</b></label>
+                <label for="department_id" class="col-sm-2 control-label">Bidang</label>
                 <div class="col-sm-6">
-                  <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Bidang" required>
+                  <input type="text" class="form-control" id="department_id" name="department_id" data-placeholder="Bidang" >
                 </div>
               </div>
               <div class="form-group">
-                <label for="sub_department_id" class="col-sm-2 control-label">Sub Bidang <b class="text-danger">*</b></label>
+                <label for="sub_department_id" class="col-sm-2 control-label">Sub Bidang</label>
                 <div class="col-sm-6">
-                  <input type="text" class="form-control" id="sub_department_id" name="sub_department_id" data-placeholder="Sub Bidang" required>
+                  <input type="text" class="form-control" id="sub_department_id" name="sub_department_id" data-placeholder="Sub Bidang" >
                 </div>
               </div>
               <div class="form-group">
