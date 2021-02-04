@@ -136,7 +136,7 @@ $(function(){
         lengthChange:true,
         autoWidth:false,
         paging:true,
-        order: [[ 5, "asc" ]],
+        order: [[ 4, "asc" ]],
         columnDefs: [
             {
                 orderable: false,targets:[0,1,2,3,4]
